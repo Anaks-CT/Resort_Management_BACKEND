@@ -38,14 +38,5 @@ class ResortService {
             return { resort };
         });
     }
-    allResortDetails() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const resort = yield this.resortRepositary.getAllresortDetails();
-            if (!resort) {
-                throw errorResponse_1.default.badRequest("Resorts not found");
-            }
-            return resort;
-        });
-    }
 }
 exports.default = ResortService;

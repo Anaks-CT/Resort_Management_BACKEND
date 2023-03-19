@@ -48,11 +48,11 @@ export default class ResortService {
         return { resort };
     }
 
-    async allResortDetails(): Promise<IResort[] | null> {
-        const resort = await this.resortRepositary.getAllresortDetails();
-        if (!resort) {
-            throw ErrorResponse.badRequest("Resorts not found");
-        }
-        return resort
-    }
+    // async allResortDetails(): Promise<IResort[] | null> {
+    //     const resort = await this.resortRepositary.getAllresortDetails();
+    //     if (!resort) {
+    //         throw ErrorResponse.badRequest("Resorts not found");
+    //     }
+    //     return resort
+    // }
 }
