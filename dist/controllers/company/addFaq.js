@@ -12,16 +12,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllResortDetails = void 0;
-const resort_service_1 = __importDefault(require("../../services/resort.service"));
-const resortService = new resort_service_1.default();
-const getAllResortDetails = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+exports.addFaq = void 0;
+const company_service_1 = __importDefault(require("../../services/company.service"));
+const companyService = new company_service_1.default();
+const addFaq = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { question, answer } = req.body;
     try {
-        const resort = yield resortService.allResortDetails();
-        res.send({ message: "Fetching data successful", data: resort });
+        const response = yield companyService.addFaq(question, answer);
+        res.send({ message: "New faq added", data: response });
     }
     catch (error) {
         return next(error);
     }
 });
-exports.getAllResortDetails = getAllResortDetails;
+exports.addFaq = addFaq;

@@ -15,6 +15,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const errorResponse_1 = __importDefault(require("../error/errorResponse"));
 const resortGallary_model_1 = __importDefault(require("../models/resortGallary.model"));
 class GallaryRepositary {
+    createGallary(resortId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const gallary = new resortGallary_model_1.default({
+                resortid: resortId,
+            });
+            yield gallary.save();
+            return gallary.toJSON();
+        });
+    }
     addLargeBanner(image, description1, description2, resortId) {
         return __awaiter(this, void 0, void 0, function* () {
             const addImage = yield resortGallary_model_1.default.updateOne({ resortid: resortId }, {
@@ -25,6 +34,16 @@ class GallaryRepositary {
                         description2: description2,
                     },
                 },
+            });
+            return addImage.acknowledged;
+        });
+    }
+    addCommunityPic(resortId, image) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const addImage = yield resortGallary_model_1.default.updateOne({ resortid: resortId }, {
+                $addToSet: {
+                    communityPics: image
+                }
             });
             return addImage.acknowledged;
         });
@@ -46,13 +65,22 @@ class GallaryRepositary {
     findGallaryByResortId(resortId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const gallary = yield resortGallary_model_1.default.findOne({ resortid: resortId });
+                const gallary = yield resortGallary_model_1.default.findOne({
+                    resortid: resortId,
+                });
                 return gallary ? gallary.toJSON() : null;
             }
             catch (error) {
-                throw errorResponse_1.default.internalError("Can't find the Gallary of the required Resort" ///// doubt is it okay to write error in here
-                );
+                ///////////////////////////// if the id passed does not match with the mongoose id type////////////////////////
+                // not sure if this is a good practice since mongodb might have thrown the error for something different error which wont be caught in the error. for example if we changed the details passing down 
+                throw errorResponse_1.default.internalError("ResortId is not of the type mongooose.objectID");
             }
+        });
+    }
+    GallaryDetails() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const gallary = yield resortGallary_model_1.default.find();
+            return gallary;
         });
     }
 }

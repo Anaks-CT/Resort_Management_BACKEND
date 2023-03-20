@@ -14,12 +14,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const company_model_1 = __importDefault(require("../models/company.model"));
 class CompanyRepositary {
-    createCompany(companyName, bannerDetails, faqs) {
+    createCompany(companyName, bannerDetails, circleBanners, faqs) {
         return __awaiter(this, void 0, void 0, function* () {
             const company = new company_model_1.default({
                 companyName: companyName,
                 bannerDetails: bannerDetails,
-                faqs: faqs
+                circleBanners: circleBanners,
+                faqs: faqs,
             });
             yield company.save();
             return company.toJSON();
@@ -29,6 +30,26 @@ class CompanyRepositary {
         return __awaiter(this, void 0, void 0, function* () {
             const company = yield company_model_1.default.findOne();
             return company ? company.toJSON() : null;
+        });
+    }
+    addFaqs(Q, A) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const result = yield company_model_1.default.updateOne({}, { $addToSet: { faqs: { Q: Q, A: A } } });
+            return result.acknowledged;
+        });
+    }
+    searchSingleFaq(faqs) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const existingFAQ = yield company_model_1.default
+                .findOne({ faqs: { $elemMatch: { Q: faqs.Q } } })
+                .exec();
+            return existingFAQ;
+        });
+    }
+    addResortId(resortId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const updateResortIdResponse = yield company_model_1.default.updateOne({}, { $addToSet: { resortDetails: resortId } });
+            return updateResortIdResponse.acknowledged;
         });
     }
 }

@@ -18,9 +18,9 @@ class CompanyService {
     constructor(companyRepositary = new company_repositary_1.default()) {
         this.companyRepositary = companyRepositary;
     }
-    createCompany(companyName, bannerDetails, faqs) {
+    createCompany(companyName, bannerDetails, circleBanners, faqs) {
         return __awaiter(this, void 0, void 0, function* () {
-            const addCompany = yield this.companyRepositary.createCompany(companyName, bannerDetails, faqs);
+            const addCompany = yield this.companyRepositary.createCompany(companyName, bannerDetails, circleBanners, faqs);
             return addCompany;
         });
     }
@@ -30,6 +30,16 @@ class CompanyService {
             if (!companyDetails)
                 throw errorResponse_1.default.internalError('company not found');
             return companyDetails;
+        });
+    }
+    addFaq(Q, A) {
+        return __awaiter(this, void 0, void 0, function* () {
+            //// checking for image duplication
+            const checkFaqDup = yield this.companyRepositary.searchSingleFaq({ Q, A });
+            if (checkFaqDup)
+                throw errorResponse_1.default.internalError('faq aldready exist');
+            const addFaq = yield this.companyRepositary.addFaqs(Q, A);
+            return addFaq;
         });
     }
 }

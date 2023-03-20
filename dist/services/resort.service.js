@@ -14,10 +14,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const resort_repositary_1 = __importDefault(require("../repositories/resort.repositary"));
 const errorResponse_1 = __importDefault(require("../error/errorResponse"));
-const resortGallary_model_1 = __importDefault(require("../models/resortGallary.model"));
+const gallary_repositary_1 = __importDefault(require("../repositories/gallary.repositary"));
+const company_repositary_1 = __importDefault(require("../repositories/company.repositary"));
 class ResortService {
-    constructor(resortRepositary = new resort_repositary_1.default()) {
+    constructor(resortRepositary = new resort_repositary_1.default(), gallaryRepositary = new gallary_repositary_1.default(), companyRepositary = new company_repositary_1.default()) {
         this.resortRepositary = resortRepositary;
+        this.gallaryRepositary = gallaryRepositary;
+        this.companyRepositary = companyRepositary;
     }
     createResort(resortDetails, location, email, customerCareNo) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -28,14 +31,24 @@ class ResortService {
             }
             //////////////////////// creating new resort ////////////////////////
             const resort = yield this.resortRepositary.createResort(resortDetails, location, email, customerCareNo);
+            ///////////////////////// adding the newly created resort in to company  /////////////////
+            yield this.companyRepositary.addResortId(resort._id);
             ///////////////////////// creating gallary modal for the resort //////////////////////
-            const gallary = new resortGallary_model_1.default({
-                resortid: resort._id,
-            });
+            const gallary = yield this.gallaryRepositary.createGallary(resort._id);
+            if (!gallary)
+                throw errorResponse_1.default.internalError("gallary is not created. Error occured in the database");
             ////////////////////////// updating the created gallaryid in resort schema/////////////////////
-            yield this.resortRepositary.setGallaryId(resort._id, gallary._id);
-            yield gallary.save();
+            yield this.resortRepositary.setGallaryId(resort._id, gallary === null || gallary === void 0 ? void 0 : gallary._id);
             return { resort };
+        });
+    }
+    allResortDetails() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const resort = yield this.resortRepositary.getAllresortDetails();
+            if (!resort) {
+                throw errorResponse_1.default.badRequest("Resorts not found");
+            }
+            return resort;
         });
     }
 }

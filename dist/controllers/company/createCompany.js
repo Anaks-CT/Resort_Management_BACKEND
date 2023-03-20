@@ -16,9 +16,9 @@ exports.createCompany = void 0;
 const company_service_1 = __importDefault(require("../../services/company.service"));
 const companyService = new company_service_1.default();
 const createCompany = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { companyName, bannerDetails, faqs } = req.body;
+    const { companyName, bannerDetails, circleBanners, faqs } = req.body;
     try {
-        const response = yield companyService.createCompany(companyName, bannerDetails, faqs);
+        const response = yield companyService.createCompany(companyName, bannerDetails, circleBanners, faqs);
         res.send({ message: "new company created", data: response });
     }
     catch (error) {

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import ErrorResponse from "../error/errorResponse";
-import { ICompany } from "../interface/company.interface";
+import { circleBanner, ICompany } from "../interface/company.interface";
 import CompanyRepositary from "../repositories/company.repositary";
 
 type bannerDetails = {
@@ -18,9 +18,10 @@ export default class CompanyService {
     async createCompany(
         companyName: string,
         bannerDetails: bannerDetails,
+        circleBanners: circleBanner[],
         faqs: faqs[]
     ): Promise<ICompany> {
-        const addCompany = await this.companyRepositary.createCompany(companyName, bannerDetails, faqs)
+        const addCompany = await this.companyRepositary.createCompany(companyName, bannerDetails,circleBanners, faqs)
         return addCompany
     }
 
@@ -29,5 +30,14 @@ export default class CompanyService {
         if(!companyDetails)
             throw ErrorResponse.internalError('company not found')
         return companyDetails
+    }
+
+    async addFaq(Q: string, A: string): Promise<Boolean>{
+        //// checking for image duplication
+        const checkFaqDup = await this.companyRepositary.searchSingleFaq({Q, A})
+        if(checkFaqDup)
+            throw ErrorResponse.internalError('faq aldready exist')
+        const addFaq = await this.companyRepositary.addFaqs(Q, A)
+        return addFaq
     }
 }

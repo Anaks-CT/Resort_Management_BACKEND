@@ -3,16 +3,10 @@ import { RequestHandler } from "express";
 
 const resortService = new ResortService();
 
-export const createResort: RequestHandler = async (req, res, next) => {
-  const { resortDetails, location, email, customerCareNo } = req.body;
+export const getAllResortDetails: RequestHandler = async (req, res, next) => {
   try {
-    const { resort } = await resortService.createResort(
-      resortDetails,
-      location,
-      email,
-      customerCareNo
-    );
-    res.send({ message: "New Resort created", data: resort });
+    const  resort  = await resortService.allResortDetails()
+    res.send({ message: "Fetching data successful", data: resort });
   } catch (error: any) {
     return next(error);
   }

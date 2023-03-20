@@ -3,7 +3,7 @@ import { IResort } from "../interface/resort.interface";
 
 const resortSchema = new Schema<IResort>({
   resortDetails: {
-    name: { type: String, required: true, unique: true },
+    name: { type: String, required: true, unique: true},
     heading: { type: String, required: true },
     description: { type: String, required: true },
     image: {type: String, required: true},

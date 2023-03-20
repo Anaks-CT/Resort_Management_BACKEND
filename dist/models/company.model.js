@@ -31,9 +31,17 @@ const companySchema = new mongoose_1.Schema({
         image: { type: String, required: true },
         description: { type: String, required: true },
     },
+    circleBanners: [
+        {
+            miniHeading: String,
+            heading: String,
+            description: String,
+            image: String,
+        },
+    ],
     faqs: [
         {
-            Q: String,
+            Q: { type: String, unique: true },
             A: String,
         },
     ],

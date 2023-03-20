@@ -12,16 +12,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllResortDetails = void 0;
-const resort_service_1 = __importDefault(require("../../services/resort.service"));
-const resortService = new resort_service_1.default();
-const getAllResortDetails = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+exports.addCommunityPic = void 0;
+const gallary_service_1 = __importDefault(require("../../services/gallary.service"));
+const gallaryService = new gallary_service_1.default();
+const addCommunityPic = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { image, resortId } = req.body;
     try {
-        const resort = yield resortService.allResortDetails();
-        res.send({ message: "Fetching data successful", data: resort });
+        const response = yield gallaryService.addCommunityPic(resortId, image);
+        res.send({ message: "Picture added successfully", data: response });
     }
     catch (error) {
         return next(error);
     }
 });
-exports.getAllResortDetails = getAllResortDetails;
+exports.addCommunityPic = addCommunityPic;
