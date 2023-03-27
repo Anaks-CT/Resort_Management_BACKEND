@@ -6,11 +6,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.gallary = void 0;
 const express_1 = __importDefault(require("express"));
 const addCommunityPic_1 = require("../controllers/gallary/addCommunityPic");
-const addLargeBanner_1 = require("../controllers/gallary/addLargeBanner");
+const largeBanner_1 = require("../controllers/gallary/largeBanner");
 const addSmallbanner_1 = require("../controllers/gallary/addSmallbanner");
 const fetchGallaryDetails_1 = require("../controllers/gallary/fetchGallaryDetails");
 exports.gallary = express_1.default.Router();
-exports.gallary.post('/addLargeBanner', addLargeBanner_1.addLargeBanner);
-exports.gallary.post('/addSmallBanner', addSmallbanner_1.addSmallBanner);
-exports.gallary.post('/addCommunityPic', addCommunityPic_1.addCommunityPic);
-exports.gallary.get('/getAllGallaryDetails', fetchGallaryDetails_1.gallaryDetails);
+exports.gallary
+    .route("/largeBanner/:resortId/:largeBannerId?")
+    .post(largeBanner_1.addLargeBanner)
+    .delete(largeBanner_1.deleteLargeBanner)
+    .patch(largeBanner_1.editBannerDetails);
+exports.gallary.post("/addSmallBanner", addSmallbanner_1.addSmallBanner);
+exports.gallary.post("/addCommunityPic", addCommunityPic_1.addCommunityPic);
+exports.gallary.get("/getAllGallaryDetails", fetchGallaryDetails_1.gallaryDetails);
+exports.gallary.get("/getGallaryByResortId/:id", fetchGallaryDetails_1.gallaryDetailsByResortId);

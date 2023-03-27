@@ -12,3 +12,14 @@ export const gallaryDetails: RequestHandler = async (req, res, next) => {
     return next(error);
   }
 };
+
+export const gallaryDetailsByResortId: RequestHandler = async (req, res, next) => {
+  try {
+    console.log(req.params);
+    const response = await gallaryService.findGallarybyResortId(req.params.id)
+    
+    res.send({message: "Successful", data: response})
+  } catch (error: any) {
+    return next(error)
+  }
+}

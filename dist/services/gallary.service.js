@@ -38,6 +38,23 @@ class GallaryService {
             return addImageResponse;
         });
     }
+    deleteLargeBanner(resortId, largeBannerId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            //*************************dont forget to write the return tupe of this******************** //
+            const deleteLargeBanner = this.gallaryRepositary.deleteLargeBannerbyId(resortId, largeBannerId);
+            if (!deleteLargeBanner)
+                throw errorResponse_1.default.badRequest('Banner not deleted');
+            return deleteLargeBanner;
+        });
+    }
+    editBannerDetails(resortId, largeBannerId, description1, description2) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const editResponse = this.gallaryRepositary.editLargeBannerDetails(resortId, largeBannerId, description1, description2);
+            if (!editResponse)
+                throw errorResponse_1.default.badRequest('Banner not edited');
+            return editResponse;
+        });
+    }
     addCommunityPic(resortId, image) {
         return __awaiter(this, void 0, void 0, function* () {
             // checking if the gallary is present and the error is caught in the repositary
@@ -83,6 +100,14 @@ class GallaryService {
             const gallaryDetails = yield this.gallaryRepositary.GallaryDetails();
             if (!gallaryDetails)
                 throw errorResponse_1.default.badRequest("Gallary database is empty");
+            return gallaryDetails;
+        });
+    }
+    findGallarybyResortId(resortId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const gallaryDetails = yield this.gallaryRepositary.findGallaryByResortId(resortId);
+            if (!gallaryDetails)
+                throw errorResponse_1.default.badRequest("Cannot find Gallary");
             return gallaryDetails;
         });
     }

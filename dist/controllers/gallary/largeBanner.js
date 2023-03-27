@@ -12,13 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addLargeBanner = void 0;
+exports.editBannerDetails = exports.deleteLargeBanner = exports.addLargeBanner = void 0;
 const gallary_service_1 = __importDefault(require("../../services/gallary.service"));
 const gallaryService = new gallary_service_1.default();
 const addLargeBanner = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { image, description1, description2 } = req.body;
     const { resortId } = req.params;
     try {
+        console.log(resortId);
         const response = yield gallaryService.addLargeBanner(image, description1, description2, resortId);
         const gallaryDetails = yield gallaryService.findGallarybyResortId(resortId);
         res.send({ message: "acknowledged:" + response, data: gallaryDetails });
@@ -28,3 +29,29 @@ const addLargeBanner = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
     }
 });
 exports.addLargeBanner = addLargeBanner;
+const deleteLargeBanner = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { resortId, largeBannerId } = req.params;
+    try {
+        const response = yield gallaryService.deleteLargeBanner(resortId, largeBannerId);
+        const gallaryDetails = yield gallaryService.findGallarybyResortId(resortId);
+        res.send({ message: "acknowledged:" + response, data: gallaryDetails });
+    }
+    catch (err) {
+        return next(err);
+    }
+});
+exports.deleteLargeBanner = deleteLargeBanner;
+const editBannerDetails = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { resortId, largeBannerId } = req.params;
+    const { description1, description2 } = req.body;
+    console.log(resortId, largeBannerId, description1, description2);
+    try {
+        const response = yield gallaryService.editBannerDetails(resortId, largeBannerId, description1, description2);
+        const gallaryDetails = yield gallaryService.findGallarybyResortId(resortId);
+        res.send({ message: "acknowledged" + response, data: gallaryDetails });
+    }
+    catch (err) {
+        return next(err);
+    }
+});
+exports.editBannerDetails = editBannerDetails;

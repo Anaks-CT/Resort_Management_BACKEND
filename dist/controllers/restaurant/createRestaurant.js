@@ -12,27 +12,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.gallaryDetailsByResortId = exports.gallaryDetails = void 0;
-const gallary_service_1 = __importDefault(require("../../services/gallary.service"));
-const gallaryService = new gallary_service_1.default();
-const gallaryDetails = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+exports.createRestaurant = void 0;
+const restaurant_service_1 = __importDefault(require("../../services/restaurant.service"));
+const restaurantService = new restaurant_service_1.default();
+const createRestaurant = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { name, heading, description, feature, image } = req.body;
     try {
-        const response = yield gallaryService.gallaryDetails();
-        res.send({ message: "Successful", data: response });
+        const result = yield restaurantService.createRestaurant(name, heading, description, feature, image);
+        res.send({ message: "New restaurant created", data: result });
     }
     catch (error) {
         return next(error);
     }
 });
-exports.gallaryDetails = gallaryDetails;
-const gallaryDetailsByResortId = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        console.log(req.params);
-        const response = yield gallaryService.findGallarybyResortId(req.params.id);
-        res.send({ message: "Successful", data: response });
-    }
-    catch (error) {
-        return next(error);
-    }
-});
-exports.gallaryDetailsByResortId = gallaryDetailsByResortId;
+exports.createRestaurant = createRestaurant;

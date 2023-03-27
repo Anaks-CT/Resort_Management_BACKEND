@@ -10,7 +10,7 @@ export default class GallaryService {
         image: string,
         description1: string,
         description2: string,
-        resortId: mongoose.SchemaDefinitionProperty<mongoose.Types.ObjectId>
+        resortId: string
     ): Promise<Boolean> {
         // checking if the gallary is present and is not null
         const gallary = await this.gallaryRepositary.findGallaryByResortId(
@@ -39,11 +39,38 @@ export default class GallaryService {
         if (!addImageResponse) {
             throw ErrorResponse.internalError("Banner not added");
         }
+
         return addImageResponse;
     }
 
+    async deleteLargeBanner(
+        resortId: string,
+        largeBannerId: string
+    ) {
+        //*************************dont forget to write the return tupe of this******************** //
+        const deleteLargeBanner = this.gallaryRepositary.deleteLargeBannerbyId(
+            resortId,
+            largeBannerId
+        );
+        if(!deleteLargeBanner)
+            throw ErrorResponse.badRequest('Banner not deleted')
+        return deleteLargeBanner;
+    }
+
+    async editBannerDetails(
+        resortId: string,
+        largeBannerId: string,
+        description1: string,
+        description2: string
+    ){
+        const editResponse = this.gallaryRepositary.editLargeBannerDetails(resortId, largeBannerId, description1, description2)
+        if(!editResponse)
+            throw ErrorResponse.badRequest('Banner not edited')
+        return editResponse
+    }
+
     async addCommunityPic(
-        resortId: mongoose.SchemaDefinitionProperty<mongoose.Types.ObjectId>,
+        resortId: string,
         image: string
     ): Promise<Boolean | null> {
         // checking if the gallary is present and the error is caught in the repositary
@@ -62,7 +89,10 @@ export default class GallaryService {
         });
 
         //adding the picture
-        const addImageResponse = await this.gallaryRepositary.addCommunityPic(resortId, image)
+        const addImageResponse = await this.gallaryRepositary.addCommunityPic(
+            resortId,
+            image
+        );
 
         //throwing error in case picture not added for some reason
         if (!addImageResponse) {
@@ -75,7 +105,7 @@ export default class GallaryService {
         image: string,
         description1: string,
         description2: string,
-        resortId: mongoose.SchemaDefinitionProperty<mongoose.Types.ObjectId>
+        resortId: string
     ): Promise<Boolean> {
         // checking if the gallary is present and the error is caught in the repositary
         const gallary = await this.gallaryRepositary.findGallaryByResortId(
@@ -111,6 +141,16 @@ export default class GallaryService {
         const gallaryDetails = await this.gallaryRepositary.GallaryDetails();
         if (!gallaryDetails)
             throw ErrorResponse.badRequest("Gallary database is empty");
+        return gallaryDetails;
+    }
+
+    async findGallarybyResortId(
+        resortId: string
+    ): Promise<IGallary | null> {
+        const gallaryDetails =
+            await this.gallaryRepositary.findGallaryByResortId(resortId);
+        if (!gallaryDetails)
+            throw ErrorResponse.badRequest("Cannot find Gallary");
         return gallaryDetails;
     }
 }

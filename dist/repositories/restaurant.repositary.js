@@ -12,19 +12,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addLargeBanner = void 0;
-const gallary_service_1 = __importDefault(require("../../services/gallary.service"));
-const gallaryService = new gallary_service_1.default();
-const addLargeBanner = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { image, description1, description2 } = req.body;
-    const { resortId } = req.params;
-    try {
-        const response = yield gallaryService.addLargeBanner(image, description1, description2, resortId);
-        const gallaryDetails = yield gallaryService.findGallarybyResortId(resortId);
-        res.send({ message: "acknowledged:" + response, data: gallaryDetails });
+const restaurant_model_1 = __importDefault(require("../models/restaurant.model"));
+class RestaurantRepositary {
+    createRestaurant(name, heading, description, feature, image) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const createRestaurant = new restaurant_model_1.default({
+                name: name,
+                heading: heading,
+                description: description,
+                feature: feature,
+                image: image
+            });
+            yield createRestaurant.save();
+            return createRestaurant.toJSON();
+        });
     }
-    catch (error) {
-        return next(error);
-    }
-});
-exports.addLargeBanner = addLargeBanner;
+}
+exports.default = RestaurantRepositary;

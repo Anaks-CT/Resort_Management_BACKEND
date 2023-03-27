@@ -36,6 +36,7 @@ const errorHandler_1 = require("./error/errorHandler");
 const resort_routes_1 = require("./routes/resort.routes");
 const gallary_routes_1 = require("./routes/gallary.routes");
 const company_routes_1 = require("./routes/company.routes");
+const restaurant_routes_1 = require("./routes/restaurant.routes");
 class App {
     constructor() {
         this.dotenvConfig();
@@ -55,6 +56,7 @@ class App {
         this.express.use("/resort", resort_routes_1.resort);
         this.express.use("/gallary", gallary_routes_1.gallary);
         this.express.use("/company", company_routes_1.company);
+        this.express.use("/restaurant", restaurant_routes_1.restaurant);
     }
     connectDB() {
         (0, database_con_1.default)();
@@ -62,7 +64,7 @@ class App {
     cors() {
         this.express.use((0, cors_1.default)({
             origin: [`http://localhost:${process.env.INCOMING_PORT}`],
-            methods: ["GET", "POST", "PUT", "DELETE"],
+            methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
             credentials: true,
         }));
     }
