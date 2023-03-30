@@ -1,35 +1,36 @@
-import mongoose, {
-    isObjectIdOrHexString,
-    isValidObjectId,
-    Query,
-    Types,
-    UpdateQuery,
-} from "mongoose";
-import ErrorResponse from "../error/errorResponse";
+import { UpdateQuery, UpdateWriteOpResult } from "mongoose";
 import { IGallary } from "../interface/gallary.interface";
 import resortGallaryModel from "../models/resortGallary.model";
-const ObjectId = require("mongodb").ObjectId;
+import { ObjectId } from "mongodb";
+import { BaseRepository } from "./baseRepositary";
 
-class GallaryRepositary {
-    async createGallary(resortId: string): Promise<IGallary | null> {
-        const gallary = new resortGallaryModel({
-            resortid: new ObjectId(resortId),
-        });
-        await gallary.save();
-        return gallary.toJSON() as IGallary;
+// import ObjectId from "mong"
+
+class GallaryRepositary extends BaseRepository {
+    constructor() {
+        super(resortGallaryModel);
     }
 
-    async addLargeBanner(
+    async createGallary(resortId: string): Promise<IGallary | null> {
+        const newGallary = {
+            resortid: new ObjectId(resortId),
+        };
+        return this.create<any>(newGallary);
+    }
+
+    async addBanner(
+        type: "largeBanner" | "smallBanner",
         image: string,
         description1: string,
         description2: string,
         resortId: string
-    ): Promise<boolean> {
+    ): Promise<UpdateWriteOpResult> {
+        const key = type === "largeBanner" ? "largeBanner" : "smallBanner";
         const addImage: UpdateQuery<any> = await resortGallaryModel.updateOne(
             { resortid: new ObjectId(resortId) },
             {
                 $addToSet: {
-                    largeBanner: {
+                    [key]: {
                         image: image,
                         description1: description1,
                         description2: description2,
@@ -40,49 +41,73 @@ class GallaryRepositary {
         return addImage.acknowledged;
     }
 
-    async deleteLargeBannerbyId(resortId: string, largeBannerId: string) {
-        //****************** don't forget to write the return type of this***************************/
-
+    async deleteBannerbyId(
+        type: "largeBanner" | "smallBanner",
+        resortId: string,
+        largeBannerId: string
+    ): Promise<UpdateWriteOpResult> {
+        const key = type === "largeBanner" ? "largeBanner" : "smallBanner";
         const deleteResponse = await resortGallaryModel.updateOne(
             { resortid: new ObjectId(resortId) },
             {
                 $pull: {
-                    largeBanner: {
+                    [key]: {
                         _id: new ObjectId(largeBannerId),
                     },
                 },
             }
         );
-        return deleteResponse;
+        return deleteResponse
     }
 
-    async editLargeBannerDetails(
+    async editBannerDetails(
+        type: "largeBanner" | "smallBanner",
         resortId: string,
-        largeBannerId: string,
+        bannerId: string,
         description1: string,
         description2: string
-    ) {
+    ): Promise<UpdateWriteOpResult> {
+        const key = type === "largeBanner" ? "largeBanner" : "smallBanner";
         const editResponse = await resortGallaryModel.updateOne(
             {
                 resortid: new ObjectId(resortId),
-                "largeBanner._id": new ObjectId(largeBannerId),
+                [`${key}._id`]: new ObjectId(bannerId),
             },
             {
                 $set: {
-                    "largeBanner.$.description1": description1,
-                    "largeBanner.$.description2": description2,
+                    [`${key}.$.description1`]: description1,
+                    [`${key}.$.description2`]: description2,
                 },
             }
         );
-        return editResponse
+        return editResponse;
     }
 
-
+    async editBannerImage(
+        type: "largeBanner" | "smallBanner",
+        resortId: string,
+        largeBannerId: string,
+        image: string
+    ): Promise<UpdateWriteOpResult> {
+        const key = type === "largeBanner" ? "largeBanner" : "smallBanner";
+        const editResponse = await resortGallaryModel.updateOne(
+            {
+                resortid: new ObjectId(resortId),
+                [`${key}._id`]: new ObjectId(largeBannerId),
+            },
+            {
+                $set: {
+                    [`${key}.$.image`]: image,
+                },
+            }
+        );
+        return editResponse;
+    }
 
     async addCommunityPic(
         resortId: string,
         image: string
-    ): Promise<Boolean | null> {
+    ): Promise<UpdateWriteOpResult> {
         const addImage: UpdateQuery<any> = await resortGallaryModel.updateOne(
             { resortid: new ObjectId(resortId) },
             {
@@ -94,45 +119,14 @@ class GallaryRepositary {
         return addImage.acknowledged;
     }
 
-    async addSmallBanner(
-        image: string,
-        description1: string,
-        description2: string,
-        resortId: string
-    ): Promise<boolean> {
-        const addImage: UpdateQuery<any> = await resortGallaryModel.updateOne(
-            { resortid: new ObjectId(resortId) },
-            {
-                $addToSet: {
-                    smallBanner: {
-                        image: image,
-                        description1: description1,
-                        description2: description2,
-                    },
-                },
-            }
-        );
-        return addImage.acknowledged;
-    }
-
     async findGallaryByResortId(resortId: string): Promise<IGallary | null> {
-        try {
-            const gallary = await resortGallaryModel.findOne({
-                resortid: new ObjectId(resortId),
-            });
-            return gallary ? (gallary.toJSON() as IGallary) : null;
-        } catch (error) {
-            ///////////////////////////// if the id passed does not match with the mongoose id type////////////////////////
-            // not sure if this is a good practice since mongodb might have thrown the error for something different error which wont be caught in the error. for example if we changed the details passing down
-            throw ErrorResponse.internalError(
-                "ResortId is not of the type mongooose.objectID"
-            );
-        }
+        return await resortGallaryModel.findOne({
+            resortid: new ObjectId(resortId),
+        });
     }
 
     async GallaryDetails(): Promise<IGallary[] | null> {
-        const gallary = await resortGallaryModel.find();
-        return gallary;
+        return await this.getAll<IGallary>();
     }
 }
 

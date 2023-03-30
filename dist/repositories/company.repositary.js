@@ -13,23 +13,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const company_model_1 = __importDefault(require("../models/company.model"));
-class CompanyRepositary {
-    createCompany(companyName, bannerDetails, circleBanners, faqs) {
+const baseRepositary_1 = require("./baseRepositary");
+class CompanyRepositary extends baseRepositary_1.BaseRepository {
+    constructor() {
+        super(company_model_1.default);
+    }
+    createCompany(company) {
         return __awaiter(this, void 0, void 0, function* () {
-            const company = new company_model_1.default({
-                companyName: companyName,
-                bannerDetails: bannerDetails,
-                circleBanners: circleBanners,
-                faqs: faqs,
-            });
-            yield company.save();
-            return company.toJSON();
+            return this.create(company);
         });
     }
     getCompanyDetails() {
         return __awaiter(this, void 0, void 0, function* () {
-            const company = yield company_model_1.default.findOne();
-            return company ? company.toJSON() : null;
+            return yield this.getOne();
         });
     }
     addFaqs(Q, A) {

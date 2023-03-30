@@ -30,7 +30,19 @@ class ResortService {
                 throw errorResponse_1.default.badRequest("Resort aldready exists");
             }
             //////////////////////// creating new resort ////////////////////////
-            const resort = yield this.resortRepositary.createResort(resortDetails, location, email, customerCareNo);
+            const newResort = {
+                resortDetails: {
+                    name: resortDetails.name,
+                    heading: resortDetails.heading,
+                    description: resortDetails.description,
+                    image: resortDetails.image,
+                    features: resortDetails.features,
+                },
+                location: location,
+                email: email,
+                customerCareNo: customerCareNo,
+            };
+            const resort = yield this.resortRepositary.createResort(newResort);
             ///////////////////////// adding the newly created resort in to company  /////////////////
             yield this.companyRepositary.addResortId(resort._id);
             ///////////////////////// creating gallary modal for the resort //////////////////////
@@ -38,16 +50,23 @@ class ResortService {
             if (!gallary)
                 throw errorResponse_1.default.internalError("gallary is not created. Error occured in the database");
             ////////////////////////// updating the created gallaryid in resort schema/////////////////////
-            yield this.resortRepositary.setGallaryId(resort._id, gallary === null || gallary === void 0 ? void 0 : gallary._id);
+            yield this.resortRepositary.setGallaryId(resort._id, gallary._id);
             return { resort };
         });
     }
     allResortDetails() {
         return __awaiter(this, void 0, void 0, function* () {
             const resort = yield this.resortRepositary.getAllresortDetails();
-            if (!resort) {
+            if (!resort)
                 throw errorResponse_1.default.badRequest("Resorts not found");
-            }
+            return resort;
+        });
+    }
+    getResortById(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const resort = yield this.resortRepositary.findResortById(id);
+            if (!resort)
+                throw errorResponse_1.default.badRequest("Resort not found");
             return resort;
         });
     }

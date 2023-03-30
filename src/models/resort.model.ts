@@ -1,4 +1,4 @@
-import mongoose, { model, Schema } from "mongoose";
+import mongoose, { model, Schema, Document } from "mongoose";
 import { IResort } from "../interface/resort.interface";
 
 const resortSchema = new Schema<IResort>({
@@ -16,4 +16,4 @@ const resortSchema = new Schema<IResort>({
   gallaryId:mongoose.Types.ObjectId,
 });
 
-export default model<IResort>("Resort", resortSchema);
+export default model<IResort & Document>("Resort", resortSchema);

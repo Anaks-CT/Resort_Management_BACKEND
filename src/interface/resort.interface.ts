@@ -1,4 +1,5 @@
-import mongoose, { Document } from "mongoose";
+import {ObjectId} from "mongodb"
+
 
 export interface IResortDetail {
   name: string;
@@ -6,16 +7,19 @@ export interface IResortDetail {
   description: string;
   image: string
   features: string[];
-};
+}
 
-export interface IResort extends Document {
+export interface IResort {
+  _id?: string
   resortDetails: IResortDetail;
-  manager?: mongoose.SchemaDefinitionProperty<mongoose.Types.ObjectId>;
+  manager?: ObjectId;
   location: string;
   email: string;
   customerCareNo: number;
-  gallaryId?: mongoose.SchemaDefinitionProperty<mongoose.Types.ObjectId>;
+  gallaryId?: ObjectId;
 }
+
+
 
 export interface CreateResortResponse{
   resort:IResort

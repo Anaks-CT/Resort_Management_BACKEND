@@ -18,19 +18,27 @@ class GallaryService {
     constructor(gallaryRepositary = new gallary_repositary_1.default()) {
         this.gallaryRepositary = gallaryRepositary;
     }
-    addLargeBanner(image, description1, description2, resortId) {
+    addBanner(type, image, description1, description2, resortId) {
         return __awaiter(this, void 0, void 0, function* () {
             // checking if the gallary is present and is not null
             const gallary = yield this.gallaryRepositary.findGallaryByResortId(resortId);
             if (!gallary)
                 throw errorResponse_1.default.badRequest("Resortid passed doesn't match any resorts");
             //checking for image duplication
-            gallary === null || gallary === void 0 ? void 0 : gallary.largeBanner.forEach((el) => {
-                if (el.image === image)
-                    throw errorResponse_1.default.badRequest("Banner aldready exist");
-            });
+            if (type === "largeBanner") {
+                gallary === null || gallary === void 0 ? void 0 : gallary.largeBanner.forEach((el) => {
+                    if (el.image === image)
+                        throw errorResponse_1.default.badRequest("Banner aldready exist");
+                });
+            }
+            else if (type === "smallBanner") {
+                gallary === null || gallary === void 0 ? void 0 : gallary.smallBanner.forEach((el) => {
+                    if (el.image === image)
+                        throw errorResponse_1.default.badRequest("Banner aldready exist");
+                });
+            }
             // adding the image
-            const addImageResponse = yield this.gallaryRepositary.addLargeBanner(image, description1, description2, resortId);
+            const addImageResponse = yield this.gallaryRepositary.addBanner(type, image, description1, description2, resortId);
             //throwing error Banner not added for some reason
             if (!addImageResponse) {
                 throw errorResponse_1.default.internalError("Banner not added");
@@ -38,18 +46,26 @@ class GallaryService {
             return addImageResponse;
         });
     }
-    deleteLargeBanner(resortId, largeBannerId) {
+    deleteBanner(type, resortId, largeBannerId) {
         return __awaiter(this, void 0, void 0, function* () {
             //*************************dont forget to write the return tupe of this******************** //
-            const deleteLargeBanner = this.gallaryRepositary.deleteLargeBannerbyId(resortId, largeBannerId);
+            const deleteLargeBanner = this.gallaryRepositary.deleteBannerbyId(type, resortId, largeBannerId);
             if (!deleteLargeBanner)
                 throw errorResponse_1.default.badRequest('Banner not deleted');
             return deleteLargeBanner;
         });
     }
-    editBannerDetails(resortId, largeBannerId, description1, description2) {
+    editBannerDetails(type, resortId, bannerId, description1, description2) {
         return __awaiter(this, void 0, void 0, function* () {
-            const editResponse = this.gallaryRepositary.editLargeBannerDetails(resortId, largeBannerId, description1, description2);
+            const editResponse = this.gallaryRepositary.editBannerDetails(type, resortId, bannerId, description1, description2);
+            if (!editResponse)
+                throw errorResponse_1.default.badRequest('Banner not edited');
+            return editResponse;
+        });
+    }
+    editBannerImage(type, resortId, bannerId, image) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const editResponse = this.gallaryRepositary.editBannerImage(type, resortId, bannerId, image);
             if (!editResponse)
                 throw errorResponse_1.default.badRequest('Banner not edited');
             return editResponse;
@@ -69,26 +85,6 @@ class GallaryService {
             //adding the picture
             const addImageResponse = yield this.gallaryRepositary.addCommunityPic(resortId, image);
             //throwing error in case picture not added for some reason
-            if (!addImageResponse) {
-                throw errorResponse_1.default.internalError("Banner not added");
-            }
-            return addImageResponse;
-        });
-    }
-    addSmallBanner(image, description1, description2, resortId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            // checking if the gallary is present and the error is caught in the repositary
-            const gallary = yield this.gallaryRepositary.findGallaryByResortId(resortId);
-            if (!gallary)
-                throw errorResponse_1.default.badRequest("Resortid passed doesn't match any resorts");
-            //checking for image duplication
-            gallary === null || gallary === void 0 ? void 0 : gallary.smallBanner.forEach((el) => {
-                if (el.image === image)
-                    throw errorResponse_1.default.badRequest("Banner aldready exist");
-            });
-            // adding the image
-            const addImageResponse = yield this.gallaryRepositary.addSmallBanner(image, description1, description2, resortId);
-            // throwing error if banner not added for some reason
             if (!addImageResponse) {
                 throw errorResponse_1.default.internalError("Banner not added");
             }

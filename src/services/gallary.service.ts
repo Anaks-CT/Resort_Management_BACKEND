@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { UpdateWriteOpResult } from "mongoose";
 import ErrorResponse from "../error/errorResponse";
 import { IGallary } from "../interface/gallary.interface";
 import GallaryRepositary from "../repositories/gallary.repositary";
@@ -6,12 +6,13 @@ import GallaryRepositary from "../repositories/gallary.repositary";
 export default class GallaryService {
     constructor(private gallaryRepositary = new GallaryRepositary()) {}
 
-    async addLargeBanner(
+    async addBanner(
+        type: "largeBanner" | "smallBanner",
         image: string,
         description1: string,
         description2: string,
         resortId: string
-    ): Promise<Boolean> {
+    ): Promise<UpdateWriteOpResult> {
         // checking if the gallary is present and is not null
         const gallary = await this.gallaryRepositary.findGallaryByResortId(
             resortId
@@ -22,13 +23,21 @@ export default class GallaryService {
             );
 
         //checking for image duplication
-        gallary?.largeBanner.forEach((el) => {
-            if (el.image === image)
-                throw ErrorResponse.badRequest("Banner aldready exist");
-        });
+        if (type === "largeBanner") {
+            gallary?.largeBanner.forEach((el) => {
+                if (el.image === image)
+                    throw ErrorResponse.badRequest("Banner aldready exist");
+            });
+        }else if(type === "smallBanner"){
+            gallary?.smallBanner.forEach((el) => {
+                if (el.image === image)
+                    throw ErrorResponse.badRequest("Banner aldready exist");
+            });
+        }
 
         // adding the image
-        const addImageResponse = await this.gallaryRepositary.addLargeBanner(
+        const addImageResponse = await this.gallaryRepositary.addBanner(
+            type,
             image,
             description1,
             description2,
@@ -43,12 +52,14 @@ export default class GallaryService {
         return addImageResponse;
     }
 
-    async deleteLargeBanner(
+    async deleteBanner(
+        type: "largeBanner" | "smallBanner",
         resortId: string,
         largeBannerId: string
     ) {
         //*************************dont forget to write the return tupe of this******************** //
-        const deleteLargeBanner = this.gallaryRepositary.deleteLargeBannerbyId(
+        const deleteLargeBanner = this.gallaryRepositary.deleteBannerbyId(
+            type,
             resortId,
             largeBannerId
         );
@@ -58,12 +69,25 @@ export default class GallaryService {
     }
 
     async editBannerDetails(
+        type: "largeBanner" | "smallBanner",
         resortId: string,
-        largeBannerId: string,
+        bannerId: string,
         description1: string,
         description2: string
     ){
-        const editResponse = this.gallaryRepositary.editLargeBannerDetails(resortId, largeBannerId, description1, description2)
+        const editResponse = this.gallaryRepositary.editBannerDetails(type, resortId, bannerId, description1, description2)
+        if(!editResponse)
+            throw ErrorResponse.badRequest('Banner not edited')
+        return editResponse
+    }
+
+    async editBannerImage(
+        type: "largeBanner" | "smallBanner",
+        resortId: string,
+        bannerId: string,
+        image: string,
+    ){
+        const editResponse = this.gallaryRepositary.editBannerImage(type, resortId, bannerId, image)
         if(!editResponse)
             throw ErrorResponse.badRequest('Banner not edited')
         return editResponse
@@ -72,7 +96,7 @@ export default class GallaryService {
     async addCommunityPic(
         resortId: string,
         image: string
-    ): Promise<Boolean | null> {
+    ): Promise<UpdateWriteOpResult> {
         // checking if the gallary is present and the error is caught in the repositary
         const gallary = await this.gallaryRepositary.findGallaryByResortId(
             resortId
@@ -101,41 +125,6 @@ export default class GallaryService {
         return addImageResponse;
     }
 
-    async addSmallBanner(
-        image: string,
-        description1: string,
-        description2: string,
-        resortId: string
-    ): Promise<Boolean> {
-        // checking if the gallary is present and the error is caught in the repositary
-        const gallary = await this.gallaryRepositary.findGallaryByResortId(
-            resortId
-        );
-        if (!gallary)
-            throw ErrorResponse.badRequest(
-                "Resortid passed doesn't match any resorts"
-            );
-
-        //checking for image duplication
-        gallary?.smallBanner.forEach((el) => {
-            if (el.image === image)
-                throw ErrorResponse.badRequest("Banner aldready exist");
-        });
-
-        // adding the image
-        const addImageResponse = await this.gallaryRepositary.addSmallBanner(
-            image,
-            description1,
-            description2,
-            resortId
-        );
-
-        // throwing error if banner not added for some reason
-        if (!addImageResponse) {
-            throw ErrorResponse.internalError("Banner not added");
-        }
-        return addImageResponse;
-    }
 
     async gallaryDetails(): Promise<IGallary[] | null> {
         const gallaryDetails = await this.gallaryRepositary.GallaryDetails();

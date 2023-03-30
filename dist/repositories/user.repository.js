@@ -12,25 +12,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const errorResponse_1 = __importDefault(require("../error/errorResponse"));
 const user_model_1 = __importDefault(require("../models/user.model"));
-class UserRepository {
-    createUser(name, phone, email, password) {
+const baseRepositary_1 = require("./baseRepositary");
+class UserRepository extends baseRepositary_1.BaseRepository {
+    constructor() {
+        super(user_model_1.default);
+    }
+    createUser(userDetails) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const user = new user_model_1.default({ name, phone, email, password }); // doubt is the try catch needed in repositary or is it only when necessary
-                yield user.save();
-                return user.toJSON();
-            }
-            catch (error) {
-                throw errorResponse_1.default.internalError("database is down");
-            }
+            return this.create(userDetails);
         });
     }
     finduser(email) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield user_model_1.default.findOne({ email: email });
-            return user ? user.toJSON() : null;
+            return yield this.getByEmail(email);
         });
     }
 }

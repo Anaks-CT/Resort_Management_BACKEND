@@ -21,7 +21,13 @@ export default class CompanyService {
         circleBanners: circleBanner[],
         faqs: faqs[]
     ): Promise<ICompany> {
-        const addCompany = await this.companyRepositary.createCompany(companyName, bannerDetails,circleBanners, faqs)
+        const company = {
+            companyName: companyName,
+            bannerDetails: bannerDetails,
+            circleBanners: circleBanners,
+            faqs: faqs,
+        };
+        const addCompany = await this.companyRepositary.createCompany(company)
         return addCompany
     }
 
@@ -32,7 +38,7 @@ export default class CompanyService {
         return companyDetails
     }
 
-    async addFaq(Q: string, A: string): Promise<Boolean>{
+    async addFaq(Q: string, A: string): Promise<boolean>{
         //// checking for image duplication
         const checkFaqDup = await this.companyRepositary.searchSingleFaq({Q, A})
         if(checkFaqDup)

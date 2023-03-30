@@ -18,7 +18,7 @@ const gallaryService = new gallary_service_1.default();
 const addSmallBanner = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { image, description1, description2, resortId } = req.body;
     try {
-        const response = yield gallaryService.addSmallBanner(image, description1, description2, resortId);
+        const response = yield gallaryService.addBanner("smallBanner", image, description1, description2, resortId);
         res.send({ message: 'Small banner added', data: response });
     }
     catch (error) {

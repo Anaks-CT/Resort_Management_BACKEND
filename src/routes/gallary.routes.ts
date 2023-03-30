@@ -4,8 +4,9 @@ import {
     addLargeBanner,
     deleteLargeBanner,
     editBannerDetails,
+    editBannerImage,
 } from "../controllers/gallary/largeBanner";
-import { addSmallBanner } from "../controllers/gallary/addSmallbanner";
+import { addSmallBanner } from "../controllers/gallary/smallbanner";
 import {
     gallaryDetails,
     gallaryDetailsByResortId,
@@ -17,7 +18,8 @@ gallary
     .route("/largeBanner/:resortId/:largeBannerId?")
     .post(addLargeBanner)
     .delete(deleteLargeBanner)
-    .patch(editBannerDetails);
+    .patch(editBannerDetails)
+    .put(editBannerImage);
 gallary.post("/addSmallBanner", addSmallBanner);
 gallary.post("/addCommunityPic", addCommunityPic);
 gallary.get("/getAllGallaryDetails", gallaryDetails);

@@ -5,8 +5,10 @@ const gallaryService = new GallaryService()
 
 export const addSmallBanner: RequestHandler = async (req, res, next) => {
     const { image, description1, description2, resortId } = req.body
+    console.log('helo')
     try {
-        const response = await gallaryService.addSmallBanner(
+        const response = await gallaryService.addBanner(
+            "smallBanner",
             image,
             description1,
             description2,

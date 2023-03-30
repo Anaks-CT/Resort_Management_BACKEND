@@ -12,20 +12,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.signup = void 0;
-const errorResponse_1 = __importDefault(require("../../../error/errorResponse"));
-const auth_service_1 = __importDefault(require("../../../services/auth.service"));
-const authService = new auth_service_1.default();
-const signup = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { name, phone, email, password } = req.body;
+exports.adminLogin = void 0;
+const errorResponse_1 = __importDefault(require("../../error/errorResponse"));
+const adminLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { user } = yield authService.signup(name, phone, email, password);
-        res.send({ message: "new user created", data: user });
+        const { email, password } = req.body;
+        if (!email)
+            throw errorResponse_1.default.forbidden('Admin must have an email to login');
+        if (email !== process.env.email)
+            throw errorResponse_1.default.unauthorized('Admin not found');
+        if (password !== process.env.password)
+            throw errorResponse_1.default.unauthorized('Invalid Password');
+        res.send({ message: "Admin login successfull" });
     }
     catch (error) {
-        if (error.code === 11000)
-            return next(errorResponse_1.default.badRequest("User already registered"));
         return next(error);
     }
 });
-exports.signup = signup;
+exports.adminLogin = adminLogin;

@@ -10,3 +10,4 @@ const getAllResortDetails_1 = require("../controllers/resort/getAllResortDetails
 exports.resort = express_1.default.Router();
 exports.resort.post('/newResort', createResort_1.createResort);
 exports.resort.get('/getAllResortDetails', getAllResortDetails_1.getAllResortDetails);
+exports.resort.post('/getResortById/:resortId', getAllResortDetails_1.getSingleResort);

@@ -13,12 +13,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.login = void 0;
-const auth_user_service_1 = __importDefault(require("../../../services/user.service/auth.user.service"));
-const authService = new auth_user_service_1.default();
+const auth_service_1 = __importDefault(require("../../../services/auth.service"));
+// import AuthService from "../../../services/user.service/auth.user.service";
+const authService = new auth_service_1.default();
 const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
     try {
-        const { user } = yield authService.login(email, password);
+        const { user } = yield authService.login("user", email, password);
         res.send({ message: "user found", data: user });
     }
     catch (error) {

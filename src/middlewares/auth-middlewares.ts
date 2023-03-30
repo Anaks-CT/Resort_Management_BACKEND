@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+// import { Request, Response, NextFunction } from 'express';
+// import jwt from 'jsonwebtoken';
 
 // function authMiddleware(req: Request, res: Response, next: NextFunction) {
 //   const token = req.header('Authorization')?.replace('Bearer ', '');

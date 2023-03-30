@@ -7,7 +7,7 @@ export interface IUser extends Document {
     email: string;
     password: string;
     cpassword: string;
-    address: {
+    address?: {
       addressLine1: string;
       addressLine2: string;
       addressLine3: string;
@@ -20,6 +20,7 @@ export interface IUser extends Document {
   
   export interface IsignupResponse {
     user: IUser;
+    // role: string
     //   token: string;
   }
   export interface IloginResponse {

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import ErrorResponse from "../../../error/errorResponse";
-import AuthService from "../../../services/user.service/auth.user.service";
+import AuthService from "../../../services/auth.service";
 
 const authService = new AuthService();
 

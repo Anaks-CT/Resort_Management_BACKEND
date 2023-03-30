@@ -12,20 +12,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.signup = void 0;
-const errorResponse_1 = __importDefault(require("../../../error/errorResponse"));
-const auth_service_1 = __importDefault(require("../../../services/auth.service"));
-const authService = new auth_service_1.default();
-const signup = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { name, phone, email, password } = req.body;
+exports.addSmallBanner = void 0;
+const gallary_service_1 = __importDefault(require("../../services/gallary.service"));
+const gallaryService = new gallary_service_1.default();
+const addSmallBanner = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { image, description1, description2, resortId } = req.body;
+    console.log('helo');
     try {
-        const { user } = yield authService.signup(name, phone, email, password);
-        res.send({ message: "new user created", data: user });
+        const response = yield gallaryService.addBanner("smallBanner", image, description1, description2, resortId);
+        res.send({ message: 'Small banner added', data: response });
     }
     catch (error) {
-        if (error.code === 11000)
-            return next(errorResponse_1.default.badRequest("User already registered"));
         return next(error);
     }
 });
-exports.signup = signup;
+exports.addSmallBanner = addSmallBanner;

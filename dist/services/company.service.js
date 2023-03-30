@@ -20,7 +20,13 @@ class CompanyService {
     }
     createCompany(companyName, bannerDetails, circleBanners, faqs) {
         return __awaiter(this, void 0, void 0, function* () {
-            const addCompany = yield this.companyRepositary.createCompany(companyName, bannerDetails, circleBanners, faqs);
+            const company = {
+                companyName: companyName,
+                bannerDetails: bannerDetails,
+                circleBanners: circleBanners,
+                faqs: faqs,
+            };
+            const addCompany = yield this.companyRepositary.createCompany(company);
             return addCompany;
         });
     }

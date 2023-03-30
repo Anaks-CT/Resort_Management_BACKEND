@@ -32,21 +32,27 @@ export default class ResortService {
         }
 
         //////////////////////// creating new resort ////////////////////////
-
-        const resort = await this.resortRepositary.createResort(
-            resortDetails,
-            location,
-            email,
-            customerCareNo
-        );
+        const newResort = {
+            resortDetails: {
+                name: resortDetails.name,
+                heading: resortDetails.heading,
+                description: resortDetails.description,
+                image: resortDetails.image,
+                features: resortDetails.features,
+            },
+            location: location,
+            email: email,
+            customerCareNo: customerCareNo,
+        }
+        const resort = await this.resortRepositary.createResort(newResort);
 
         ///////////////////////// adding the newly created resort in to company  /////////////////
 
-        await this.companyRepositary.addResortId(resort._id)
+        await this.companyRepositary.addResortId(resort._id!)
 
         ///////////////////////// creating gallary modal for the resort //////////////////////
 
-        const gallary = await this.gallaryRepositary.createGallary(resort._id);
+        const gallary = await this.gallaryRepositary.createGallary(resort._id!);
 
         if (!gallary)
             throw ErrorResponse.internalError(
@@ -55,16 +61,20 @@ export default class ResortService {
 
         ////////////////////////// updating the created gallaryid in resort schema/////////////////////
 
-        await this.resortRepositary.setGallaryId(resort._id, gallary?._id);
+        await this.resortRepositary.setGallaryId(resort._id!, gallary._id!);
 
         return { resort };
     }
 
     async allResortDetails(): Promise<IResort[] | null> {
         const resort = await this.resortRepositary.getAllresortDetails();
-        if (!resort) {
-            throw ErrorResponse.badRequest("Resorts not found");
-        }
+        if (!resort) throw ErrorResponse.badRequest("Resorts not found");
         return resort;
+    }
+
+    async getResortById(id: string): Promise<IResort | null>{
+        const resort = await this.resortRepositary.findResortById(id)
+        if(!resort) throw ErrorResponse.badRequest("Resort not found")
+        return resort
     }
 }

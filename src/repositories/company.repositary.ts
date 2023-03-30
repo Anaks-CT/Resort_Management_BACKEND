@@ -2,6 +2,7 @@ import { UpdateQuery } from "mongoose";
 import ErrorResponse from "../error/errorResponse";
 import { circleBanner, ICompany } from "../interface/company.interface";
 import companyModel from "../models/company.model";
+import { BaseRepository } from "./baseRepositary";
 
 type bannerDetails = {
     image: string;
@@ -12,26 +13,16 @@ type faqs = {
     A: string;
 };
 
-class CompanyRepositary {
-    async createCompany(
-        companyName: string,
-        bannerDetails: bannerDetails,
-        circleBanners: circleBanner[],
-        faqs: faqs[]
-    ): Promise<ICompany> {
-        const company = new companyModel({
-            companyName: companyName,
-            bannerDetails: bannerDetails,
-            circleBanners: circleBanners,
-            faqs: faqs,
-        });
-        await company.save();
-        return company.toJSON() as ICompany;
+class CompanyRepositary extends BaseRepository{
+    constructor(){
+        super(companyModel)
+    }
+    async createCompany(company: ICompany): Promise<ICompany> {
+        return this.create(company)
     }
 
     async getCompanyDetails(): Promise<ICompany | null> {
-        const company = await companyModel.findOne();
-        return company ? (company.toJSON() as ICompany) : null;
+        return await this.getOne();
     }
 
     async addFaqs(Q: string, A: string): Promise<boolean> {
@@ -49,7 +40,7 @@ class CompanyRepositary {
         return existingFAQ;
     }
 
-    async addResortId(resortId: string): Promise<Boolean | null> {
+    async addResortId(resortId: string): Promise<boolean | null> {
         const updateResortIdResponse: UpdateQuery<any> =
             await companyModel.updateOne(
                 {},

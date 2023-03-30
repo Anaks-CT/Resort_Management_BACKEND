@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllResortDetails = void 0;
+exports.getSingleResort = exports.getAllResortDetails = void 0;
 const resort_service_1 = __importDefault(require("../../services/resort.service"));
 const resortService = new resort_service_1.default();
 const getAllResortDetails = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -25,3 +25,14 @@ const getAllResortDetails = (req, res, next) => __awaiter(void 0, void 0, void 0
     }
 });
 exports.getAllResortDetails = getAllResortDetails;
+const getSingleResort = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        console.log(req.params.resortId);
+        const resort = yield resortService.getResortById(req.params.resortId);
+        res.send({ message: "Fetching data successful", data: resort });
+    }
+    catch (error) {
+        return next(error);
+    }
+});
+exports.getSingleResort = getSingleResort;

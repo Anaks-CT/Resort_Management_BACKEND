@@ -1,14 +1,14 @@
 import mongoose, { Document } from "mongoose";
 
 export type circleBanner = {
-    miniHeading: String;
-    heading: String;
-    description: String;
-    image: String;
+    miniHeading: string;
+    heading: string;
+    description: string;
+    image: string;
 };
-export interface ICompany extends Document {
+export interface ICompany  {
     companyName: string;
-    resortDetails?: mongoose.SchemaDefinitionProperty<mongoose.Types.ObjectId>[];
+    resortDetails?: string[];
     bannerDetails: {
         image: string;
         description: string;

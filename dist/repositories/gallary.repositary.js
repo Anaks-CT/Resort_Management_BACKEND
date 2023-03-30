@@ -12,24 +12,28 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const errorResponse_1 = __importDefault(require("../error/errorResponse"));
 const resortGallary_model_1 = __importDefault(require("../models/resortGallary.model"));
-const ObjectId = require("mongodb").ObjectId;
-class GallaryRepositary {
+const mongodb_1 = require("mongodb");
+const baseRepositary_1 = require("./baseRepositary");
+// import ObjectId from "mong"
+class GallaryRepositary extends baseRepositary_1.BaseRepository {
+    constructor() {
+        super(resortGallary_model_1.default);
+    }
     createGallary(resortId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const gallary = new resortGallary_model_1.default({
-                resortid: new ObjectId(resortId),
-            });
-            yield gallary.save();
-            return gallary.toJSON();
+            const newGallary = {
+                resortid: new mongodb_1.ObjectId(resortId),
+            };
+            return this.create(newGallary);
         });
     }
-    addLargeBanner(image, description1, description2, resortId) {
+    addBanner(type, image, description1, description2, resortId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const addImage = yield resortGallary_model_1.default.updateOne({ resortid: new ObjectId(resortId) }, {
+            const key = type === "largeBanner" ? "largeBanner" : "smallBanner";
+            const addImage = yield resortGallary_model_1.default.updateOne({ resortid: new mongodb_1.ObjectId(resortId) }, {
                 $addToSet: {
-                    largeBanner: {
+                    [key]: {
                         image: image,
                         description1: description1,
                         description2: description2,
@@ -39,28 +43,43 @@ class GallaryRepositary {
             return addImage.acknowledged;
         });
     }
-    deleteLargeBannerbyId(resortId, largeBannerId) {
+    deleteBannerbyId(type, resortId, largeBannerId) {
         return __awaiter(this, void 0, void 0, function* () {
-            //****************** don't forget to write the return type of this***************************/
-            const deleteResponse = yield resortGallary_model_1.default.updateOne({ resortid: new ObjectId(resortId) }, {
+            const key = type === "largeBanner" ? "largeBanner" : "smallBanner";
+            const deleteResponse = yield resortGallary_model_1.default.updateOne({ resortid: new mongodb_1.ObjectId(resortId) }, {
                 $pull: {
-                    largeBanner: {
-                        _id: new ObjectId(largeBannerId),
+                    [key]: {
+                        _id: new mongodb_1.ObjectId(largeBannerId),
                     },
                 },
             });
             return deleteResponse;
         });
     }
-    editLargeBannerDetails(resortId, largeBannerId, description1, description2) {
+    editBannerDetails(type, resortId, bannerId, description1, description2) {
         return __awaiter(this, void 0, void 0, function* () {
+            const key = type === "largeBanner" ? "largeBanner" : "smallBanner";
             const editResponse = yield resortGallary_model_1.default.updateOne({
-                resortid: new ObjectId(resortId),
-                "largeBanner._id": new ObjectId(largeBannerId),
+                resortid: new mongodb_1.ObjectId(resortId),
+                [`${key}._id`]: new mongodb_1.ObjectId(bannerId),
             }, {
                 $set: {
-                    "largeBanner.$.description1": description1,
-                    "largeBanner.$.description2": description2,
+                    [`${key}.$.description1`]: description1,
+                    [`${key}.$.description2`]: description2,
+                },
+            });
+            return editResponse;
+        });
+    }
+    editBannerImage(type, resortId, largeBannerId, image) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const key = type === "largeBanner" ? "largeBanner" : "smallBanner";
+            const editResponse = yield resortGallary_model_1.default.updateOne({
+                resortid: new mongodb_1.ObjectId(resortId),
+                [`${key}._id`]: new mongodb_1.ObjectId(largeBannerId),
+            }, {
+                $set: {
+                    [`${key}.$.image`]: image,
                 },
             });
             return editResponse;
@@ -68,7 +87,7 @@ class GallaryRepositary {
     }
     addCommunityPic(resortId, image) {
         return __awaiter(this, void 0, void 0, function* () {
-            const addImage = yield resortGallary_model_1.default.updateOne({ resortid: new ObjectId(resortId) }, {
+            const addImage = yield resortGallary_model_1.default.updateOne({ resortid: new mongodb_1.ObjectId(resortId) }, {
                 $addToSet: {
                     communityPics: image,
                 },
@@ -76,39 +95,16 @@ class GallaryRepositary {
             return addImage.acknowledged;
         });
     }
-    addSmallBanner(image, description1, description2, resortId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const addImage = yield resortGallary_model_1.default.updateOne({ resortid: new ObjectId(resortId) }, {
-                $addToSet: {
-                    smallBanner: {
-                        image: image,
-                        description1: description1,
-                        description2: description2,
-                    },
-                },
-            });
-            return addImage.acknowledged;
-        });
-    }
     findGallaryByResortId(resortId) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const gallary = yield resortGallary_model_1.default.findOne({
-                    resortid: new ObjectId(resortId),
-                });
-                return gallary ? gallary.toJSON() : null;
-            }
-            catch (error) {
-                ///////////////////////////// if the id passed does not match with the mongoose id type////////////////////////
-                // not sure if this is a good practice since mongodb might have thrown the error for something different error which wont be caught in the error. for example if we changed the details passing down
-                throw errorResponse_1.default.internalError("ResortId is not of the type mongooose.objectID");
-            }
+            return yield resortGallary_model_1.default.findOne({
+                resortid: new mongodb_1.ObjectId(resortId),
+            });
         });
     }
     GallaryDetails() {
         return __awaiter(this, void 0, void 0, function* () {
-            const gallary = yield resortGallary_model_1.default.find();
-            return gallary;
+            return yield this.getAll();
         });
     }
 }
