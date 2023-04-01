@@ -55,13 +55,13 @@ export default class GallaryService {
     async deleteBanner(
         type: "largeBanner" | "smallBanner",
         resortId: string,
-        largeBannerId: string
+        bannerId: string
     ) {
         //*************************dont forget to write the return tupe of this******************** //
         const deleteLargeBanner = this.gallaryRepositary.deleteBannerbyId(
             type,
             resortId,
-            largeBannerId
+            bannerId
         );
         if(!deleteLargeBanner)
             throw ErrorResponse.badRequest('Banner not deleted')

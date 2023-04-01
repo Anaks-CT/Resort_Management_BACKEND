@@ -43,13 +43,14 @@ class GallaryRepositary extends baseRepositary_1.BaseRepository {
             return addImage.acknowledged;
         });
     }
-    deleteBannerbyId(type, resortId, largeBannerId) {
+    deleteBannerbyId(type, resortId, bannerId) {
         return __awaiter(this, void 0, void 0, function* () {
             const key = type === "largeBanner" ? "largeBanner" : "smallBanner";
+            console.log(key);
             const deleteResponse = yield resortGallary_model_1.default.updateOne({ resortid: new mongodb_1.ObjectId(resortId) }, {
                 $pull: {
                     [key]: {
-                        _id: new mongodb_1.ObjectId(largeBannerId),
+                        _id: new mongodb_1.ObjectId(bannerId),
                     },
                 },
             });
@@ -71,12 +72,12 @@ class GallaryRepositary extends baseRepositary_1.BaseRepository {
             return editResponse;
         });
     }
-    editBannerImage(type, resortId, largeBannerId, image) {
+    editBannerImage(type, resortId, bannerId, image) {
         return __awaiter(this, void 0, void 0, function* () {
             const key = type === "largeBanner" ? "largeBanner" : "smallBanner";
             const editResponse = yield resortGallary_model_1.default.updateOne({
                 resortid: new mongodb_1.ObjectId(resortId),
-                [`${key}._id`]: new mongodb_1.ObjectId(largeBannerId),
+                [`${key}._id`]: new mongodb_1.ObjectId(bannerId),
             }, {
                 $set: {
                     [`${key}.$.image`]: image,

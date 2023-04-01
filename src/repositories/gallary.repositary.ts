@@ -44,15 +44,18 @@ class GallaryRepositary extends BaseRepository {
     async deleteBannerbyId(
         type: "largeBanner" | "smallBanner",
         resortId: string,
-        largeBannerId: string
+        bannerId: string
     ): Promise<UpdateWriteOpResult> {
+        
         const key = type === "largeBanner" ? "largeBanner" : "smallBanner";
+        console.log(key);
+        
         const deleteResponse = await resortGallaryModel.updateOne(
             { resortid: new ObjectId(resortId) },
             {
                 $pull: {
                     [key]: {
-                        _id: new ObjectId(largeBannerId),
+                        _id: new ObjectId(bannerId),
                     },
                 },
             }
@@ -86,14 +89,14 @@ class GallaryRepositary extends BaseRepository {
     async editBannerImage(
         type: "largeBanner" | "smallBanner",
         resortId: string,
-        largeBannerId: string,
+        bannerId: string,
         image: string
     ): Promise<UpdateWriteOpResult> {
         const key = type === "largeBanner" ? "largeBanner" : "smallBanner";
         const editResponse = await resortGallaryModel.updateOne(
             {
                 resortid: new ObjectId(resortId),
-                [`${key}._id`]: new ObjectId(largeBannerId),
+                [`${key}._id`]: new ObjectId(bannerId),
             },
             {
                 $set: {

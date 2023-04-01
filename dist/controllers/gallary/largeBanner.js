@@ -12,14 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.editBannerImage = exports.editBannerDetails = exports.deleteLargeBanner = exports.addLargeBanner = void 0;
+exports.editBannerImage = exports.editBannerDetails = exports.deleteBanner = exports.addBanner = void 0;
 const gallary_service_1 = __importDefault(require("../../services/gallary.service"));
 const gallaryService = new gallary_service_1.default();
-const addLargeBanner = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { image, description1, description2 } = req.body;
+const addBanner = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { image, description1, description2, banner } = req.body;
     const { resortId } = req.params;
     try {
-        const response = yield gallaryService.addBanner("largeBanner", image, description1, description2, resortId);
+        const response = yield gallaryService.addBanner(banner, image, description1, description2, resortId);
         const gallaryDetails = yield gallaryService.findGallarybyResortId(resortId);
         res.send({ message: "acknowledged:" + response, data: gallaryDetails });
     }
@@ -27,11 +27,12 @@ const addLargeBanner = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
         return next(error);
     }
 });
-exports.addLargeBanner = addLargeBanner;
-const deleteLargeBanner = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+exports.addBanner = addBanner;
+const deleteBanner = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { resortId, largeBannerId } = req.params;
+    const banner = req.params.banner;
     try {
-        const response = yield gallaryService.deleteBanner("largeBanner", resortId, largeBannerId);
+        const response = yield gallaryService.deleteBanner(banner, resortId, largeBannerId);
         const gallaryDetails = yield gallaryService.findGallarybyResortId(resortId);
         res.send({ message: "acknowledged:" + response, data: gallaryDetails });
     }
@@ -39,12 +40,12 @@ const deleteLargeBanner = (req, res, next) => __awaiter(void 0, void 0, void 0, 
         return next(err);
     }
 });
-exports.deleteLargeBanner = deleteLargeBanner;
+exports.deleteBanner = deleteBanner;
 const editBannerDetails = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { resortId, largeBannerId } = req.params;
-    const { description1, description2 } = req.body;
+    const { description1, description2, banner } = req.body;
     try {
-        const response = yield gallaryService.editBannerDetails("largeBanner", resortId, largeBannerId, description1, description2);
+        const response = yield gallaryService.editBannerDetails(banner, resortId, largeBannerId, description1, description2);
         const gallaryDetails = yield gallaryService.findGallarybyResortId(resortId);
         res.send({ message: "acknowledged" + response, data: gallaryDetails });
     }
@@ -55,9 +56,9 @@ const editBannerDetails = (req, res, next) => __awaiter(void 0, void 0, void 0, 
 exports.editBannerDetails = editBannerDetails;
 const editBannerImage = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { resortId, largeBannerId } = req.params;
-    const { image } = req.body;
+    const { image, banner } = req.body;
     try {
-        const response = yield gallaryService.editBannerImage("largeBanner", resortId, largeBannerId, image);
+        const response = yield gallaryService.editBannerImage(banner, resortId, largeBannerId, image);
         const gallaryDetails = yield gallaryService.findGallarybyResortId(resortId);
         res.send({ message: "acknowledged" + response, data: gallaryDetails });
     }

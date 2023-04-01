@@ -2,13 +2,14 @@ import { RequestHandler } from "express";
 import GallaryService from "../../services/gallary.service";
 
 const gallaryService = new GallaryService();
+type BannerType = "largeBanner" | "smallBanner";
 
-export const addLargeBanner: RequestHandler = async (req, res, next) => {
-    const { image, description1, description2 } = req.body;
+export const addBanner: RequestHandler = async (req, res, next) => {
+    const { image, description1, description2, banner } = req.body;
     const { resortId } = req.params;
     try {
         const response = await gallaryService.addBanner(
-            "largeBanner",
+            banner,
             image,
             description1,
             description2,
@@ -23,13 +24,15 @@ export const addLargeBanner: RequestHandler = async (req, res, next) => {
     }
 };
 
-export const deleteLargeBanner: RequestHandler = async (req, res, next) => {
-    const { resortId, largeBannerId } = req.params;
+export const deleteBanner: RequestHandler = async (req, res, next) => {
+    const { resortId, largeBannerId, smallBannerId } = req.params;
+    const  banner: "largeBanner" | "smallBanner" = req.params.banner as BannerType
+
     try {
         const response = await gallaryService.deleteBanner(
-            "largeBanner",
+            banner,
             resortId,
-            largeBannerId
+            banner === "largeBanner" ? largeBannerId : smallBannerId
         );
         const gallaryDetails = await gallaryService.findGallarybyResortId(
             resortId
@@ -41,13 +44,15 @@ export const deleteLargeBanner: RequestHandler = async (req, res, next) => {
 };
 
 export const editBannerDetails: RequestHandler = async (req, res, next) => {
-    const { resortId, largeBannerId } = req.params;
-    const { description1, description2 } = req.body;
+    const { resortId, largeBannerId, smallBannerId } = req.params;
+    const { description1, description2, banner } = req.body;
+    console.log(largeBannerId, smallBannerId, banner);
+    
     try {
         const response = await gallaryService.editBannerDetails(
-            "largeBanner",
+            banner,
             resortId,
-            largeBannerId,
+            banner === "largeBanner" ? largeBannerId : smallBannerId,
             description1,
             description2
         );
@@ -61,13 +66,13 @@ export const editBannerDetails: RequestHandler = async (req, res, next) => {
 };
 
 export const editBannerImage: RequestHandler = async (req, res, next) => {
-    const { resortId, largeBannerId } = req.params;
-    const { image } = req.body;
+    const { resortId, largeBannerId, smallBannerId } = req.params;
+    const { image, banner } = req.body;
     try {
         const response = await gallaryService.editBannerImage(
-            "largeBanner",
+            banner,
             resortId,
-            largeBannerId,
+            banner === "largeBanner" ? largeBannerId : smallBannerId,
             image
         );
         const gallaryDetails = await gallaryService.findGallarybyResortId(

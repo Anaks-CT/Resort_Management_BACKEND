@@ -46,10 +46,10 @@ class GallaryService {
             return addImageResponse;
         });
     }
-    deleteBanner(type, resortId, largeBannerId) {
+    deleteBanner(type, resortId, bannerId) {
         return __awaiter(this, void 0, void 0, function* () {
             //*************************dont forget to write the return tupe of this******************** //
-            const deleteLargeBanner = this.gallaryRepositary.deleteBannerbyId(type, resortId, largeBannerId);
+            const deleteLargeBanner = this.gallaryRepositary.deleteBannerbyId(type, resortId, bannerId);
             if (!deleteLargeBanner)
                 throw errorResponse_1.default.badRequest('Banner not deleted');
             return deleteLargeBanner;

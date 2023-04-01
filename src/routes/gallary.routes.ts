@@ -1,12 +1,11 @@
 import express from "express";
 import { addCommunityPic } from "../controllers/gallary/addCommunityPic";
 import {
-    addLargeBanner,
-    deleteLargeBanner,
+    addBanner,
+    deleteBanner,
     editBannerDetails,
     editBannerImage,
-} from "../controllers/gallary/largeBanner";
-import { addSmallBanner } from "../controllers/gallary/smallbanner";
+} from "../controllers/gallary/banner";
 import {
     gallaryDetails,
     gallaryDetailsByResortId,
@@ -15,12 +14,19 @@ import {
 export const gallary = express.Router();
 
 gallary
-    .route("/largeBanner/:resortId/:largeBannerId?")
-    .post(addLargeBanner)
-    .delete(deleteLargeBanner)
+    .route("/largeBanner/:resortId/:largeBannerId?/:banner?")
+    .post(addBanner)
+    .delete(deleteBanner)
     .patch(editBannerDetails)
     .put(editBannerImage);
-gallary.post("/addSmallBanner", addSmallBanner);
+
+gallary
+    .route("/smallBanner/:resortId/:smallBannerId?/:banner?")
+    .post(addBanner)
+    .delete(deleteBanner)
+    .patch(editBannerDetails)
+    .put(editBannerImage);
 gallary.post("/addCommunityPic", addCommunityPic);
 gallary.get("/getAllGallaryDetails", gallaryDetails);
 gallary.get("/getGallaryByResortId/:id", gallaryDetailsByResortId);
+gallary.get('/getGallary')
