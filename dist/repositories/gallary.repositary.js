@@ -31,7 +31,7 @@ class GallaryRepositary extends baseRepositary_1.BaseRepository {
     addBanner(type, image, description1, description2, resortId) {
         return __awaiter(this, void 0, void 0, function* () {
             const key = type === "largeBanner" ? "largeBanner" : "smallBanner";
-            const addImage = yield resortGallary_model_1.default.updateOne({ resortid: new mongodb_1.ObjectId(resortId) }, {
+            return yield resortGallary_model_1.default.findOneAndUpdate({ resortid: new mongodb_1.ObjectId(resortId) }, {
                 $addToSet: {
                     [key]: {
                         image: image,
@@ -39,28 +39,25 @@ class GallaryRepositary extends baseRepositary_1.BaseRepository {
                         description2: description2,
                     },
                 },
-            });
-            return addImage.acknowledged;
+            }, { new: true });
         });
     }
     deleteBannerbyId(type, resortId, bannerId) {
         return __awaiter(this, void 0, void 0, function* () {
             const key = type === "largeBanner" ? "largeBanner" : "smallBanner";
-            console.log(key);
-            const deleteResponse = yield resortGallary_model_1.default.updateOne({ resortid: new mongodb_1.ObjectId(resortId) }, {
+            return yield resortGallary_model_1.default.findOneAndUpdate({ resortid: new mongodb_1.ObjectId(resortId) }, {
                 $pull: {
                     [key]: {
                         _id: new mongodb_1.ObjectId(bannerId),
                     },
                 },
-            });
-            return deleteResponse;
+            }, { new: true });
         });
     }
     editBannerDetails(type, resortId, bannerId, description1, description2) {
         return __awaiter(this, void 0, void 0, function* () {
             const key = type === "largeBanner" ? "largeBanner" : "smallBanner";
-            const editResponse = yield resortGallary_model_1.default.updateOne({
+            return yield resortGallary_model_1.default.findOneAndUpdate({
                 resortid: new mongodb_1.ObjectId(resortId),
                 [`${key}._id`]: new mongodb_1.ObjectId(bannerId),
             }, {
@@ -68,32 +65,49 @@ class GallaryRepositary extends baseRepositary_1.BaseRepository {
                     [`${key}.$.description1`]: description1,
                     [`${key}.$.description2`]: description2,
                 },
-            });
-            return editResponse;
+            }, { new: true });
         });
     }
     editBannerImage(type, resortId, bannerId, image) {
         return __awaiter(this, void 0, void 0, function* () {
             const key = type === "largeBanner" ? "largeBanner" : "smallBanner";
-            const editResponse = yield resortGallary_model_1.default.updateOne({
+            return yield resortGallary_model_1.default.findOneAndUpdate({
                 resortid: new mongodb_1.ObjectId(resortId),
                 [`${key}._id`]: new mongodb_1.ObjectId(bannerId),
             }, {
                 $set: {
                     [`${key}.$.image`]: image,
                 },
-            });
-            return editResponse;
+            }, { new: true });
         });
     }
     addCommunityPic(resortId, image) {
         return __awaiter(this, void 0, void 0, function* () {
-            const addImage = yield resortGallary_model_1.default.updateOne({ resortid: new mongodb_1.ObjectId(resortId) }, {
+            return yield resortGallary_model_1.default.findOneAndUpdate({ resortid: new mongodb_1.ObjectId(resortId) }, {
                 $addToSet: {
                     communityPics: image,
                 },
-            });
-            return addImage.acknowledged;
+            }, { new: true });
+        });
+    }
+    deleteCommunityPic(resortId, image) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield resortGallary_model_1.default.findOneAndUpdate({
+                resortid: new mongodb_1.ObjectId(resortId),
+            }, {
+                $pull: {
+                    communityPics: image,
+                },
+            }, { new: true });
+        });
+    }
+    editCommunityPic(resortId, index, newImage) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield resortGallary_model_1.default.findOneAndUpdate({ resortid: new mongodb_1.ObjectId(resortId) }, {
+                $set: {
+                    [`communityPics.${index}`]: newImage,
+                },
+            }, { new: true });
         });
     }
     findGallaryByResortId(resortId) {

@@ -1,4 +1,3 @@
-import { UpdateQuery, UpdateWriteOpResult } from "mongoose";
 import { IGallary } from "../interface/gallary.interface";
 import resortGallaryModel from "../models/resortGallary.model";
 import { ObjectId } from "mongodb";
@@ -24,9 +23,9 @@ class GallaryRepositary extends BaseRepository {
         description1: string,
         description2: string,
         resortId: string
-    ): Promise<UpdateWriteOpResult> {
+    ): Promise<boolean | null> {
         const key = type === "largeBanner" ? "largeBanner" : "smallBanner";
-        const addImage: UpdateQuery<any> = await resortGallaryModel.updateOne(
+        return await resortGallaryModel.findOneAndUpdate(
             { resortid: new ObjectId(resortId) },
             {
                 $addToSet: {
@@ -36,21 +35,18 @@ class GallaryRepositary extends BaseRepository {
                         description2: description2,
                     },
                 },
-            }
-        );
-        return addImage.acknowledged;
+            },
+            { new: true }
+        )
     }
 
     async deleteBannerbyId(
         type: "largeBanner" | "smallBanner",
         resortId: string,
         bannerId: string
-    ): Promise<UpdateWriteOpResult> {
-        
+    ): Promise<boolean | null> {
         const key = type === "largeBanner" ? "largeBanner" : "smallBanner";
-        console.log(key);
-        
-        const deleteResponse = await resortGallaryModel.updateOne(
+        return await resortGallaryModel.findOneAndUpdate(
             { resortid: new ObjectId(resortId) },
             {
                 $pull: {
@@ -58,9 +54,9 @@ class GallaryRepositary extends BaseRepository {
                         _id: new ObjectId(bannerId),
                     },
                 },
-            }
+            },
+            { new: true }
         );
-        return deleteResponse
     }
 
     async editBannerDetails(
@@ -69,9 +65,9 @@ class GallaryRepositary extends BaseRepository {
         bannerId: string,
         description1: string,
         description2: string
-    ): Promise<UpdateWriteOpResult> {
+    ): Promise<boolean | null> {
         const key = type === "largeBanner" ? "largeBanner" : "smallBanner";
-        const editResponse = await resortGallaryModel.updateOne(
+        return await resortGallaryModel.findOneAndUpdate(
             {
                 resortid: new ObjectId(resortId),
                 [`${key}._id`]: new ObjectId(bannerId),
@@ -81,9 +77,9 @@ class GallaryRepositary extends BaseRepository {
                     [`${key}.$.description1`]: description1,
                     [`${key}.$.description2`]: description2,
                 },
-            }
+            },
+            { new: true }
         );
-        return editResponse;
     }
 
     async editBannerImage(
@@ -91,9 +87,9 @@ class GallaryRepositary extends BaseRepository {
         resortId: string,
         bannerId: string,
         image: string
-    ): Promise<UpdateWriteOpResult> {
+    ): Promise<boolean | null> {
         const key = type === "largeBanner" ? "largeBanner" : "smallBanner";
-        const editResponse = await resortGallaryModel.updateOne(
+        return await resortGallaryModel.findOneAndUpdate(
             {
                 resortid: new ObjectId(resortId),
                 [`${key}._id`]: new ObjectId(bannerId),
@@ -102,24 +98,57 @@ class GallaryRepositary extends BaseRepository {
                 $set: {
                     [`${key}.$.image`]: image,
                 },
-            }
+            },
+            { new: true }
         );
-        return editResponse;
     }
 
     async addCommunityPic(
         resortId: string,
         image: string
-    ): Promise<UpdateWriteOpResult> {
-        const addImage: UpdateQuery<any> = await resortGallaryModel.updateOne(
+    ): Promise<boolean | null> {
+        return await resortGallaryModel.findOneAndUpdate(
             { resortid: new ObjectId(resortId) },
             {
                 $addToSet: {
                     communityPics: image,
                 },
-            }
+            },
+            {new: true}
         );
-        return addImage.acknowledged;
+    }
+
+    async deleteCommunityPic(
+        resortId: string,
+        image: string
+    ): Promise<boolean | null> {
+        return await resortGallaryModel.findOneAndUpdate(
+            {
+                resortid: new ObjectId(resortId),
+            },
+            {
+                $pull: {
+                    communityPics: image,
+                },
+            },
+            { new: true}
+        );
+    }
+
+    async editCommunityPic(
+        resortId: string,
+        index: number,
+        newImage: string
+    ): Promise<boolean | null> {
+        return await resortGallaryModel.findOneAndUpdate(
+            { resortid: new ObjectId(resortId) },
+            {
+                $set: {
+                    [`communityPics.${index}`]: newImage,
+                },
+            },
+            { new: true }
+        );
     }
 
     async findGallaryByResortId(resortId: string): Promise<IGallary | null> {

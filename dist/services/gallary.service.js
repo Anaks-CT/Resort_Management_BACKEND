@@ -24,6 +24,10 @@ class GallaryService {
             const gallary = yield this.gallaryRepositary.findGallaryByResortId(resortId);
             if (!gallary)
                 throw errorResponse_1.default.badRequest("Resortid passed doesn't match any resorts");
+            // checking if total images exeeds over 10
+            const key = type === "largeBanner" ? "largeBanner" : "smallBanner";
+            if (gallary[key].length === 10)
+                throw errorResponse_1.default.badRequest("Cannot exeed more than 10 banners");
             //checking for image duplication
             if (type === "largeBanner") {
                 gallary === null || gallary === void 0 ? void 0 : gallary.largeBanner.forEach((el) => {
@@ -38,36 +42,35 @@ class GallaryService {
                 });
             }
             // adding the image
-            const addImageResponse = yield this.gallaryRepositary.addBanner(type, image, description1, description2, resortId);
+            const UpdatedData = yield this.gallaryRepositary.addBanner(type, image, description1, description2, resortId);
             //throwing error Banner not added for some reason
-            if (!addImageResponse) {
+            if (!UpdatedData) {
                 throw errorResponse_1.default.internalError("Banner not added");
             }
-            return addImageResponse;
+            return UpdatedData;
         });
     }
     deleteBanner(type, resortId, bannerId) {
         return __awaiter(this, void 0, void 0, function* () {
-            //*************************dont forget to write the return tupe of this******************** //
-            const deleteLargeBanner = this.gallaryRepositary.deleteBannerbyId(type, resortId, bannerId);
+            const deleteLargeBanner = yield this.gallaryRepositary.deleteBannerbyId(type, resortId, bannerId);
             if (!deleteLargeBanner)
-                throw errorResponse_1.default.badRequest('Banner not deleted');
+                throw errorResponse_1.default.badRequest("Banner not deleted");
             return deleteLargeBanner;
         });
     }
     editBannerDetails(type, resortId, bannerId, description1, description2) {
         return __awaiter(this, void 0, void 0, function* () {
-            const editResponse = this.gallaryRepositary.editBannerDetails(type, resortId, bannerId, description1, description2);
+            const editResponse = yield this.gallaryRepositary.editBannerDetails(type, resortId, bannerId, description1, description2);
             if (!editResponse)
-                throw errorResponse_1.default.badRequest('Banner not edited');
+                throw errorResponse_1.default.badRequest("Banner not edited");
             return editResponse;
         });
     }
     editBannerImage(type, resortId, bannerId, image) {
         return __awaiter(this, void 0, void 0, function* () {
-            const editResponse = this.gallaryRepositary.editBannerImage(type, resortId, bannerId, image);
+            const editResponse = yield this.gallaryRepositary.editBannerImage(type, resortId, bannerId, image);
             if (!editResponse)
-                throw errorResponse_1.default.badRequest('Banner not edited');
+                throw errorResponse_1.default.badRequest("Banner not edited");
             return editResponse;
         });
     }
@@ -77,6 +80,9 @@ class GallaryService {
             const gallary = yield this.gallaryRepositary.findGallaryByResortId(resortId);
             if (!gallary)
                 throw errorResponse_1.default.badRequest("Resortid passed doesn't match any resorts");
+            // checking if total images exeeds over 10
+            if (gallary.communityPics.length === 10)
+                throw errorResponse_1.default.badRequest("Cannot exeed more than 10 banners");
             //checking for image duplication
             gallary === null || gallary === void 0 ? void 0 : gallary.communityPics.forEach((el) => {
                 if (el === image)
@@ -89,6 +95,35 @@ class GallaryService {
                 throw errorResponse_1.default.internalError("Banner not added");
             }
             return addImageResponse;
+        });
+    }
+    editCommunityPic(resortId, oldImage, newImage) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // checking if the gallary exits using the resortId
+            const gallary = yield this.gallaryRepositary.findGallaryByResortId(resortId);
+            if (!gallary)
+                throw errorResponse_1.default.badRequest("ResortId doesn't match any resorts");
+            // finding the index of the old image url in the community pics array
+            const index = gallary.communityPics.indexOf(oldImage);
+            if (index === -1)
+                throw errorResponse_1.default.notFound("Image not found");
+            const updatedResult = yield this.gallaryRepositary.editCommunityPic(resortId, index, newImage);
+            if (!updatedResult)
+                throw errorResponse_1.default.internalError("Image is not updated");
+            return updatedResult;
+        });
+    }
+    deleteCommunityPic(resortId, imageUrl) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // checking if the gallary exits using the resortId
+            const gallary = yield this.gallaryRepositary.findGallaryByResortId(resortId);
+            if (!gallary)
+                throw errorResponse_1.default.badRequest("ResortId doesn't match any resorts");
+            const deleteResponse = yield this.gallaryRepositary.deleteCommunityPic(resortId, imageUrl);
+            // throwing an error if the modified count is 0
+            if (deleteResponse === 0)
+                throw errorResponse_1.default.internalError("Community pic not deleted");
+            return deleteResponse;
         });
     }
     gallaryDetails() {

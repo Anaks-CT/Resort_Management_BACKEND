@@ -14,57 +14,30 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.editBannerImage = exports.editBannerDetails = exports.deleteBanner = exports.addBanner = void 0;
 const gallary_service_1 = __importDefault(require("../../services/gallary.service"));
+const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const gallaryService = new gallary_service_1.default();
-const addBanner = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+exports.addBanner = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { image, description1, description2, banner } = req.body;
     const { resortId } = req.params;
-    try {
-        const response = yield gallaryService.addBanner(banner, image, description1, description2, resortId);
-        const gallaryDetails = yield gallaryService.findGallarybyResortId(resortId);
-        res.send({ message: "acknowledged:" + response, data: gallaryDetails });
-    }
-    catch (error) {
-        return next(error);
-    }
-});
-exports.addBanner = addBanner;
-const deleteBanner = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const updatedData = yield gallaryService.addBanner(banner, image, description1, description2, resortId);
+    res.json({ message: "Banner added successfully", data: updatedData });
+}));
+exports.deleteBanner = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { resortId, largeBannerId, smallBannerId } = req.params;
-    const banner = req.params.banner;
-    try {
-        const response = yield gallaryService.deleteBanner(banner, resortId, banner === "largeBanner" ? largeBannerId : smallBannerId);
-        const gallaryDetails = yield gallaryService.findGallarybyResortId(resortId);
-        res.send({ message: "acknowledged:" + response, data: gallaryDetails });
-    }
-    catch (err) {
-        return next(err);
-    }
-});
-exports.deleteBanner = deleteBanner;
-const editBannerDetails = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const banner = req.params
+        .banner;
+    const updatedData = yield gallaryService.deleteBanner(banner, resortId, banner === "largeBanner" ? largeBannerId : smallBannerId);
+    res.json({ message: "Image deleted successfully", data: updatedData });
+}));
+exports.editBannerDetails = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { resortId, largeBannerId, smallBannerId } = req.params;
     const { description1, description2, banner } = req.body;
-    console.log(largeBannerId, smallBannerId, banner);
-    try {
-        const response = yield gallaryService.editBannerDetails(banner, resortId, banner === "largeBanner" ? largeBannerId : smallBannerId, description1, description2);
-        const gallaryDetails = yield gallaryService.findGallarybyResortId(resortId);
-        res.send({ message: "acknowledged" + response, data: gallaryDetails });
-    }
-    catch (err) {
-        return next(err);
-    }
-});
-exports.editBannerDetails = editBannerDetails;
-const editBannerImage = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const updatedData = yield gallaryService.editBannerDetails(banner, resortId, banner === "largeBanner" ? largeBannerId : smallBannerId, description1, description2);
+    res.json({ message: "Banner Details edited successfully", data: updatedData });
+}));
+exports.editBannerImage = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { resortId, largeBannerId, smallBannerId } = req.params;
     const { image, banner } = req.body;
-    try {
-        const response = yield gallaryService.editBannerImage(banner, resortId, banner === "largeBanner" ? largeBannerId : smallBannerId, image);
-        const gallaryDetails = yield gallaryService.findGallarybyResortId(resortId);
-        res.send({ message: "acknowledged" + response, data: gallaryDetails });
-    }
-    catch (err) {
-        return next(err);
-    }
-});
-exports.editBannerImage = editBannerImage;
+    const updatedData = yield gallaryService.editBannerImage(banner, resortId, banner === "largeBanner" ? largeBannerId : smallBannerId, image);
+    res.json({ message: "Banner image edited successfully", data: updatedData });
+}));

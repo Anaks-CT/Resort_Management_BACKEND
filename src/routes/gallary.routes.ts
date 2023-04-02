@@ -1,5 +1,9 @@
 import express from "express";
-import { addCommunityPic } from "../controllers/gallary/addCommunityPic";
+import {
+    addCommunityPic,
+    deleteCommunityPic,
+    editCommunityPic,
+} from "../controllers/gallary/communityPic";
 import {
     addBanner,
     deleteBanner,
@@ -26,7 +30,11 @@ gallary
     .delete(deleteBanner)
     .patch(editBannerDetails)
     .put(editBannerImage);
-gallary.post("/addCommunityPic", addCommunityPic);
+gallary
+    .route("/communityBanner")
+    .post(addCommunityPic)
+    .delete(deleteCommunityPic)
+    .put(editCommunityPic)
 gallary.get("/getAllGallaryDetails", gallaryDetails);
 gallary.get("/getGallaryByResortId/:id", gallaryDetailsByResortId);
-gallary.get('/getGallary')
+gallary.get("/getGallary");

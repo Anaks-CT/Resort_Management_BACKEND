@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.gallary = void 0;
 const express_1 = __importDefault(require("express"));
-const addCommunityPic_1 = require("../controllers/gallary/addCommunityPic");
+const communityPic_1 = require("../controllers/gallary/communityPic");
 const banner_1 = require("../controllers/gallary/banner");
 const fetchGallaryDetails_1 = require("../controllers/gallary/fetchGallaryDetails");
 exports.gallary = express_1.default.Router();
@@ -21,7 +21,11 @@ exports.gallary
     .delete(banner_1.deleteBanner)
     .patch(banner_1.editBannerDetails)
     .put(banner_1.editBannerImage);
-exports.gallary.post("/addCommunityPic", addCommunityPic_1.addCommunityPic);
+exports.gallary
+    .route("/communityBanner")
+    .post(communityPic_1.addCommunityPic)
+    .delete(communityPic_1.deleteCommunityPic)
+    .put(communityPic_1.editCommunityPic);
 exports.gallary.get("/getAllGallaryDetails", fetchGallaryDetails_1.gallaryDetails);
 exports.gallary.get("/getGallaryByResortId/:id", fetchGallaryDetails_1.gallaryDetailsByResortId);
-exports.gallary.get('/getGallary');
+exports.gallary.get("/getGallary");
