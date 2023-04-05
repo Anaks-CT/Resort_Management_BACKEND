@@ -49,9 +49,9 @@ class BaseRepository {
             return this.model.findOneAndUpdate(filter, item, options).exec();
         });
     }
-    delete(id) {
+    deleteById(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.model.findByIdAndDelete(id);
+            return yield this.model.deleteOne({ _id: id });
         });
     }
 }

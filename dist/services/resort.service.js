@@ -25,6 +25,7 @@ class ResortService {
     createResort(resortDetails, location, email, customerCareNo) {
         return __awaiter(this, void 0, void 0, function* () {
             const resortDupe = yield this.resortRepositary.searchResort(resortDetails);
+            console.log(resortDetails);
             /////////////////////// checking duplicate resort with same name///////////////////////////////
             if (resortDupe) {
                 throw errorResponse_1.default.badRequest("Resort aldready exists");
@@ -52,6 +53,23 @@ class ResortService {
             ////////////////////////// updating the created gallaryid in resort schema/////////////////////
             yield this.resortRepositary.setGallaryId(resort._id, gallary._id);
             return { resort };
+        });
+    }
+    editResort(resortDetails, image, resortId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const editResort = yield this.resortRepositary.editResort(resortDetails, resortId, image);
+            if ((editResort === null || editResort === void 0 ? void 0 : editResort.modifiedCount) !== 1)
+                throw errorResponse_1.default.internalError('Resort not edited');
+            return editResort;
+        });
+    }
+    editResortActive(resortId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const editResponse = yield this.resortRepositary.editResortActive(resortId);
+            const editGallaryStatus = yield this.gallaryRepositary.editGallaryStatus(resortId);
+            if (editResponse.modifiedCount !== 1 || editGallaryStatus.modifiedCount !== 1)
+                throw errorResponse_1.default.internalError('Resort Active is not changed');
+            return editResponse;
         });
     }
     allResortDetails() {

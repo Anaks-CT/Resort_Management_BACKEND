@@ -18,6 +18,7 @@ const gallarySchema = new Schema<IGallary>({
     },
   ],
   communityPics: [String],
+  active:{type:Boolean,default: true}
 });
 
 export default model<IGallary>("Gallary", gallarySchema);

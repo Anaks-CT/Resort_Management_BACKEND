@@ -5,6 +5,7 @@ import GallaryService from "../../services/gallary.service";
 const gallaryService = new GallaryService();
 
 export const gallaryDetails: RequestHandler = async (req, res, next) => {
+  console.log('first')
   try {
     const response = await gallaryService.gallaryDetails()
     res.send({ message: "Successful", data: response});

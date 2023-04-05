@@ -36,6 +36,7 @@ const resortSchema = new mongoose_1.Schema({
     location: { type: String, required: true },
     email: { type: String, required: true },
     customerCareNo: { type: Number, required: true },
-    gallaryId: mongoose_1.default.Types.ObjectId,
+    gallaryId: { type: mongoose_1.default.Types.ObjectId, ref: 'Gallary' },
+    active: { type: Boolean, default: true }
 });
 exports.default = (0, mongoose_1.model)("Resort", resortSchema);

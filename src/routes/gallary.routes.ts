@@ -36,5 +36,5 @@ gallary
     .delete(deleteCommunityPic)
     .put(editCommunityPic)
 gallary.get("/getAllGallaryDetails", gallaryDetails);
-gallary.get("/getGallaryByResortId/:id", gallaryDetailsByResortId);
+gallary.get("/getGallaryByResortId/:id", gallaryDetailsByResortId); 
 gallary.get("/getGallary");

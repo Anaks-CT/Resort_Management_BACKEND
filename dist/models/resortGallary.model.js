@@ -41,5 +41,6 @@ const gallarySchema = new mongoose_1.Schema({
         },
     ],
     communityPics: [String],
+    active: { type: Boolean, default: true }
 });
 exports.default = (0, mongoose_1.model)("Gallary", gallarySchema);

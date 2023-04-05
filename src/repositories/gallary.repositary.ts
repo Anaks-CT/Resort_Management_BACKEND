@@ -2,6 +2,7 @@ import { IGallary } from "../interface/gallary.interface";
 import resortGallaryModel from "../models/resortGallary.model";
 import { ObjectId } from "mongodb";
 import { BaseRepository } from "./baseRepositary";
+import { UpdateWriteOpResult } from "mongoose";
 
 // import ObjectId from "mong"
 
@@ -15,6 +16,10 @@ class GallaryRepositary extends BaseRepository {
             resortid: new ObjectId(resortId),
         };
         return this.create<any>(newGallary);
+    }
+
+    async editGallaryStatus(resortId: string): Promise<UpdateWriteOpResult> {
+        return await resortGallaryModel.updateOne({resortid: new ObjectId(resortId)},[{ $set: { active: { $not: ["$active"] } } }])
     }
 
     async addBanner(

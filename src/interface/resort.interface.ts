@@ -17,6 +17,7 @@ export interface IResort {
   email: string;
   customerCareNo: number;
   gallaryId?: ObjectId;
+  active?: boolean
 }
 
 

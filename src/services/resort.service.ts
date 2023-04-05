@@ -7,6 +7,7 @@ import {
 import ErrorResponse from "../error/errorResponse";
 import GallaryRepositary from "../repositories/gallary.repositary";
 import CompanyRepositary from "../repositories/company.repositary";
+import { UpdateWriteOpResult } from "mongoose";
 
 export default class ResortService {
     constructor(
@@ -24,6 +25,8 @@ export default class ResortService {
         const resortDupe = await this.resortRepositary.searchResort(
             resortDetails
         );
+            console.log(resortDetails);
+            
 
         /////////////////////// checking duplicate resort with same name///////////////////////////////
 
@@ -64,6 +67,20 @@ export default class ResortService {
         await this.resortRepositary.setGallaryId(resort._id!, gallary._id!);
 
         return { resort };
+    }
+
+
+    async editResort(resortDetails:IResort, image: string, resortId: string ): Promise<UpdateWriteOpResult | null>{
+        const editResort = await this.resortRepositary.editResort(resortDetails, resortId, image )
+        if(editResort?.modifiedCount !== 1) throw ErrorResponse.internalError('Resort not edited')
+        return editResort
+    }
+
+    async editResortActive(resortId: string): Promise<UpdateWriteOpResult>{
+        const editResponse = await this.resortRepositary.editResortActive(resortId)
+        const editGallaryStatus = await this.gallaryRepositary.editGallaryStatus(resortId)
+        if(editResponse.modifiedCount !== 1 || editGallaryStatus.modifiedCount !== 1) throw ErrorResponse.internalError('Resort Active is not changed')
+        return editResponse
     }
 
     async allResortDetails(): Promise<IResort[] | null> {

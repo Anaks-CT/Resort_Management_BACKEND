@@ -20,7 +20,7 @@ const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
     const { email, password } = req.body;
     try {
         const { user } = yield authService.login("user", email, password);
-        res.send({ message: "user found", data: user });
+        res.json({ message: "user found", data: user });
     }
     catch (error) {
         return next(error);

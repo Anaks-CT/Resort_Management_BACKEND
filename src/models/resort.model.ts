@@ -11,9 +11,10 @@ const resortSchema = new Schema<IResort>({
   },
   manager: { type: mongoose.Types.ObjectId },
   location: { type: String, required: true },
-  email: { type: String, required: true },
+  email: { type: String, required: true }, 
   customerCareNo: { type: Number, required: true },
-  gallaryId:mongoose.Types.ObjectId,
+  gallaryId:{type: mongoose.Types.ObjectId , ref:'Gallary'}, 
+  active:{type: Boolean , default: true}
 });
 
 export default model<IResort & Document>("Resort", resortSchema);

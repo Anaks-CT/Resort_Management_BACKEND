@@ -15,4 +15,5 @@ export interface IGallary{
     largeBanner: IBannerDetails[];
     smallBanner: IBannerDetails[];
     communityPics: string[];
+    active?: boolean
 }

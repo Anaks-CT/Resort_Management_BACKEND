@@ -1,7 +1,7 @@
 import { RequestHandler } from "express";
 import asyncHandler from "express-async-handler";
 import ErrorResponse from "../error/errorResponse";
-import {loginSchema, signupSchema } from "./yupSchema";
+import {addResort, loginSchema, signupSchema } from "./yupSchema";
 
 // Validating req.body before reaching controller
 
@@ -28,4 +28,17 @@ export const validateLogin: RequestHandler = asyncHandler(
     }
   }
 );
+
+// add resort body validation
+export const resortValidate: RequestHandler = asyncHandler(
+  async (req, res, next) => {
+    try {
+      req.body = await addResort.validate(req.body);
+      next();
+    } catch (err: any) {
+      throw ErrorResponse.unauthorized(err.errors[0]);
+    }
+  }
+);
+
 

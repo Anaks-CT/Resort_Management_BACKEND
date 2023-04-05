@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.loginSchema = exports.signupSchema = void 0;
+exports.addResort = exports.loginSchema = exports.signupSchema = void 0;
 const yup = __importStar(require("yup"));
 exports.signupSchema = yup.object().shape({
     name: yup
@@ -40,23 +40,41 @@ exports.signupSchema = yup.object().shape({
         .string()
         .trim()
         .required("Enter your email")
-        .test('isvalidEmail', "Enter a valid Email", (arg) => /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(arg)),
+        .test("isvalidEmail", "Enter a valid Email", (arg) => /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(arg)),
     password: yup
         .string()
         .trim()
         .required("Password can not be empty")
         .min(8, "Too short password")
         .max(16, "Too long password")
-        .test("isPerfectPasswrod", "Enter a strong password", (arg) => /((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W])(?!.*\s).{8,16})/.test(arg))
+        .test("isPerfectPasswrod", "Enter a strong password", (arg) => /((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W])(?!.*\s).{8,16})/.test(arg)),
 });
 exports.loginSchema = yup.object().shape({
     email: yup
         .string()
         .trim()
         .required("Enter you email")
-        .test('isvalidEmail', "Enter a valid Email", (arg) => /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(arg)),
-    password: yup
+        .test("isvalidEmail", "Enter a valid Email", (arg) => /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(arg)),
+    password: yup.string().trim().required("Password can not be empty"),
+});
+exports.addResort = yup.object().shape({
+    image: yup.string().trim().required("Image cannot be empty"),
+    name: yup.string().trim().required("Name cannot be empty"),
+    heading: yup.string().trim().required("Heading cannot be empty"),
+    description: yup.string().trim().required("Description cannot be empty"),
+    location: yup.string().trim().required("Description cannot be empty"),
+    email: yup
         .string()
         .trim()
-        .required("Password can not be empty")
+        .required("Enter you email")
+        .test("isvalidEmail", "Enter a valid Email", (arg) => /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(arg)),
+    customerCareNo: yup
+        .string()
+        .trim()
+        .required("Customer Care Number is required")
+        .matches(/^[0-9]{10}$/, "Customer Care Number is not valid"),
+    features: yup
+        .array()
+        .of(yup.string().required("Feature is required"))
+        .min(1, "At least one feature is required"),
 });

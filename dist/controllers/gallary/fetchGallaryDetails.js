@@ -16,6 +16,7 @@ exports.gallaryDetailsByResortId = exports.gallaryDetails = void 0;
 const gallary_service_1 = __importDefault(require("../../services/gallary.service"));
 const gallaryService = new gallary_service_1.default();
 const gallaryDetails = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('first');
     try {
         const response = yield gallaryService.gallaryDetails();
         res.send({ message: "Successful", data: response });

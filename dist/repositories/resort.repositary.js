@@ -25,6 +25,18 @@ class ResortRepositary extends baseRepositary_1.BaseRepository {
             return yield this.create(resortDetails);
         });
     }
+    editResort(resortDetails, resortId, image) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield resort_model_1.default.updateOne({ _id: new mongodb_1.ObjectId(resortId) }, {
+                $set: Object.assign(Object.assign({ "resortDetails.name": resortDetails.name, "resortDetails.heading": resortDetails.heading, "resortDetails.description": resortDetails.description }, (image ? { "resortDetails.image": image } : {})), { "resortDetails.features": resortDetails.features, location: resortDetails.location, email: resortDetails.email, customerCareNo: resortDetails.customerCareNo }),
+            });
+        });
+    }
+    editResortActive(resortId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield resort_model_1.default.updateOne({ _id: new mongodb_1.ObjectId(resortId) }, [{ $set: { active: { $not: ["$active"] } } }]);
+        });
+    }
     ////////////////////////////// querying for all resorts information ////////////////////////
     getAllresortDetails() {
         return __awaiter(this, void 0, void 0, function* () {

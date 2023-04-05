@@ -16,10 +16,12 @@ exports.createResort = void 0;
 const resort_service_1 = __importDefault(require("../../services/resort.service"));
 const resortService = new resort_service_1.default();
 const createResort = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { resortDetails, location, email, customerCareNo } = req.body;
+    const { image, name, heading, description, features, location, email, customerCareNo } = req.body;
+    const resortDetails = { image, name, heading, description, features };
     try {
-        const { resort } = yield resortService.createResort(resortDetails, location, email, customerCareNo);
-        res.send({ message: "New Resort created", data: resort });
+        yield resortService.createResort(resortDetails, location, email, customerCareNo);
+        const allResortDetails = yield resortService.allResortDetails();
+        res.send({ message: "New Resort created", data: allResortDetails });
     }
     catch (error) {
         return next(error);

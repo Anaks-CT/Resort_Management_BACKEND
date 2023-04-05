@@ -32,7 +32,7 @@ export abstract class BaseRepository {
     return this.model.findOneAndUpdate(filter, item, options).exec();
   }
 
-  async delete(id: string): Promise<void> {
-    await this.model.findByIdAndDelete(id);
+  async deleteById<T>(id: string): Promise<T> {
+    return await this.model.deleteOne({_id: id});
   }
 }

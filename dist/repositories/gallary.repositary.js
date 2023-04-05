@@ -28,6 +28,11 @@ class GallaryRepositary extends baseRepositary_1.BaseRepository {
             return this.create(newGallary);
         });
     }
+    editGallaryStatus(resortId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield resortGallary_model_1.default.updateOne({ resortid: new mongodb_1.ObjectId(resortId) }, [{ $set: { active: { $not: ["$active"] } } }]);
+        });
+    }
     addBanner(type, image, description1, description2, resortId) {
         return __awaiter(this, void 0, void 0, function* () {
             const key = type === "largeBanner" ? "largeBanner" : "smallBanner";
