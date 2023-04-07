@@ -14,12 +14,13 @@ export interface ICompany  {
         description: string;
     };
     circleBanners: circleBanner[];
-    faqs: {
-        Q: string;
-        A: string;
-    }[];
+    faqs: Ifaq[];
 }
 
+export interface Ifaq{
+    Q: string,
+    A: string
+}
 // export interface CreateResortResponse{
 //   resort:ICompany
 // }

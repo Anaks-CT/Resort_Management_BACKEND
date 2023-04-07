@@ -1,4 +1,3 @@
-import { RequestHandler } from "express";
 import GallaryService from "../../services/gallary.service";
 import AsyncHandler from "express-async-handler";
 
@@ -40,7 +39,7 @@ export const editBannerDetails = AsyncHandler( async (req, res) => {
             description1,
             description2
         );
-        res.json({ message: "Banner Details edited successfully", data: updatedData });
+        res.json({ message: "Banner edited successfully", data: updatedData });
 });
 
 export const editBannerImage = AsyncHandler( async (req, res) => {
@@ -52,5 +51,5 @@ export const editBannerImage = AsyncHandler( async (req, res) => {
             banner === "largeBanner" ? largeBannerId : smallBannerId,
             image
         );
-        res.json({ message: "Banner image edited successfully", data: updatedData });
+        res.json({ message: "Banner edited successfully", data: updatedData });
 });

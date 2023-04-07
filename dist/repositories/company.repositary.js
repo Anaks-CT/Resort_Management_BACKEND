@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const company_model_1 = __importDefault(require("../models/company.model"));
 const baseRepositary_1 = require("./baseRepositary");
+const mongodb_1 = require("mongodb");
 class CompanyRepositary extends baseRepositary_1.BaseRepository {
     constructor() {
         super(company_model_1.default);
@@ -30,16 +31,35 @@ class CompanyRepositary extends baseRepositary_1.BaseRepository {
     }
     addFaqs(Q, A) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield company_model_1.default.updateOne({}, { $addToSet: { faqs: { Q: Q, A: A } } });
-            return result.acknowledged;
+            return yield company_model_1.default.findOneAndUpdate({}, { $addToSet: { faqs: { Q: Q, A: A } } }, { new: true });
+        });
+    }
+    deleteFaq(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield company_model_1.default.findOneAndUpdate({}, {
+                $pull: {
+                    faqs: {
+                        _id: new mongodb_1.ObjectId(id),
+                    },
+                },
+            }, { new: true });
+        });
+    }
+    editFaq(id, question, answer) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield company_model_1.default.findOneAndUpdate({ "faqs._id": id }, { $set: { "faqs.$.Q": question, "faqs.$.A": answer } }, { new: true });
         });
     }
     searchSingleFaq(faqs) {
         return __awaiter(this, void 0, void 0, function* () {
-            const existingFAQ = yield company_model_1.default
+            return yield company_model_1.default
                 .findOne({ faqs: { $elemMatch: { Q: faqs.Q } } })
                 .exec();
-            return existingFAQ;
+        });
+    }
+    searchFaqById(faqID) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield company_model_1.default.findOne({ "faqs._id": faqID });
         });
     }
     addResortId(resortId) {

@@ -99,7 +99,7 @@ export default class ResortService {
         }else{
             order = null
         }
-        const resortDetails = await this.resortRepositary.searchSortService(searchValue, order)
+        const resortDetails = await this.resortRepositary.searchSortService<IResort>(searchValue, order)
         if(!resortDetails) throw ErrorResponse.internalError('Resorts not found')
         return resortDetails as IResort[]
     }  

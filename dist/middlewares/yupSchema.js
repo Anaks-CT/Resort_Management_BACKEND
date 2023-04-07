@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addResort = exports.loginSchema = exports.signupSchema = void 0;
+exports.faqSchema = exports.addResort = exports.loginSchema = exports.signupSchema = void 0;
 const yup = __importStar(require("yup"));
 exports.signupSchema = yup.object().shape({
     name: yup
@@ -77,4 +77,8 @@ exports.addResort = yup.object().shape({
         .array()
         .of(yup.string().required("Feature is required"))
         .min(1, "At least one feature is required"),
+});
+exports.faqSchema = yup.object().shape({
+    question: yup.string().trim().required("Question cannot be empty"),
+    answer: yup.string().trim().required("Answer cannot be empty"),
 });

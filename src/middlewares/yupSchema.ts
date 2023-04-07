@@ -68,3 +68,7 @@ export const addResort = yup.object().shape({
         .min(1, "At least one feature is required"),
 });
 
+export const faqSchema = yup.object().shape({
+    question: yup.string().trim().required("Question cannot be empty"),
+    answer: yup.string().trim().required("Answer cannot be empty"),
+  });

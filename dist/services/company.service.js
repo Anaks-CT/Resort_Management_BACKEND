@@ -38,14 +38,48 @@ class CompanyService {
             return companyDetails;
         });
     }
+    getfaqDetails() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const companyDetails = yield this.companyRepositary.getOne();
+            if (!companyDetails)
+                throw errorResponse_1.default.internalError('company not found');
+            return companyDetails === null || companyDetails === void 0 ? void 0 : companyDetails.faqs;
+        });
+    }
     addFaq(Q, A) {
         return __awaiter(this, void 0, void 0, function* () {
+            // checking if the faq is more than 10
+            const company = yield this.companyRepositary.getOne();
+            if ((company === null || company === void 0 ? void 0 : company.faqs.length) === 10)
+                throw errorResponse_1.default.forbidden('Cannot add more than 10 FAQs');
             //// checking for image duplication
             const checkFaqDup = yield this.companyRepositary.searchSingleFaq({ Q, A });
             if (checkFaqDup)
-                throw errorResponse_1.default.internalError('faq aldready exist');
-            const addFaq = yield this.companyRepositary.addFaqs(Q, A);
-            return addFaq;
+                throw errorResponse_1.default.badRequest('FAQ aldready exist');
+            const companyDetail = yield this.companyRepositary.addFaqs(Q, A);
+            if (!companyDetail)
+                throw errorResponse_1.default.internalError('FAQ not added');
+            return companyDetail.faqs;
+        });
+    }
+    editFaq(id, question, answer) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const response = yield this.companyRepositary.editFaq(id, question, answer);
+            if (!response)
+                throw errorResponse_1.default.badRequest('FAQ is not edited');
+            return response.faqs;
+        });
+    }
+    deleteFaq(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // checking if the faqID is present in the company
+            const faqTest = yield this.companyRepositary.searchFaqById(id);
+            if (!faqTest)
+                throw errorResponse_1.default.badRequest('No faq with the given Id');
+            const response = yield this.companyRepositary.deleteFaq(id);
+            if (!response)
+                throw errorResponse_1.default.internalError('Faq not deleted');
+            return response.faqs;
         });
     }
 }

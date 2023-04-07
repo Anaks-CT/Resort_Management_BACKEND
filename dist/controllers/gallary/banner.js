@@ -33,11 +33,11 @@ exports.editBannerDetails = (0, express_async_handler_1.default)((req, res) => _
     const { resortId, largeBannerId, smallBannerId } = req.params;
     const { description1, description2, banner } = req.body;
     const updatedData = yield gallaryService.editBannerDetails(banner, resortId, banner === "largeBanner" ? largeBannerId : smallBannerId, description1, description2);
-    res.json({ message: "Banner Details edited successfully", data: updatedData });
+    res.json({ message: "Banner edited successfully", data: updatedData });
 }));
 exports.editBannerImage = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { resortId, largeBannerId, smallBannerId } = req.params;
     const { image, banner } = req.body;
     const updatedData = yield gallaryService.editBannerImage(banner, resortId, banner === "largeBanner" ? largeBannerId : smallBannerId, image);
-    res.json({ message: "Banner image edited successfully", data: updatedData });
+    res.json({ message: "Banner edited successfully", data: updatedData });
 }));
