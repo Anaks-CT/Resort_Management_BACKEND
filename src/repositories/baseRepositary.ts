@@ -26,6 +26,17 @@ export abstract class BaseRepository {
     return newObject
   }
 
+
+  async searchSortService<T>(searchValue: string, sortOrder: 1 | -1 | null): Promise<T[]>{
+    //************************************ major error will change later */
+    console.log(searchValue);
+    let query = this.model.find({"resortDetails.name": { $regex : new RegExp(searchValue!=="null" ? searchValue : '', 'i')}});
+    if (sortOrder) {
+        query = query.sort({"resortDetails.name": sortOrder});
+    }
+    return await query;
+}
+
   async update<T>(id: string, item: UpdateQuery<T>): Promise<T | null> {
     const filter: FilterQuery<T> = { _id: id };
     const options = { new: true };

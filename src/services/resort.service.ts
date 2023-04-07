@@ -89,6 +89,21 @@ export default class ResortService {
         return resort;
     }
 
+    async searchSortService(searchValue: string, sortOrder: string): Promise<IResort[] | null>{
+                
+        let order: 1 | -1 | null
+        if(sortOrder === "asc"){
+            order = 1
+        }else if(sortOrder === "des"){
+            order = -1
+        }else{
+            order = null
+        }
+        const resortDetails = await this.resortRepositary.searchSortService(searchValue, order)
+        if(!resortDetails) throw ErrorResponse.internalError('Resorts not found')
+        return resortDetails as IResort[]
+    }  
+
     async getResortById(id: string): Promise<IResort | null>{
         const resort = await this.resortRepositary.findResortById(id)
         if(!resort) throw ErrorResponse.badRequest("Resort not found")

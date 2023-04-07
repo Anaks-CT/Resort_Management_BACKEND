@@ -80,6 +80,24 @@ class ResortService {
             return resort;
         });
     }
+    searchSortService(searchValue, sortOrder) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let order;
+            if (sortOrder === "asc") {
+                order = 1;
+            }
+            else if (sortOrder === "des") {
+                order = -1;
+            }
+            else {
+                order = null;
+            }
+            const resortDetails = yield this.resortRepositary.searchSortService(searchValue, order);
+            if (!resortDetails)
+                throw errorResponse_1.default.internalError('Resorts not found');
+            return resortDetails;
+        });
+    }
     getResortById(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const resort = yield this.resortRepositary.findResortById(id);

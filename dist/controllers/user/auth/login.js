@@ -18,6 +18,7 @@ const auth_service_1 = __importDefault(require("../../../services/auth.service")
 const authService = new auth_service_1.default();
 const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
+    // console.log(email, password);
     try {
         const { user } = yield authService.login("user", email, password);
         res.json({ message: "user found", data: user });

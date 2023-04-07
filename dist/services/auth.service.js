@@ -48,7 +48,7 @@ class AuthService {
             if (checkUserDupe)
                 throw errorResponse_1.default.unauthorized('Email aldready Registered');
             const hashedPassword = yield bcrypt_1.default.hash(password, 10);
-            const userDetails = { name, phone, email, password };
+            const userDetails = { name, phone, email, password: hashedPassword };
             const user = yield this.userRepository.createUser(userDetails);
             return { user };
         });

@@ -41,6 +41,10 @@ class ResortRepositary extends BaseRepository {
         return await this.getAll<IResort>();
     }
 
+    async resortDetailService(searchValue: string, sortBy: string | null, sortOrder: 1 | -1 | null): Promise<IResort[] | null>{
+        return await this.searchSortService<IResort>(searchValue, sortBy, sortOrder)
+    }
+
     ///////////////////////////// querying for single resort details which contains of name, heading, description, image//////
     async searchResort(resortdetail: IResortDetail): Promise<IResort | null> {
         return await resortModel.findOne({

@@ -43,6 +43,11 @@ class ResortRepositary extends baseRepositary_1.BaseRepository {
             return yield this.getAll();
         });
     }
+    resortDetailService(searchValue, sortBy, sortOrder) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.searchSortService(searchValue, sortBy, sortOrder);
+        });
+    }
     ///////////////////////////// querying for single resort details which contains of name, heading, description, image//////
     searchResort(resortdetail) {
         return __awaiter(this, void 0, void 0, function* () {

@@ -6,6 +6,7 @@ const authService = new AuthService();
 
 export const login: RequestHandler = async (req, res, next) => {
   const { email, password } = req.body;
+  // console.log(email, password);
   try {
     const { user } = await authService.login("user",email, password);
     res.json({ message: "user found", data: user });

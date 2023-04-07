@@ -35,7 +35,7 @@ export class AuthService {
         const checkUserDupe = await this.userRepository.finduser(email)
         if (checkUserDupe) throw ErrorResponse.unauthorized('Email aldready Registered')
         const hashedPassword = await bcrypt.hash(password, 10)
-        const userDetails = { name, phone, email, password }
+        const userDetails = { name, phone, email, password: hashedPassword }
         const user = await this.userRepository.createUser(userDetails);
         return {user}
       }

@@ -9,11 +9,11 @@ const resortCRUD_1 = require("../controllers/resort/resortCRUD");
 const getAllResortDetails_1 = require("../controllers/resort/getAllResortDetails");
 const bodyValidation_1 = require("../middlewares/bodyValidation");
 exports.resort = express_1.default.Router();
-// resort.post('/newResort', resortValidate, createResort);
 exports.resort
     .route("/resort/:resortId?")
     .get(getAllResortDetails_1.getAllResortDetails)
     .post(bodyValidation_1.resortValidate, resortCRUD_1.createResort)
     .put(resortCRUD_1.editResort)
     .delete(resortCRUD_1.editResortActive);
+exports.resort.get('/resortDetailService', getAllResortDetails_1.getSearchSortResortDetails);
 exports.resort.post("/getResortById/:resortId", getAllResortDetails_1.getSingleResort);
