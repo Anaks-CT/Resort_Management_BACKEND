@@ -9,6 +9,7 @@ const resortSchema = new Schema<IResort>({
     image: {type: String, required: true},
     features: [String],
   },
+  rooms: {type: [mongoose.Types.ObjectId], ref: "Room"},//changed from string to mongoose types objectID
   manager: { type: mongoose.Types.ObjectId },
   location: { type: String, required: true },
   email: { type: String, required: true }, 

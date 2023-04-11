@@ -22,9 +22,7 @@ export default class ResortService {
         email: string,
         customerCareNo: number
     ): Promise<CreateResortResponse> {
-        const resortDupe = await this.resortRepositary.searchResort(
-            resortDetails
-        );
+        const resortDupe = await this.resortRepositary.getOne<IResort>({resortDetails: resortDetails});
             console.log(resortDetails);
             
 
@@ -47,15 +45,15 @@ export default class ResortService {
             email: email,
             customerCareNo: customerCareNo,
         }
-        const resort = await this.resortRepositary.createResort(newResort);
+        const resort = await this.resortRepositary.create<any>(newResort);
 
         ///////////////////////// adding the newly created resort in to company  /////////////////
 
-        await this.companyRepositary.addResortId(resort._id!)
+        await this.companyRepositary.addResortId(resort._id)
 
         ///////////////////////// creating gallary modal for the resort //////////////////////
 
-        const gallary = await this.gallaryRepositary.createGallary(resort._id!);
+        const gallary = await this.gallaryRepositary.createGallary(resort._id);
 
         if (!gallary)
             throw ErrorResponse.internalError(
@@ -84,7 +82,7 @@ export default class ResortService {
     }
 
     async allResortDetails(): Promise<IResort[] | null> {
-        const resort = await this.resortRepositary.getAllresortDetails();
+        const resort = await this.resortRepositary.getAll<IResort>({});
         if (!resort) throw ErrorResponse.badRequest("Resorts not found");
         return resort;
     }
@@ -105,7 +103,7 @@ export default class ResortService {
     }  
 
     async getResortById(id: string): Promise<IResort | null>{
-        const resort = await this.resortRepositary.findResortById(id)
+        const resort = await this.resortRepositary.getById<IResort>(id)
         if(!resort) throw ErrorResponse.badRequest("Resort not found")
         return resort
     }

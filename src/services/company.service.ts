@@ -27,26 +27,26 @@ export default class CompanyService {
             circleBanners: circleBanners,
             faqs: faqs,
         };
-        const addCompany = await this.companyRepositary.createCompany(company)
+        const addCompany = await this.companyRepositary.create<ICompany>(company)
         return addCompany
     }
 
     async getCompanyDetails(): Promise<ICompany>{
-        const companyDetails = await this.companyRepositary.getCompanyDetails()
+        const companyDetails = await this.companyRepositary.getOne<ICompany>({})
         if(!companyDetails)
             throw ErrorResponse.internalError('company not found')
         return companyDetails
     }
 
     async getfaqDetails(): Promise<Ifaq[]>{
-        const companyDetails = await this.companyRepositary.getOne<ICompany>()
+        const companyDetails = await this.companyRepositary.getOne<ICompany>({})
         if(!companyDetails) throw ErrorResponse.internalError('company not found')
         return companyDetails?.faqs
     }
 
     async addFaq(Q: string, A: string): Promise<Ifaq[]>{
         // checking if the faq is more than 10
-        const company = await this.companyRepositary.getOne<ICompany>()
+        const company = await this.companyRepositary.getOne<ICompany>({})
         if(company?.faqs.length === 10) throw ErrorResponse.forbidden('Cannot add more than 10 FAQs')
         //// checking for image duplication
         const checkFaqDup = await this.companyRepositary.searchSingleFaq({Q, A})

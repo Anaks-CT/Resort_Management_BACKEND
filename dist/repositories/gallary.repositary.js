@@ -122,10 +122,5 @@ class GallaryRepositary extends baseRepositary_1.BaseRepository {
             });
         });
     }
-    GallaryDetails() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield this.getAll();
-        });
-    }
 }
 exports.default = GallaryRepositary;

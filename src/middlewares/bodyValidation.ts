@@ -1,7 +1,7 @@
 import { RequestHandler } from "express";
 import asyncHandler from "express-async-handler";
 import ErrorResponse from "../error/errorResponse";
-import { addResort, faqSchema, loginSchema, signupSchema } from "./yupSchema";
+import { addResort, addRoomSchema, faqSchema, loginSchema, signupSchema } from "./yupSchema";
 
 // Validating req.body before reaching controller
 
@@ -51,3 +51,15 @@ export const faqValidate: RequestHandler = asyncHandler(
         }
     }
 );
+
+export const roomValidate: RequestHandler = asyncHandler(
+    async (req, res, next) => {
+        console.log(req.body);
+        try {
+            req.body.roomData = await addRoomSchema.validate(req.body.roomData)
+            next()
+        } catch (err: any) {
+            throw ErrorResponse.unauthorized(err.errors[0])
+        }
+    }
+)

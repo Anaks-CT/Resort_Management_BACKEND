@@ -9,6 +9,7 @@ import { resort } from "./routes/resort.routes";
 import { gallary } from "./routes/gallary.routes";
 import { company } from "./routes/company.routes";
 import { restaurant } from "./routes/restaurant.routes";
+import { room } from "./routes/room.routes";
 
 class App {
     public express: express.Application;
@@ -31,6 +32,7 @@ class App {
     private mountRoutes(): void {
         this.express.use("/user", user);
         this.express.use("/resort", resort);
+        this.express.use("/room", room);
         this.express.use("/gallary", gallary);
         this.express.use("/company", company);
         this.express.use("/restaurant", restaurant);

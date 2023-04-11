@@ -14,14 +14,14 @@ class BaseRepository {
     constructor(model) {
         this.model = model;
     }
-    getAll() {
+    getAll(Object) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.model.find();
+            return this.model.find(Object);
         });
     }
-    getOne() {
+    getOne(object) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.model.findOne();
+            return this.model.findOne(object);
         });
     }
     getByEmail(email) {
@@ -40,6 +40,11 @@ class BaseRepository {
             const newObject = new this.model(item);
             yield newObject.save();
             return newObject;
+        });
+    }
+    count() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.model.countDocuments();
         });
     }
     searchSortService(searchValue, sortOrder) {

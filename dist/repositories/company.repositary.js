@@ -19,16 +19,6 @@ class CompanyRepositary extends baseRepositary_1.BaseRepository {
     constructor() {
         super(company_model_1.default);
     }
-    createCompany(company) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return this.create(company);
-        });
-    }
-    getCompanyDetails() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield this.getOne();
-        });
-    }
     addFaqs(Q, A) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield company_model_1.default.findOneAndUpdate({}, { $addToSet: { faqs: { Q: Q, A: A } } }, { new: true });

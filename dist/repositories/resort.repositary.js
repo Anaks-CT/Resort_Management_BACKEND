@@ -20,11 +20,9 @@ class ResortRepositary extends baseRepositary_1.BaseRepository {
     constructor() {
         super(resort_model_1.default);
     }
-    createResort(resortDetails) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield this.create(resortDetails);
-        });
-    }
+    // async createResort(resortDetails: IResort): Promise<IResort> {
+    //     return await this.create<IResort>(resortDetails);
+    // }
     editResort(resortDetails, resortId, image) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield resort_model_1.default.updateOne({ _id: new mongodb_1.ObjectId(resortId) }, {
@@ -37,24 +35,10 @@ class ResortRepositary extends baseRepositary_1.BaseRepository {
             return yield resort_model_1.default.updateOne({ _id: new mongodb_1.ObjectId(resortId) }, [{ $set: { active: { $not: ["$active"] } } }]);
         });
     }
-    ////////////////////////////// querying for all resorts information ////////////////////////
-    getAllresortDetails() {
+    // pushing new room that is being created
+    addingRoomInResort(roomId, resortId) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.getAll();
-        });
-    }
-    ///////////////////////////// querying for single resort details which contains of name, heading, description, image//////
-    searchResort(resortdetail) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield resort_model_1.default.findOne({
-                resortDetails: resortdetail,
-            });
-        });
-    }
-    ////////////////////////////// querying resort by its id /////////////////////////////
-    findResortById(id) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield this.getById(id);
+            return yield resort_model_1.default.updateOne({ _id: resortId }, { $push: { rooms: roomId } });
         });
     }
     ////////////////////////////// updating gallary id after creating gallary model in the database////////////

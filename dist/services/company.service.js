@@ -26,13 +26,13 @@ class CompanyService {
                 circleBanners: circleBanners,
                 faqs: faqs,
             };
-            const addCompany = yield this.companyRepositary.createCompany(company);
+            const addCompany = yield this.companyRepositary.create(company);
             return addCompany;
         });
     }
     getCompanyDetails() {
         return __awaiter(this, void 0, void 0, function* () {
-            const companyDetails = yield this.companyRepositary.getCompanyDetails();
+            const companyDetails = yield this.companyRepositary.getOne({});
             if (!companyDetails)
                 throw errorResponse_1.default.internalError('company not found');
             return companyDetails;
@@ -40,7 +40,7 @@ class CompanyService {
     }
     getfaqDetails() {
         return __awaiter(this, void 0, void 0, function* () {
-            const companyDetails = yield this.companyRepositary.getOne();
+            const companyDetails = yield this.companyRepositary.getOne({});
             if (!companyDetails)
                 throw errorResponse_1.default.internalError('company not found');
             return companyDetails === null || companyDetails === void 0 ? void 0 : companyDetails.faqs;
@@ -49,7 +49,7 @@ class CompanyService {
     addFaq(Q, A) {
         return __awaiter(this, void 0, void 0, function* () {
             // checking if the faq is more than 10
-            const company = yield this.companyRepositary.getOne();
+            const company = yield this.companyRepositary.getOne({});
             if ((company === null || company === void 0 ? void 0 : company.faqs.length) === 10)
                 throw errorResponse_1.default.forbidden('Cannot add more than 10 FAQs');
             //// checking for image duplication

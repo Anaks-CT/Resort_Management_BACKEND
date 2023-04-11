@@ -192,7 +192,7 @@ export default class GallaryService {
     }
 
     async gallaryDetails(): Promise<IGallary[] | null> {
-        const gallaryDetails = await this.gallaryRepositary.GallaryDetails();
+        const gallaryDetails = await this.gallaryRepositary.getAll<IGallary>({});
         if (!gallaryDetails)
             throw ErrorResponse.badRequest("Gallary database is empty");
         return gallaryDetails;

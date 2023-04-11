@@ -24,20 +24,24 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
-const resortSchema = new mongoose_1.Schema({
-    resortDetails: {
-        name: { type: String, required: true, unique: true },
-        heading: { type: String, required: true },
-        description: { type: String, required: true },
-        image: { type: String, required: true },
-        features: [String],
-    },
-    rooms: { type: [mongoose_1.default.Types.ObjectId], ref: "Room" },
-    manager: { type: mongoose_1.default.Types.ObjectId },
-    location: { type: String, required: true },
-    email: { type: String, required: true },
-    customerCareNo: { type: Number, required: true },
-    gallaryId: { type: mongoose_1.default.Types.ObjectId, ref: 'Gallary' },
+const roomSchema = new mongoose_1.Schema({
+    name: { type: String, required: true },
+    description: { type: String, required: true },
+    area: { type: Number, required: true },
+    resortId: { type: mongoose_1.default.Types.ObjectId, ref: "Resort" },
+    images: [{ type: String, required: true }],
+    packages: [
+        {
+            packageName: { type: String, required: true },
+            cost: { type: Number, required: true },
+            features: [String],
+        },
+    ],
+    maxPeople: { type: Number, required: true },
+    roomNumbers: [{ number: String, unavailableDates: { type: [Date] } }],
+    highlights: [String],
+    amenities: [String],
+    facilities: [String],
     active: { type: Boolean, default: true }
-});
-exports.default = (0, mongoose_1.model)("Resort", resortSchema);
+}, { timestamps: true });
+exports.default = (0, mongoose_1.model)("Room", roomSchema);

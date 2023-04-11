@@ -128,7 +128,7 @@ class GallaryService {
     }
     gallaryDetails() {
         return __awaiter(this, void 0, void 0, function* () {
-            const gallaryDetails = yield this.gallaryRepositary.GallaryDetails();
+            const gallaryDetails = yield this.gallaryRepositary.getAll({});
             if (!gallaryDetails)
                 throw errorResponse_1.default.badRequest("Gallary database is empty");
             return gallaryDetails;

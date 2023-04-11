@@ -10,6 +10,7 @@ const errorHandler = (err, req, res, next) => {
     if (err instanceof errorResponse_1.default) {
         return res.status(err.status).json({ message: err.message });
     }
+    console.log(err);
     return res.status(500).json({ message: "Internal server error" });
 };
 exports.errorHandler = errorHandler;

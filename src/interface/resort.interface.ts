@@ -10,9 +10,10 @@ export interface IResortDetail {
 }
 
 export interface IResort {
-  _id?: string
+  _id: string
   resortDetails: IResortDetail;
   manager?: ObjectId;
+  rooms: string[]
   location: string;
   email: string;
   customerCareNo: number;

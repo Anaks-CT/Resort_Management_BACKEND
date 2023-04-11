@@ -1,14 +1,14 @@
-import { Model, Document, FilterQuery, UpdateQuery } from "mongoose";
+import { FilterQuery, UpdateQuery } from "mongoose";
 
 export abstract class BaseRepository {
   constructor(private readonly model:any) {}
 
-   async getAll<T>(): Promise<T[] | null> {
-    return this.model.find();
+   async getAll<T>(Object: any): Promise<T[] | null> {
+    return this.model.find(Object);
   }
 
-  async getOne<T>(): Promise<T | null> {
-    return this.model.findOne();
+  async getOne<T>(object: any): Promise<T | null> {
+    return this.model.findOne(object);
   }
 
   async getByEmail<T>(email: string): Promise<T | null> {
@@ -26,6 +26,9 @@ export abstract class BaseRepository {
     return newObject
   }
 
+  async count():Promise<number>{
+    return this.model.countDocuments()
+  }
 
   async searchSortService<T>(searchValue: string, sortOrder: 1 | -1 | null): Promise<T[]>{
     //************************************ major error will change later */

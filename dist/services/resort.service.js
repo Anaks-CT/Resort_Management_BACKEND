@@ -24,7 +24,7 @@ class ResortService {
     }
     createResort(resortDetails, location, email, customerCareNo) {
         return __awaiter(this, void 0, void 0, function* () {
-            const resortDupe = yield this.resortRepositary.searchResort(resortDetails);
+            const resortDupe = yield this.resortRepositary.getOne({ resortDetails: resortDetails });
             console.log(resortDetails);
             /////////////////////// checking duplicate resort with same name///////////////////////////////
             if (resortDupe) {
@@ -43,7 +43,7 @@ class ResortService {
                 email: email,
                 customerCareNo: customerCareNo,
             };
-            const resort = yield this.resortRepositary.createResort(newResort);
+            const resort = yield this.resortRepositary.create(newResort);
             ///////////////////////// adding the newly created resort in to company  /////////////////
             yield this.companyRepositary.addResortId(resort._id);
             ///////////////////////// creating gallary modal for the resort //////////////////////
@@ -74,7 +74,7 @@ class ResortService {
     }
     allResortDetails() {
         return __awaiter(this, void 0, void 0, function* () {
-            const resort = yield this.resortRepositary.getAllresortDetails();
+            const resort = yield this.resortRepositary.getAll({});
             if (!resort)
                 throw errorResponse_1.default.badRequest("Resorts not found");
             return resort;
@@ -100,7 +100,7 @@ class ResortService {
     }
     getResortById(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const resort = yield this.resortRepositary.findResortById(id);
+            const resort = yield this.resortRepositary.getById(id);
             if (!resort)
                 throw errorResponse_1.default.badRequest("Resort not found");
             return resort;

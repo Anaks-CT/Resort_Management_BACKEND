@@ -162,9 +162,7 @@ class GallaryRepositary extends BaseRepository {
         });
     }
 
-    async GallaryDetails(): Promise<IGallary[] | null> {
-        return await this.getAll<IGallary>();
-    }
+
 }
 
 export default GallaryRepositary;
