@@ -32,7 +32,7 @@ exports.getRoomsByResortId = (0, express_async_handler_1.default)((req, res) => 
 exports.updateRoom = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { resortId } = req.params;
     const { roomId, formValues } = req.body;
-    console.log(formValues + 'sdfdsdssfd');
+    console.log(formValues);
     const response = yield roomService.updateRoomDetails(resortId, roomId, formValues);
     res.status(200).json({ message: "Update Room Successfull" });
 }));

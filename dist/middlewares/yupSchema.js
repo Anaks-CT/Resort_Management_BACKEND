@@ -82,12 +82,15 @@ exports.faqSchema = yup.object().shape({
     question: yup.string().trim().required("Question cannot be empty"),
     answer: yup.string().trim().required("Answer cannot be empty"),
 });
-const SUPPORTED_FORMATS = ["image/jpg", "image/jpeg", "image/png"];
 exports.addRoomSchema = yup.object().shape({
-    images: yup.array().of(yup
-        .mixed()
-        .nullable()
-        .test("FILE_FORMAT", "Choose a valid file format (jpg, jpeg, png)", (value) => !value || (value && SUPPORTED_FORMATS.includes(value === null || value === void 0 ? void 0 : value.type)))).max(4, "You can add a maximum of 4 images").test("EMPTY_ARRAY", "Image field is required", (value) => value.length > 0),
+    images: yup
+        .array()
+        .of(yup
+        .string()
+        .required()
+        .matches(/^https:\/\/res\.cloudinary\.com\/.*\/image\/upload\/.*$/, "Invalid Cloudinary URL"))
+        .required()
+        .min(1, "At least one Image is required"),
     name: yup.string().trim().required('Name is required'),
     description: yup.string().trim().required('Description is required'),
     area: yup.string().trim().required('Area is required'),
