@@ -17,31 +17,37 @@ export default class RoomService {
             resortId: resortId,
             name: roomDetails.name,
         });
+        // throwing error if the room details not found with the resort Id and room Id
         if (!roomDetails)
             throw ErrorResponse.badRequest("Room Details cannot be empty");
+        // throwing error if the room name is already present
         if (roomByResortId?.name === roomDetails.name)
             throw ErrorResponse.badRequest("Room type already exists");
+        // count of present room type to give the alphabet for the next room type in room numbers
         const roomTypeCount =
             await this.roomRepositary.getCountOfRoomByResortId(resortId);
         const { noOfRooms } = roomDetails;
-        console.log(noOfRooms);
-        const roomNumbers: any[] = [];
+        // pushing all the room numbers generated using the util function and passing to repositary
+        const roomNumbers: {number: string, unavailableDates: []}[] = [];
         for (let i = 0; i < noOfRooms; i++) {
             roomNumbers.push({
                 number: 100 + i + 1 + numberToAlphabet(roomTypeCount + 1),
                 unavailableDates: [],
             });
         }
-        console.log(roomNumbers);
+        // initializing the new room with all details and passing to reposiaary
         const newRoom = {
             ...roomDetails,
             roomNumbers: roomNumbers,
             resortId: new ObjectId(resortId),
         };
         const room = await this.roomRepositary.create<IRoom>(newRoom);
+        // throwing error if the reposiatry doesnt return the newly created room
         if (!room) throw ErrorResponse.badRequest("Room not created");
+        // adding the newly created room to the corresponding resortiD
         const editResortResponse =
             await this.resortRepositary.addingRoomInResort(room._id!, resortId);
+        // throwing error if resort isn't updated
         if (editResortResponse.modifiedCount !== 1)
             throw ErrorResponse.internalError("Room not added to Resort");
         return room;
@@ -60,32 +66,30 @@ export default class RoomService {
         roomId: string,
         roomDetails: any
     ) {
-        console.log(resortId);
-        console.log(roomId);
-        // console.log(roomDetails.noOfRooms);
         // checking if the room exist in resort
         const room = await this.roomRepositary.getRoomByResortIdRoomId(
             resortId,
             roomId
         );
+        // throwing erro if room id or resortid given is wrong
         if (!room)
             throw ErrorResponse.badRequest("Room or Resort doesn't exist");
+
         const roomLength = room?.roomNumbers.length;
-        // throwing an error if room numbers exeeds 999
         // throwing an error if roomDetails.noOfRoom less than previous number
         if (roomLength > roomDetails.noOfRooms)
             throw ErrorResponse.badRequest(
                 `Rooms should be more than ${roomLength}`
             );
 
-        // console.log(roomLength);
-        const lastRoomNumber = room?.roomNumbers[roomLength! - 1];
-        // console.log(lastRoomNumber)
-        const roomNumbers: any[] = [...room.roomNumbers];
+        // initializing an array with all the existing room numbers to not lose the id
+        const roomNumbers: {number: string, unavailableDates: Date[]}[] = [...room.roomNumbers];
+        // finding the room number alphabet after 3 digits (101b) for example
         const roomNumberAlphabet = room.roomNumbers[0].number.substring(
             3,
             room.roomNumbers[0].number.length
         );
+        // pushing to the created array of newly created room numbers with alphabet
         for (let i = 0; i < roomDetails.noOfRooms - roomLength; i++) {
             roomNumbers.push({
                 number: 100 + i + 1 + roomLength + roomNumberAlphabet,
@@ -93,19 +97,17 @@ export default class RoomService {
             });
         }
 
+        // deleting the images if it is an empty array
+        // if not deleted it will be stored in the database when image was not intended to edit
         if (roomDetails.images.length < 1) {
             delete roomDetails.images;
         }
-        // console.log(roomDetails);
-        console.log(roomNumbers);
-        // const pushRooms = {}
+        // passing fileds to the repositary to update
         const editRoom = await this.roomRepositary.updateRoomDetailById(
             roomId,
             roomDetails,
             roomNumbers
         );
-        console.log(editRoom);
-        // const updateRoom = await this.roomRepositary.update({})
         return editRoom;
     }
 }
