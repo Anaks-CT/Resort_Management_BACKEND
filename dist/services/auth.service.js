@@ -16,23 +16,27 @@ exports.AuthService = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const errorResponse_1 = __importDefault(require("../error/errorResponse"));
 const user_repository_1 = __importDefault(require("../repositories/user.repository"));
-// type loginDetails = {
-//     email: string,
-//     password: string
-// }
+const manager_repositary_1 = __importDefault(require("../repositories/manager.repositary"));
 class AuthService {
-    constructor(userRepository = new user_repository_1.default()) {
+    constructor(userRepository = new user_repository_1.default(), managerRepositary = new manager_repositary_1.default()) {
         this.userRepository = userRepository;
+        this.managerRepositary = managerRepositary;
     }
     login(role, email, password) {
         return __awaiter(this, void 0, void 0, function* () {
-            let user;
+            let repositary;
             if (role === "user") {
-                user = yield this.userRepository.finduser(email);
+                repositary = this.userRepository;
+            }
+            else if (role === "manager") {
+                repositary = this.managerRepositary;
             }
             else {
-                user = null;
+                repositary = null;
             }
+            if (!repositary)
+                throw errorResponse_1.default.badRequest('Please provide role');
+            const user = yield repositary.getByEmail(email);
             if (!user)
                 throw errorResponse_1.default.unauthorized("User not found");
             const isPasswordMatch = yield bcrypt_1.default.compare(password, user.password);
@@ -42,15 +46,33 @@ class AuthService {
             return { user };
         });
     }
-    signup(name, phone, email, password) {
+    signup(role, signupDetails) {
         return __awaiter(this, void 0, void 0, function* () {
-            const checkUserDupe = yield this.userRepository.finduser(email);
+            let repositary;
+            if (role === "user") {
+                repositary = this.userRepository;
+            }
+            else if (role === "manager") {
+                repositary = this.managerRepositary;
+            }
+            else {
+                repositary = null;
+            }
+            console.log(signupDetails);
+            // if(role === "manager"){
+            //     if()
+            // }
+            if (!repositary)
+                throw errorResponse_1.default.badRequest('Please provide role');
+            const checkUserDupe = yield repositary.getByEmail(signupDetails.email);
             if (checkUserDupe)
                 throw errorResponse_1.default.unauthorized('Email aldready Registered');
-            const hashedPassword = yield bcrypt_1.default.hash(password, 10);
-            const userDetails = { name, phone, email, password: hashedPassword };
-            const user = yield this.userRepository.createUser(userDetails);
-            return { user };
+            const hashedPassword = yield bcrypt_1.default.hash(signupDetails.password, 10);
+            const userDetails = Object.assign(Object.assign({}, signupDetails), { password: hashedPassword });
+            const user = yield repositary.create(userDetails);
+            if (!user)
+                throw errorResponse_1.default.internalError(`${role} not Registered`);
+            return user;
         });
     }
 }

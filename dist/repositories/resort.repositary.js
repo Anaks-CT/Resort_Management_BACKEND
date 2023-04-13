@@ -48,5 +48,25 @@ class ResortRepositary extends baseRepositary_1.BaseRepository {
             return yield resort_model_1.default.updateOne({ _id: new mongodb_1.ObjectId(resortId) }, { $set: { gallaryId: gallaryid } });
         });
     }
+    addManger(resortId, managerId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield resort_model_1.default.updateOne({ _id: resortId }, { $set: { manager: managerId } });
+        });
+    }
+    deleteManager(resortId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield resort_model_1.default.updateOne({ _id: resortId }, { $unset: { manager: '' } });
+        });
+    }
+    searchSortService(searchValue, sortOrder) {
+        return __awaiter(this, void 0, void 0, function* () {
+            //************************************ major error will change later */
+            let query = resort_model_1.default.find({ "resortDetails.name": { $regex: new RegExp(searchValue ? searchValue : '', 'i') } }).populate('manager');
+            if (sortOrder) {
+                query = query.sort({ "resortDetails.name": sortOrder });
+            }
+            return yield query;
+        });
+    }
 }
 exports.default = ResortRepositary;

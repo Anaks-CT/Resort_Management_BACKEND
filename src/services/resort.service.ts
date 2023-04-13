@@ -83,7 +83,7 @@ export default class ResortService {
 
     async allResortDetails(): Promise<IResort[] | null> {
         const resort = await this.resortRepositary.getAll<IResort>({});
-        if (!resort) throw ErrorResponse.badRequest("Resorts not found");
+        if (resort.length < 1) throw ErrorResponse.badRequest("Resorts not found");
         return resort;
     }
 
@@ -97,7 +97,7 @@ export default class ResortService {
         }else{
             order = null
         }
-        const resortDetails = await this.resortRepositary.searchSortService<IResort>(searchValue, order)
+        const resortDetails = await this.resortRepositary.searchSortService(searchValue, order)
         if(!resortDetails) throw ErrorResponse.internalError('Resorts not found')
         return resortDetails as IResort[]
     }  

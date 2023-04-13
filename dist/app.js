@@ -38,6 +38,7 @@ const gallary_routes_1 = require("./routes/gallary.routes");
 const company_routes_1 = require("./routes/company.routes");
 const restaurant_routes_1 = require("./routes/restaurant.routes");
 const room_routes_1 = require("./routes/room.routes");
+const manager_routes_1 = require("./routes/manager.routes");
 class App {
     constructor() {
         this.dotenvConfig();
@@ -59,6 +60,7 @@ class App {
         this.express.use("/gallary", gallary_routes_1.gallary);
         this.express.use("/company", company_routes_1.company);
         this.express.use("/restaurant", restaurant_routes_1.restaurant);
+        this.express.use("/manager/", manager_routes_1.manager);
     }
     connectDB() {
         (0, database_con_1.default)();

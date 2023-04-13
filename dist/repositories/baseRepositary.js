@@ -47,18 +47,8 @@ class BaseRepository {
             return this.model.countDocuments();
         });
     }
-    searchSortService(searchValue, sortOrder) {
-        return __awaiter(this, void 0, void 0, function* () {
-            //************************************ major error will change later */
-            console.log(searchValue);
-            let query = this.model.find({ "resortDetails.name": { $regex: new RegExp(searchValue !== "null" ? searchValue : '', 'i') } });
-            if (sortOrder) {
-                query = query.sort({ "resortDetails.name": sortOrder });
-            }
-            return yield query;
-        });
-    }
-    update(id, item) {
+    // async searchSortOrder
+    findOneAndupdate(id, item) {
         return __awaiter(this, void 0, void 0, function* () {
             const filter = { _id: id };
             const options = { new: true };

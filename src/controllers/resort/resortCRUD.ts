@@ -14,7 +14,7 @@ export const createResort = asyncHandler(async (req, res) => {
       customerCareNo
     );
     const allResortDetails = await resortService.allResortDetails()
-    res.json({ message: "New Resort created", data: allResortDetails });
+    res.status(201).json({ message: "New Resort created", data: allResortDetails });
 });
 
 export const editResort =asyncHandler(async (req, res) => {

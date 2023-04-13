@@ -65,13 +65,18 @@ class RoomService {
             const roomDetails = yield this.roomRepositary.getAll({
                 resortId: new mongodb_1.ObjectId(resortId),
             });
-            if (!roomDetails)
+            if (roomDetails.length < 1)
                 throw errorResponse_1.default.badRequest("No Rooms available");
             return roomDetails;
         });
     }
     updateRoomDetails(resortId, roomId, roomDetails) {
         return __awaiter(this, void 0, void 0, function* () {
+            //checking if the room type exeeds 50
+            const roomTypeCount = yield this.roomRepositary.count();
+            // throwing error if room type exeeds 50
+            if (roomTypeCount === 50)
+                throw errorResponse_1.default.badRequest('Cannot add more than 50 Room Types');
             // checking if the room exist in resort
             const room = yield this.roomRepositary.getRoomByResortIdRoomId(resortId, roomId);
             // throwing erro if room id or resortid given is wrong

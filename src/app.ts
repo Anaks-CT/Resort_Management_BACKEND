@@ -10,6 +10,7 @@ import { gallary } from "./routes/gallary.routes";
 import { company } from "./routes/company.routes";
 import { restaurant } from "./routes/restaurant.routes";
 import { room } from "./routes/room.routes";
+import { manager } from "./routes/manager.routes";
 
 class App {
     public express: express.Application;
@@ -36,6 +37,7 @@ class App {
         this.express.use("/gallary", gallary);
         this.express.use("/company", company);
         this.express.use("/restaurant", restaurant);
+        this.express.use("/manager/",manager)
     }
 
     private connectDB(): void {

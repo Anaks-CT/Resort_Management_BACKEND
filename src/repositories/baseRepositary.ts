@@ -3,7 +3,7 @@ import { FilterQuery, UpdateQuery } from "mongoose";
 export abstract class BaseRepository {
   constructor(private readonly model:any) {}
 
-   async getAll<T>(Object: any): Promise<T[] | null> {
+   async getAll<T>(Object: any): Promise<T[]> {
     return this.model.find(Object);
   }
 
@@ -30,23 +30,19 @@ export abstract class BaseRepository {
     return this.model.countDocuments()
   }
 
-  async searchSortService<T>(searchValue: string, sortOrder: 1 | -1 | null): Promise<T[]>{
-    //************************************ major error will change later */
-    console.log(searchValue);
-    let query = this.model.find({"resortDetails.name": { $regex : new RegExp(searchValue!=="null" ? searchValue : '', 'i')}});
-    if (sortOrder) {
-        query = query.sort({"resortDetails.name": sortOrder});
-    }
-    return await query;
-}
+ 
 
-  async update<T>(id: string, item: UpdateQuery<T>): Promise<T | null> {
+  // async searchSortOrder
+
+  async findOneAndupdate<T>(id: string, item: UpdateQuery<T>): Promise<T | null> {
     const filter: FilterQuery<T> = { _id: id };
     const options = { new: true };
     return this.model.findOneAndUpdate(filter, item, options).exec();
   }
 
+
   async deleteById<T>(id: string): Promise<T> {
     return await this.model.deleteOne({_id: id});
   }
+  
 }

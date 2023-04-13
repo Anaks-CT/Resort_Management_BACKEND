@@ -57,7 +57,7 @@ export default class RoomService {
         const roomDetails = await this.roomRepositary.getAll<IRoom>({
             resortId: new ObjectId(resortId),
         });
-        if (!roomDetails) throw ErrorResponse.badRequest("No Rooms available");
+        if (roomDetails.length < 1) throw ErrorResponse.badRequest("No Rooms available");
         return roomDetails;
     }
 
@@ -66,6 +66,10 @@ export default class RoomService {
         roomId: string,
         roomDetails: any
     ) {
+        //checking if the room type exeeds 50
+        const roomTypeCount = await this.roomRepositary.count()
+        // throwing error if room type exeeds 50
+        if(roomTypeCount === 50) throw ErrorResponse.badRequest('Cannot add more than 50 Room Types')
         // checking if the room exist in resort
         const room = await this.roomRepositary.getRoomByResortIdRoomId(
             resortId,

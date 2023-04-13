@@ -21,7 +21,7 @@ exports.createResort = (0, express_async_handler_1.default)((req, res) => __awai
     const resortDetails = { image, name, heading, description, features };
     yield resortService.createResort(resortDetails, location, email, customerCareNo);
     const allResortDetails = yield resortService.allResortDetails();
-    res.json({ message: "New Resort created", data: allResortDetails });
+    res.status(201).json({ message: "New Resort created", data: allResortDetails });
 }));
 exports.editResort = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { resortDetails, image } = req.body;

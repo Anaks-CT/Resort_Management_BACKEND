@@ -12,21 +12,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.signup = void 0;
-const errorResponse_1 = __importDefault(require("../../../error/errorResponse"));
-const auth_service_1 = __importDefault(require("../../../services/auth.service"));
+exports.getAllManagerDetails = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
-const authService = new auth_service_1.default();
-exports.signup = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { name, phone, email, password } = req.body;
-    const signupDetail = { name, phone, email, password };
-    try {
-        const user = yield authService.signup('user', signupDetail);
-        res.status(201).json({ message: "Register Successfull !!", data: user });
-    }
-    catch (error) {
-        if (error.code === 11000)
-            return next(errorResponse_1.default.badRequest("User already registered"));
-        return next(error);
-    }
+const manager_service_1 = __importDefault(require("../../services/manager.service"));
+const managerService = new manager_service_1.default();
+exports.getAllManagerDetails = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { searchInput, sortBy, sortOrder } = req.query;
+    const managerDetails = yield managerService.searchSortedManagerDetails(searchInput, sortOrder, sortBy);
+    res.json({ message: "Manager details fetched successfully", data: managerDetails });
 }));
+// export const editResortActive = asyncHandler( async (req, res) => {
+//   const {resortId} = req.params
+//   await managerService.editResortActive(resortId)
+//   const allResortDetails = await managerService.allResortDetails()
+//   res.json({message: "Resort Active changed successfully", data: allResortDetails})
+// })
+// export const deleteResort = asyncHandler( async (req, res) => {
+// })

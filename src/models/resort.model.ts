@@ -10,7 +10,7 @@ const resortSchema = new Schema<IResort>({
     features: [String],
   },
   rooms: {type: [mongoose.Types.ObjectId], ref: "Room"},//changed from string to mongoose types objectID
-  manager: { type: mongoose.Types.ObjectId },
+  manager: { type: mongoose.Types.ObjectId, ref: "Manager" },
   location: { type: String, required: true },
   email: { type: String, required: true }, 
   customerCareNo: { type: Number, required: true },

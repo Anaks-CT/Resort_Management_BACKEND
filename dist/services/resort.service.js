@@ -75,7 +75,7 @@ class ResortService {
     allResortDetails() {
         return __awaiter(this, void 0, void 0, function* () {
             const resort = yield this.resortRepositary.getAll({});
-            if (!resort)
+            if (resort.length < 1)
                 throw errorResponse_1.default.badRequest("Resorts not found");
             return resort;
         });

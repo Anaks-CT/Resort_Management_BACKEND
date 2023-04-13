@@ -51,6 +51,23 @@ class ResortRepositary extends BaseRepository {
             { $set: { gallaryId: gallaryid } }
         );
     }
+
+    async addManger(resortId: string, managerId: string): Promise<UpdateWriteOpResult>{
+        return await resortModel.updateOne({_id: resortId}, {$set : {manager: managerId}})
+    }
+
+    async deleteManager(resortId: string): Promise<UpdateWriteOpResult>{
+        return await resortModel.updateOne({_id: resortId},{$unset: {manager: ''}})
+    }
+
+    async searchSortService(searchValue: string, sortOrder: 1 | -1 | null): Promise<IResort[]>{
+        //************************************ major error will change later */
+        let query = resortModel.find({"resortDetails.name": { $regex : new RegExp(searchValue ? searchValue : '', 'i')}}).populate('manager');
+        if (sortOrder) {
+            query = query.sort({"resortDetails.name": sortOrder});
+        }
+        return await query;
+    }
 }
 
 export default ResortRepositary;
