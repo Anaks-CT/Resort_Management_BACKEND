@@ -11,6 +11,14 @@ export const getAllManagerDetails =asyncHandler(async (req, res) => {
   res.json({message: "Manager details fetched successfully", data: managerDetails})
 })
 
+export const changeManagerStatus = asyncHandler( async (req, res) => {
+  const { resortId, managerEmail, status} = req.body
+  await managerService.changeManagerStatus(resortId, managerEmail, status)
+  const updatedManagerDetails = await managerService.getAllManagerDetails()
+  res.status(200).json({message: "Manager Status updated successfully", data: updatedManagerDetails})
+
+})
+
 // export const editResortActive = asyncHandler( async (req, res) => {
 //   const {resortId} = req.params
 //   await managerService.editResortActive(resortId)

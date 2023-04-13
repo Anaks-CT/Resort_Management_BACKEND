@@ -1,10 +1,10 @@
 import express from 'express';
-import { validateLogin, validateSignup } from '../middlewares/bodyValidation';
+import { managerSignupValidate, validateLogin } from '../middlewares/bodyValidation';
 import { login, signup } from '../controllers/manager/auth';
-import { getAllManagerDetails } from '../controllers/manager/managerCRUD';
+import { changeManagerStatus, getAllManagerDetails } from '../controllers/manager/managerCRUD';
 
 export const manager = express.Router();
 
-manager.get('/',getAllManagerDetails)
-manager.post('/signup',validateSignup, signup);
+manager.route('/').get(getAllManagerDetails).delete(changeManagerStatus)
+manager.post('/signup',managerSignupValidate, signup);
 manager.post('/login',validateLogin, login)

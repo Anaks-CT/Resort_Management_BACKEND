@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllManagerDetails = void 0;
+exports.changeManagerStatus = exports.getAllManagerDetails = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const manager_service_1 = __importDefault(require("../../services/manager.service"));
 const managerService = new manager_service_1.default();
@@ -20,6 +20,12 @@ exports.getAllManagerDetails = (0, express_async_handler_1.default)((req, res) =
     const { searchInput, sortBy, sortOrder } = req.query;
     const managerDetails = yield managerService.searchSortedManagerDetails(searchInput, sortOrder, sortBy);
     res.json({ message: "Manager details fetched successfully", data: managerDetails });
+}));
+exports.changeManagerStatus = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { resortId, managerEmail, status } = req.body;
+    yield managerService.changeManagerStatus(resortId, managerEmail, status);
+    const updatedManagerDetails = yield managerService.getAllManagerDetails();
+    res.status(200).json({ message: "Manager Status updated successfully", data: updatedManagerDetails });
 }));
 // export const editResortActive = asyncHandler( async (req, res) => {
 //   const {resortId} = req.params

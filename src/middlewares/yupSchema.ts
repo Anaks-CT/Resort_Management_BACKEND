@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import * as yup from "yup";
 
 export const signupSchema = yup.object().shape({
@@ -112,6 +113,5 @@ export const addRoomSchema = yup.object().shape({
   facilities: yup.array()
     .of(yup.string().trim().required('Facility is required')),
 });
-
 
 

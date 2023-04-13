@@ -11,13 +11,13 @@ export default class ManagerService {
     ) {}
 
     
+    async getAllManagerDetails(): Promise<IManager[]> {
+        const managerDetails = await this.managerRepositary.getAll<IManager>({})
+        if(!managerDetails) throw ErrorResponse.internalError('Failed to fetch Manager Details')
+        return managerDetails
+    }
 
 
-    // async editResort(resortDetails:IResort, image: string, resortId: string ): Promise<UpdateWriteOpResult | null>{
-    //     const editResort = await this.resortRepositary.editResort(resortDetails, resortId, image )
-    //     if(editResort?.modifiedCount !== 1) throw ErrorResponse.internalError('Resort not edited')
-    //     return editResort
-    // }
 
      
 //*********************will change this to pagination, sort and search */
@@ -37,15 +37,45 @@ export default class ManagerService {
             sortby = "name"
         }else if(sortBy === "Phone Number" ){
             sortby = "phone"
+        }else if(sortBy === "Make-Changes"){
+            sortby = "active"
         }else{
             sortby = ''
         }
         const managerDetails = await this.managerRepositary.searchSortManagerDetails(searchInput, order, sortby)
-        if(managerDetails && managerDetails?.length < 1) {
-            console.log('helllow');
-            throw ErrorResponse.badRequest("Manager Details not found")
-        }
+        if(managerDetails && managerDetails?.length < 1) throw ErrorResponse.badRequest("Manager Details not found")
+        
         return managerDetails
+    }
+
+    async changeManagerStatus(resortId: string, managerEmail: string, status: boolean): Promise<boolean>{
+        // blocking all manager first so only one manager stays active at the end
+        const blockAllmanagerResponse = await this.managerRepositary.blockingAllExistingMangerOfResort(resortId)
+        
+        // throwing error if failed to do so
+        if(blockAllmanagerResponse.modifiedCount === 0) throw ErrorResponse.internalError('Failed to update all Manager Status')
+
+        // returning with true since all manager have been blocked
+        if(status){
+            // updating the resort manager status
+            const updateResort = await this.resortRepositary.deleteManager(resortId)
+            if(updateResort.modifiedCount === 0) throw ErrorResponse.internalError('Failed to update Resort Manager field')
+            return true
+        }
+        
+        // changing the status to true if status is aldready false
+        const updateManagerResponse = await this.managerRepositary.updateManagerStatus(resortId, managerEmail)
+        
+        // throwing error if failed to update manager status
+        if(updateManagerResponse.modifiedCount === 0) throw ErrorResponse.internalError('Failed to update Manager Status')
+
+        // Updating the resort by adding the active manager
+        const managerDetail = await this.managerRepositary.getOne<IManager>({email: managerEmail})
+        const updateResort = await this.resortRepositary.addManger(resortId, managerDetail?._id as string)
+        if(updateResort.modifiedCount === 0) throw ErrorResponse.internalError('Failed to update Resort Manager field')
+        // return true after everything is done
+        return true
+
     }
 
     async createManager(signupDetails: IManager): Promise<IManager | null>{
@@ -53,7 +83,7 @@ export default class ManagerService {
 
         // signing up the manager first
         const managerDetails = await authService.signup("manager",signupDetails)
-
+ 
         // changing the status to false of all managers
         const blockResponse = await this.managerRepositary.blockingAllExistingMangerOfResort(resortId as string)
 

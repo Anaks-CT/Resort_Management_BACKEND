@@ -22,11 +22,14 @@ class ManagerService {
         this.managerRepositary = managerRepositary;
         this.resortRepositary = resortRepositary;
     }
-    // async editResort(resortDetails:IResort, image: string, resortId: string ): Promise<UpdateWriteOpResult | null>{
-    //     const editResort = await this.resortRepositary.editResort(resortDetails, resortId, image )
-    //     if(editResort?.modifiedCount !== 1) throw ErrorResponse.internalError('Resort not edited')
-    //     return editResort
-    // }
+    getAllManagerDetails() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const managerDetails = yield this.managerRepositary.getAll({});
+            if (!managerDetails)
+                throw errorResponse_1.default.internalError('Failed to fetch Manager Details');
+            return managerDetails;
+        });
+    }
     //*********************will change this to pagination, sort and search */
     searchSortedManagerDetails(searchInput, sortOrder, sortBy) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -50,15 +53,45 @@ class ManagerService {
             else if (sortBy === "Phone Number") {
                 sortby = "phone";
             }
+            else if (sortBy === "Make-Changes") {
+                sortby = "active";
+            }
             else {
                 sortby = '';
             }
             const managerDetails = yield this.managerRepositary.searchSortManagerDetails(searchInput, order, sortby);
-            if (managerDetails && (managerDetails === null || managerDetails === void 0 ? void 0 : managerDetails.length) < 1) {
-                console.log('helllow');
+            if (managerDetails && (managerDetails === null || managerDetails === void 0 ? void 0 : managerDetails.length) < 1)
                 throw errorResponse_1.default.badRequest("Manager Details not found");
-            }
             return managerDetails;
+        });
+    }
+    changeManagerStatus(resortId, managerEmail, status) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // blocking all manager first so only one manager stays active at the end
+            const blockAllmanagerResponse = yield this.managerRepositary.blockingAllExistingMangerOfResort(resortId);
+            // throwing error if failed to do so
+            if (blockAllmanagerResponse.modifiedCount === 0)
+                throw errorResponse_1.default.internalError('Failed to update all Manager Status');
+            // returning with true since all manager have been blocked
+            if (status) {
+                // updating the resort manager status
+                const updateResort = yield this.resortRepositary.deleteManager(resortId);
+                if (updateResort.modifiedCount === 0)
+                    throw errorResponse_1.default.internalError('Failed to update Resort Manager field');
+                return true;
+            }
+            // changing the status to true if status is aldready false
+            const updateManagerResponse = yield this.managerRepositary.updateManagerStatus(resortId, managerEmail);
+            // throwing error if failed to update manager status
+            if (updateManagerResponse.modifiedCount === 0)
+                throw errorResponse_1.default.internalError('Failed to update Manager Status');
+            // Updating the resort by adding the active manager
+            const managerDetail = yield this.managerRepositary.getOne({ email: managerEmail });
+            const updateResort = yield this.resortRepositary.addManger(resortId, managerDetail === null || managerDetail === void 0 ? void 0 : managerDetail._id);
+            if (updateResort.modifiedCount === 0)
+                throw errorResponse_1.default.internalError('Failed to update Resort Manager field');
+            // return true after everything is done
+            return true;
         });
     }
     createManager(signupDetails) {
