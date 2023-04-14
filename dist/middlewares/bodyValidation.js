@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.managerSignupValidate = exports.roomValidate = exports.faqValidate = exports.resortValidate = exports.validateLogin = exports.validateSignup = void 0;
+exports.paramsIdValidate = exports.managerSignupValidate = exports.roomValidate = exports.faqValidate = exports.resortValidate = exports.validateLogin = exports.validateSignup = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const errorResponse_1 = __importDefault(require("../error/errorResponse"));
 const yupSchema_1 = require("./yupSchema");
@@ -42,12 +42,15 @@ exports.roomValidate = (0, express_async_handler_1.default)((req, res, next) => 
     next();
 }));
 exports.managerSignupValidate = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(req.body);
     if (!req.body.resortId || !validator_1.default.isMongoId(req.body.resortId)) {
-        console.log("reached here");
         throw errorResponse_1.default.badRequest("Cannot find Resort");
     }
     req.body = yield yupSchema_1.signupSchema.validate(req.body);
+    next();
+}));
+exports.paramsIdValidate = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!req.params.id || !validator_1.default.isMongoId(req.params.id))
+        throw errorResponse_1.default.badRequest('Cannot find Resort');
     next();
 }));
 // export const managerValidate = asyncHandler(

@@ -9,6 +9,6 @@ const bodyValidation_1 = require("../middlewares/bodyValidation");
 const auth_1 = require("../controllers/manager/auth");
 const managerCRUD_1 = require("../controllers/manager/managerCRUD");
 exports.manager = express_1.default.Router();
-exports.manager.route('/').get(managerCRUD_1.getAllManagerDetails).delete(managerCRUD_1.changeManagerStatus);
+exports.manager.route('/:id?').get(managerCRUD_1.getAllManagerDetails).delete(bodyValidation_1.paramsIdValidate, managerCRUD_1.changeManagerStatus);
 exports.manager.post('/signup', bodyValidation_1.managerSignupValidate, auth_1.signup);
 exports.manager.post('/login', bodyValidation_1.validateLogin, auth_1.login);

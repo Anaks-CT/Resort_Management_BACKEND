@@ -14,18 +14,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const manager_model_1 = __importDefault(require("../models/manager.model"));
 const baseRepositary_1 = require("./baseRepositary");
+const mongodb_1 = require("mongodb");
 class MangerRepositary extends baseRepositary_1.BaseRepository {
     constructor() {
         super(manager_model_1.default);
     }
     blockingAllExistingMangerOfResort(resortId) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield manager_model_1.default.updateMany({ resortId: resortId }, { $set: { active: false } });
+            return yield manager_model_1.default.updateMany({ resortId: new mongodb_1.ObjectId(resortId) }, { $set: { active: false } });
         });
     }
     updateManagerStatus(resortId, email) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield manager_model_1.default.updateOne({ resortId: resortId, email: email }, [{ $set: { active: { $not: ["$active"] } } }]);
+            return yield manager_model_1.default.updateOne({ resortId: new mongodb_1.ObjectId(resortId), email: email }, [{ $set: { active: { $not: ["$active"] } } }]);
         });
     }
     // async getPopulatedResortDetails(): Promise<IManager[] | null >{
@@ -35,7 +36,7 @@ class MangerRepositary extends baseRepositary_1.BaseRepository {
         return __awaiter(this, void 0, void 0, function* () {
             //************************************ major error will change later */
             let query = manager_model_1.default.find({ "email": { $regex: new RegExp(searchValue ? searchValue : '', 'i') } }).populate('resortId');
-            if (sortOrder) {
+            if (sortOrder && sortBy) {
                 query = query.sort({ [sortBy]: sortOrder });
             }
             return yield query;

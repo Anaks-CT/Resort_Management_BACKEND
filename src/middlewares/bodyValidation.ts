@@ -40,14 +40,18 @@ export const roomValidate = asyncHandler(async (req, res, next) => {
 });
 
 export const managerSignupValidate = asyncHandler(async (req, res, next) => {
-    console.log(req.body);
     if (!req.body.resortId || !validator.isMongoId(req.body.resortId)) {
-        console.log("reached here");
         throw ErrorResponse.badRequest("Cannot find Resort");
     }
     req.body = await signupSchema.validate(req.body);
     next();
 });
+
+export const paramsIdValidate = asyncHandler( async (req, res, next) => {
+    if(!req.params.id || !validator.isMongoId(req.params.id))
+        throw ErrorResponse.badRequest('Cannot find Resort')
+    next()
+})
 
 // export const managerValidate = asyncHandler(
 //     async (req, res, next) => {

@@ -24,7 +24,7 @@ class ManagerService {
     }
     getAllManagerDetails() {
         return __awaiter(this, void 0, void 0, function* () {
-            const managerDetails = yield this.managerRepositary.getAll({});
+            const managerDetails = yield this.managerRepositary.searchSortManagerDetails('', null, null);
             if (!managerDetails)
                 throw errorResponse_1.default.internalError('Failed to fetch Manager Details');
             return managerDetails;
@@ -65,13 +65,17 @@ class ManagerService {
             return managerDetails;
         });
     }
-    changeManagerStatus(resortId, managerEmail, status) {
+    changeManagerStatus(managerId) {
         return __awaiter(this, void 0, void 0, function* () {
+            // fetching manager details from mongodb
+            const managerDetails = yield this.managerRepositary.getOne({ _id: managerId });
+            // throwing an errro if couldnt find
+            if (!managerDetails)
+                throw errorResponse_1.default.badRequest('No manager Found');
+            const { email: managerEmail, active: status } = managerDetails;
+            const resortId = managerDetails.resortId;
             // blocking all manager first so only one manager stays active at the end
-            const blockAllmanagerResponse = yield this.managerRepositary.blockingAllExistingMangerOfResort(resortId);
-            // throwing error if failed to do so
-            if (blockAllmanagerResponse.modifiedCount === 0)
-                throw errorResponse_1.default.internalError('Failed to update all Manager Status');
+            yield this.managerRepositary.blockingAllExistingMangerOfResort(resortId);
             // returning with true since all manager have been blocked
             if (status) {
                 // updating the resort manager status
