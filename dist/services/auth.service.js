@@ -17,6 +17,7 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const errorResponse_1 = __importDefault(require("../error/errorResponse"));
 const user_repository_1 = __importDefault(require("../repositories/user.repository"));
 const manager_repositary_1 = __importDefault(require("../repositories/manager.repositary"));
+const jwtTokenManage_1 = require("../utils/jwtTokenManage");
 class AuthService {
     constructor(userRepository = new user_repository_1.default(), managerRepositary = new manager_repositary_1.default()) {
         this.userRepository = userRepository;
@@ -43,7 +44,8 @@ class AuthService {
             if (!isPasswordMatch) {
                 throw errorResponse_1.default.unauthorized("Invalid Email or Password");
             }
-            return { user };
+            // const {password: _, ...detail} = user
+            return { user, token: (0, jwtTokenManage_1.signToken)(user._id) };
         });
     }
     signup(role, signupDetails) {
@@ -58,7 +60,6 @@ class AuthService {
             else {
                 repositary = null;
             }
-            console.log(signupDetails);
             // if(role === "manager"){
             //     if()
             // }

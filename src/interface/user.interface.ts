@@ -1,3 +1,4 @@
+import { JwtPayload } from "jsonwebtoken";
 import { Document } from "mongoose";
 
 
@@ -14,6 +15,7 @@ export interface IUser extends Document {
       pincode: number;
       country: string;
     };
+    role: string
   }
   
   
@@ -23,6 +25,6 @@ export interface IUser extends Document {
     //   token: string;
   }
   export interface IloginResponse {
-    user: IUser;
-    //   token: string;
+    user: any;
+      token: string | JwtPayload;
   }

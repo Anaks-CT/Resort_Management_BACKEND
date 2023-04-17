@@ -14,5 +14,6 @@ const userSchema = new mongoose_1.Schema({
         pincode: { type: Number },
         country: { type: String },
     },
-});
+    role: { type: String, default: "user" }
+}, { timestamps: true });
 exports.default = (0, mongoose_1.model)("User", userSchema);

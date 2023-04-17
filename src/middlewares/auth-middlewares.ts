@@ -1,21 +1,68 @@
-// import { Request, Response, NextFunction } from 'express';
-// import jwt from 'jsonwebtoken';
+import expressAsyncHandler from 'express-async-handler';
+import jwt from 'jsonwebtoken';
+import ErrorResponse from '../error/errorResponse';
+import { verifyToken } from '../utils/jwtTokenManage';
+import validator from "validator";
+import { IToken } from '../interface/auth.interface';
 
-// function authMiddleware(req: Request, res: Response, next: NextFunction) {
-//   const token = req.header('Authorization')?.replace('Bearer ', '');
-//   if (!token) {
-//     return res.status(401).send({ error: 'Unauthorized' });
-//   }
+import { Request } from 'express';
+import UserService from '../services/user.service';
+const userService = new UserService();
 
-//   try {
-//     const decoded: any = jwt.verify(token, process.env.jwt_secret);
-//     req.userId= decoded.id;
-//     next();
-//   } catch (error) {
-//     return res.status(401).send({ error: 'Unauthorized' });
-//   }
-// }
-// export default authMiddleware;
+interface RequestWithUser extends Request {
+  user?: any;
+}
+export const authMiddleware = expressAsyncHandler(async (req: RequestWithUser, res, next) => {
+  try {
+    
+    if (!req.headers?.authorization)
+      throw ErrorResponse.unauthorized("Access Denied");
+    const token = req.headers.authorization.replace("Bearer ", "");
+    console.log(token + 'njn aan vli');
+    const secret = process.env.JWT_SECRET;
+    if (!secret) throw ErrorResponse.badRequest('JWT Secret not found');
+    jwt.verify(token, secret, (err, user) => {
+      // console.log(user);
+      if(err || !user || typeof user === 'string' || !user?._id ) next( ErrorResponse.badRequest('Authorization Failed !! Please Login'));
+      req.user = user
+    })
+    next();
+  } catch (err: any) {
+    throw ErrorResponse.unauthorized(err.message);
+  }
+});
+
+export const userVerify = expressAsyncHandler(async(req: RequestWithUser, res, next) => {
+  try {
+    
+    authMiddleware(req, res, () => {
+      console.log(req.user);
+      if(!req.user) next(ErrorResponse.unauthorized('You are not Authenticated'))
+      const user = userService.getSingleUserDetails(req.user._id)
+      if(!user) next( ErrorResponse.unauthorized('You are not authorized'))
+      next()
+
+    })
+  } catch (err: any) {
+    next(err)
+  }
+})
+
+export const adminVerify = expressAsyncHandler(async(req: RequestWithUser, res, next) => {
+  authMiddleware(req, res, () => {
+    console.log(req.user);
+    try {
+      if(!req.user) next(ErrorResponse.unauthorized('You are not Authenticated'))
+      if(req.user._id === process.env.password){
+        next()
+      }else{
+        return next( ErrorResponse.unauthorized('You are not authorized'))
+      }
+    } catch (error) {
+      next(error)
+    }
+  })
+})
 
 
 

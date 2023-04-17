@@ -3,7 +3,7 @@ import ErrorResponse from "../error/errorResponse";
 import { IUser, IloginResponse, IsignupResponse } from "../interface/user.interface";
 import UserRepository from "../repositories/user.repository";
 import MangerRepositary from "../repositories/manager.repositary";
-import { IManager } from "../interface/manager.interface";
+import { signToken } from "../utils/jwtTokenManage";
 
 type role = "user" | "admin" | "manager";
 // type loginDetails = {
@@ -38,7 +38,8 @@ export class AuthService {
         if (!isPasswordMatch) {
             throw ErrorResponse.unauthorized("Invalid Email or Password");
         }
-        return { user };
+        // const {password: _, ...detail} = user
+        return { user, token: signToken(user._id) };
     }
 
     async signup<T extends signUpCred>(role: role, signupDetails: T): Promise<T> {
@@ -50,7 +51,6 @@ export class AuthService {
         }else{
             repositary = null
         }
-        console.log(signupDetails);
         // if(role === "manager"){
 
         //     if()

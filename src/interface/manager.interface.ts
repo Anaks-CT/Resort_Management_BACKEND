@@ -9,5 +9,5 @@ export interface IManager {
     profile?: string
     password: string
     resortId: ObjectId
-    active: boolean
+    active?: boolean
 }   

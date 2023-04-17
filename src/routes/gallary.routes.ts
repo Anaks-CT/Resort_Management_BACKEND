@@ -14,27 +14,28 @@ import {
     gallaryDetails,
     gallaryDetailsByResortId,
 } from "../controllers/gallary/fetchGallaryDetails";
+import { adminVerify } from "../middlewares/auth-middlewares";
 
 export const gallary = express.Router();
 
 gallary
     .route("/largeBanner/:resortId/:largeBannerId?/:banner?")
-    .post(addBanner)
-    .delete(deleteBanner)
-    .patch(editBannerDetails)
-    .put(editBannerImage);
+    .post(adminVerify, addBanner)
+    .delete(adminVerify, deleteBanner)
+    .patch(adminVerify, editBannerDetails)
+    .put(adminVerify, editBannerImage);
 
 gallary
     .route("/smallBanner/:resortId/:smallBannerId?/:banner?")
-    .post(addBanner)
-    .delete(deleteBanner)
-    .patch(editBannerDetails)
-    .put(editBannerImage);
+    .post(adminVerify, addBanner)
+    .delete(adminVerify, deleteBanner)
+    .patch(adminVerify, editBannerDetails)
+    .put(adminVerify, editBannerImage);
 gallary
     .route("/communityBanner")
-    .post(addCommunityPic)
-    .delete(deleteCommunityPic)
-    .put(editCommunityPic)
+    .post(adminVerify, addCommunityPic)
+    .delete(adminVerify, deleteCommunityPic)
+    .put(adminVerify, editCommunityPic);
 gallary.get("/getAllGallaryDetails", gallaryDetails);
-gallary.get("/getGallaryByResortId/:id", gallaryDetailsByResortId); 
+gallary.get("/getGallaryByResortId/:id", gallaryDetailsByResortId);
 gallary.get("/getGallary");

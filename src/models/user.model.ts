@@ -14,6 +14,7 @@ const userSchema = new Schema<IUser>({
     pincode: { type: Number},
     country: { type: String},
   },
-});
+  role: {type: String, default: "user"}
+},{ timestamps: true });
 
 export default model<IUser>("User", userSchema);

@@ -1,8 +1,6 @@
 import { v2 as cloudinary } from "cloudinary";
-import { config } from "dotenv";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import multer from 'multer';
-import path from "path";
 
 interface Params {
     folder: string;

@@ -39,6 +39,7 @@ const company_routes_1 = require("./routes/company.routes");
 const restaurant_routes_1 = require("./routes/restaurant.routes");
 const room_routes_1 = require("./routes/room.routes");
 const manager_routes_1 = require("./routes/manager.routes");
+const auth_middlewares_1 = require("./middlewares/auth-middlewares");
 class App {
     constructor() {
         this.dotenvConfig();
@@ -50,9 +51,11 @@ class App {
         this.mountRoutes();
         this.errorHandler();
     }
+    // dotenv configuration
     dotenvConfig() {
         dotenv.config();
     }
+    // Routes
     mountRoutes() {
         this.express.use("/user", user_routes_1.user);
         this.express.use("/resort", resort_routes_1.resort);
@@ -61,10 +64,15 @@ class App {
         this.express.use("/company", company_routes_1.company);
         this.express.use("/restaurant", restaurant_routes_1.restaurant);
         this.express.use("/manager/", manager_routes_1.manager);
+        this.express.use('/checkCredential', auth_middlewares_1.adminVerify, (req, res) => {
+            res.json({ message: "credentials successfull" });
+        });
     }
+    // connecting database(MongoDB)
     connectDB() {
         (0, database_con_1.default)();
     }
+    // CORS configuration
     cors() {
         this.express.use((0, cors_1.default)({
             origin: [`http://localhost:${process.env.INCOMING_PORT}`],
@@ -72,12 +80,15 @@ class App {
             credentials: true,
         }));
     }
+    // logger (Morgan configuration)
     logger() {
         this.express.use((0, morgan_1.default)("dev"));
     }
+    // global error handler
     errorHandler() {
         this.express.use(errorHandler_1.errorHandler);
     }
+    // body parser
     bodyParser() {
         this.express.use(express_1.default.json());
         this.express.use(express_1.default.urlencoded({ extended: true }));

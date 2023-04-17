@@ -18,11 +18,12 @@ export const signup = asyncHandler(async (req, res, next) => {
     const { name, phone, email, password, resortId } = req.body;
     const signupDetails = {name, phone, email, password, resortId}
     try {
-        const user = await managerService.createManager(signupDetails);
-        res.json({ message: "Register Successfull !!", data: user });
+        await managerService.createManager(signupDetails);
+        const updatedManagerDetails = await managerService.getAllManagerDetails()
+        res.json({ message: "New Manager Added", data: updatedManagerDetails });
     } catch (error: any) {
         if (error.code === 11000)
             return next(ErrorResponse.badRequest("User already registered"));
         return next(error);
     }
-});
+}); 

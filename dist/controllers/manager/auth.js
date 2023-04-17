@@ -29,8 +29,9 @@ exports.signup = (0, express_async_handler_1.default)((req, res, next) => __awai
     const { name, phone, email, password, resortId } = req.body;
     const signupDetails = { name, phone, email, password, resortId };
     try {
-        const user = yield managerService.createManager(signupDetails);
-        res.json({ message: "Register Successfull !!", data: user });
+        yield managerService.createManager(signupDetails);
+        const updatedManagerDetails = yield managerService.getAllManagerDetails();
+        res.json({ message: "New Manager Added", data: updatedManagerDetails });
     }
     catch (error) {
         if (error.code === 11000)

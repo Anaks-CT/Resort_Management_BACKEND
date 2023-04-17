@@ -12,22 +12,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.adminLogin = void 0;
-const errorResponse_1 = __importDefault(require("../../error/errorResponse"));
-const jwtTokenManage_1 = require("../../utils/jwtTokenManage");
-const adminLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const { email, password } = req.body;
-        if (!email)
-            throw errorResponse_1.default.forbidden('Admin must have an email to login');
-        if (email !== process.env.email)
-            throw errorResponse_1.default.unauthorized('Admin not found');
-        if (password !== process.env.password)
-            throw errorResponse_1.default.unauthorized('Invalid Password');
-        res.json({ message: "Admin login successfull", token: (0, jwtTokenManage_1.signToken)(process.env.password) });
+const errorResponse_1 = __importDefault(require("../error/errorResponse"));
+const user_repository_1 = __importDefault(require("../repositories/user.repository"));
+class UserService {
+    constructor(userRepositary = new user_repository_1.default()) {
+        this.userRepositary = userRepositary;
     }
-    catch (error) {
-        return next(error);
+    getSingleUserDetails(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield this.userRepositary.getOne({ _id: id });
+            if (!user)
+                throw errorResponse_1.default.notFound('User not found');
+            return user;
+        });
     }
-});
-exports.adminLogin = adminLogin;
+}
+exports.default = UserService;

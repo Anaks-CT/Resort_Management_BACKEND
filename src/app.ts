@@ -11,6 +11,7 @@ import { company } from "./routes/company.routes";
 import { restaurant } from "./routes/restaurant.routes";
 import { room } from "./routes/room.routes";
 import { manager } from "./routes/manager.routes";
+import { adminVerify, authMiddleware, userVerify } from "./middlewares/auth-middlewares";
 
 class App {
     public express: express.Application;
@@ -26,10 +27,12 @@ class App {
         this.errorHandler();
     }
 
+    // dotenv configuration
     private dotenvConfig(): void {
         dotenv.config();
     }
 
+    // Routes
     private mountRoutes(): void {
         this.express.use("/user", user);
         this.express.use("/resort", resort);
@@ -38,12 +41,18 @@ class App {
         this.express.use("/company", company);
         this.express.use("/restaurant", restaurant);
         this.express.use("/manager/",manager)
+
+        this.express.use('/checkCredential', adminVerify, (req, res) => {
+            res.json({message:"credentials successfull"})
+        })
     }
 
+    // connecting database(MongoDB)
     private connectDB(): void {
         connectDB();
     }
 
+    // CORS configuration
     private cors(): void {
         this.express.use(
             cors({
@@ -54,14 +63,17 @@ class App {
         );
     }
 
+    // logger (Morgan configuration)
     private logger() {
         this.express.use(morgan("dev"));
     }
 
+    // global error handler
     private errorHandler() {
         this.express.use(errorHandler);
     }
 
+    // body parser
     private bodyParser(): void {
         this.express.use(express.json());
         this.express.use(express.urlencoded({ extended: true }));
