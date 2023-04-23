@@ -1,5 +1,4 @@
 
-import { room } from "../../routes/room.routes";
 import RoomService from "../../services/room.service";
 import asyncHandler from "express-async-handler";
 
@@ -20,10 +19,16 @@ export const getRoomsByResortId = asyncHandler( async(req, res) => {
     res.status(200).json({message: "Successful", data: response})
 })
 
+export const getAvailableRooms = asyncHandler(async (req, res) => {
+    const { destination: resortId, roomDetail, date } = req.body.formValues;
+    const getAvailableRooms = await roomService.getAvailableRooms(resortId, roomDetail, date)
+    res.json({data: getAvailableRooms });
+});
+
 export const updateRoom = asyncHandler( async (req, res) => {
     const {resortId} = req.params
     const {roomId, formValues} = req.body
     console.log(formValues);
-    const response = await roomService.updateRoomDetails(resortId, roomId, formValues)
+    await roomService.updateRoomDetails(resortId, roomId, formValues)
     res.status(200).json({message:"Update Room Successfull"})
 }) 

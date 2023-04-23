@@ -4,6 +4,7 @@ import { IRoom } from "../interface/room.interface";
 import { ObjectId } from "mongodb";
 import ResortRepositary from "../repositories/resort.repositary";
 import { numberToAlphabet } from "../utils/numberToAlphabet";
+import { getDateInRange } from "../utils/getDatesInRange";
 
 export default class RoomService {
     constructor(
@@ -61,6 +62,47 @@ export default class RoomService {
         return roomDetails;
     }
 
+    async getAvailableRooms(resortId: {name: string, id: string}, roomDetails: number[], date: any){
+        // finding the roomOccupancy with the given input
+        const evenNumberMaker = (number: number) => {
+            if(number % 2 === 1) return number + 1
+            else return number
+        }
+        // converting the input number of guests to the nearest room occupancy of room types
+        const roomOccupancy = roomDetails.map(item => evenNumberMaker(item))
+        // getting all the roomtypes with input roomDetails value
+        const getAvailableRooms =  await Promise.all(roomOccupancy.map(item => this.roomRepositary.getAll({resortId: resortId.id, maxPeople: item})))
+        // getting all the dates between the start date and end date
+        const allDates = getDateInRange(date.startDate, date.endDate)
+        // function for checking the unavailable dates in rooms to check if it is available on given dates
+        const isAvailable = (roomNumber: any) => {
+            const isFound = roomNumber.unavailableDates.some((date: any) =>  allDates.includes(new Date(date)))
+            return !isFound
+        }
+        // declaring an array for all the room types
+        const availableRoomTypes:any = []
+        // looping the array of available roomtypes with a fixed number of people
+        getAvailableRooms.forEach((roomTypeArray: any) =>{
+            // looping the array of selected number of peple room type
+            roomTypeArray.forEach((roomType: any) => {
+                // looping the rooms inside room type
+                for (let i = 0; i < roomType.roomNumbers.length; i++) {
+                    const item = roomType.roomNumbers[i];
+                    // breaking the loop if the first room is availble in the roomtype
+                    if (isAvailable(item)) {
+                        console.log('came here' + i);
+                        availableRoomTypes.push(roomType)
+                        break;
+                    }
+                }
+            });
+        })
+        // throwing error if the rooms aren't availble
+        if(!availableRoomTypes) throw ErrorResponse.notFound("My Rooms available in this date")
+
+        return availableRoomTypes
+    }
+
     async updateRoomDetails(
         resortId: string,
         roomId: string,
@@ -114,4 +156,5 @@ export default class RoomService {
         );
         return editRoom;
     }
+
 }

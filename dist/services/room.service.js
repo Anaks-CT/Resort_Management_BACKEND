@@ -17,6 +17,7 @@ const room_repositary_1 = __importDefault(require("../repositories/room.reposita
 const mongodb_1 = require("mongodb");
 const resort_repositary_1 = __importDefault(require("../repositories/resort.repositary"));
 const numberToAlphabet_1 = require("../utils/numberToAlphabet");
+const getDatesInRange_1 = require("../utils/getDatesInRange");
 class RoomService {
     constructor(roomRepositary = new room_repositary_1.default(), resortRepositary = new resort_repositary_1.default()) {
         this.roomRepositary = roomRepositary;
@@ -68,6 +69,50 @@ class RoomService {
             if (roomDetails.length < 1)
                 throw errorResponse_1.default.badRequest("No Rooms available");
             return roomDetails;
+        });
+    }
+    getAvailableRooms(resortId, roomDetails, date) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // finding the roomOccupancy with the given input
+            const evenNumberMaker = (number) => {
+                if (number % 2 === 1)
+                    return number + 1;
+                else
+                    return number;
+            };
+            // converting the input number of guests to the nearest room occupancy of room types
+            const roomOccupancy = roomDetails.map(item => evenNumberMaker(item));
+            // getting all the roomtypes with input roomDetails value
+            const getAvailableRooms = yield Promise.all(roomOccupancy.map(item => this.roomRepositary.getAll({ resortId: resortId.id, maxPeople: item })));
+            // getting all the dates between the start date and end date
+            const allDates = (0, getDatesInRange_1.getDateInRange)(date.startDate, date.endDate);
+            // function for checking the unavailable dates in rooms to check if it is available on given dates
+            const isAvailable = (roomNumber) => {
+                const isFound = roomNumber.unavailableDates.some((date) => allDates.includes(new Date(date)));
+                return !isFound;
+            };
+            // declaring an array for all the room types
+            const availableRoomTypes = [];
+            // looping the array of available roomtypes with a fixed number of people
+            getAvailableRooms.forEach((roomTypeArray) => {
+                // looping the array of selected number of peple room type
+                roomTypeArray.forEach((roomType) => {
+                    // looping the rooms inside room type
+                    for (let i = 0; i < roomType.roomNumbers.length; i++) {
+                        const item = roomType.roomNumbers[i];
+                        // breaking the loop if the first room is availble in the roomtype
+                        if (isAvailable(item)) {
+                            console.log('came here' + i);
+                            availableRoomTypes.push(roomType);
+                            break;
+                        }
+                    }
+                });
+            });
+            // throwing error if the rooms aren't availble
+            if (!availableRoomTypes)
+                throw errorResponse_1.default.notFound("My Rooms available in this date");
+            return availableRoomTypes;
         });
     }
     updateRoomDetails(resortId, roomId, roomDetails) {

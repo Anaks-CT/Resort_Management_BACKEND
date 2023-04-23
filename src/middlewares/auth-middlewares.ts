@@ -1,9 +1,6 @@
 import expressAsyncHandler from 'express-async-handler';
 import jwt from 'jsonwebtoken';
 import ErrorResponse from '../error/errorResponse';
-import { verifyToken } from '../utils/jwtTokenManage';
-import validator from "validator";
-import { IToken } from '../interface/auth.interface';
 
 import { Request } from 'express';
 import UserService from '../services/user.service';
@@ -18,25 +15,24 @@ export const authMiddleware = expressAsyncHandler(async (req: RequestWithUser, r
     if (!req.headers?.authorization)
       throw ErrorResponse.unauthorized("Access Denied");
     const token = req.headers.authorization.replace("Bearer ", "");
-    console.log(token + 'njn aan vli');
+    console.log(token);
     const secret = process.env.JWT_SECRET;
-    if (!secret) throw ErrorResponse.badRequest('JWT Secret not found');
+    if (!secret) throw ErrorResponse.unauthorized('JWT Secret not found');
     jwt.verify(token, secret, (err, user) => {
       // console.log(user);
-      if(err || !user || typeof user === 'string' || !user?._id ) next( ErrorResponse.badRequest('Authorization Failed !! Please Login'));
+      if(err || !user || typeof user === 'string' || !user?._id ) next( ErrorResponse.unauthorized('Authorization Failed !! Please Login'));
       req.user = user
+      next();
     })
-    next();
   } catch (err: any) {
     throw ErrorResponse.unauthorized(err.message);
   }
 });
 
 export const userVerify = expressAsyncHandler(async(req: RequestWithUser, res, next) => {
-  try {
+  try { 
     
     authMiddleware(req, res, () => {
-      console.log(req.user);
       if(!req.user) next(ErrorResponse.unauthorized('You are not Authenticated'))
       const user = userService.getSingleUserDetails(req.user._id)
       if(!user) next( ErrorResponse.unauthorized('You are not authorized'))
@@ -50,7 +46,6 @@ export const userVerify = expressAsyncHandler(async(req: RequestWithUser, res, n
 
 export const adminVerify = expressAsyncHandler(async(req: RequestWithUser, res, next) => {
   authMiddleware(req, res, () => {
-    console.log(req.user);
     try {
       if(!req.user) next(ErrorResponse.unauthorized('You are not Authenticated'))
       if(req.user._id === process.env.password){

@@ -1,7 +1,5 @@
-import { UpdateQuery, UpdateWriteOpResult } from "mongoose";
 import { BaseRepository } from "./baseRepositary";
 import { ObjectId } from "mongodb";
-import { IRoom } from "../interface/room.interface";
 import roomModel from "../models/room.model";
 
 

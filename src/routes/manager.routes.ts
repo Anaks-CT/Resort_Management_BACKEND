@@ -6,6 +6,6 @@ import { adminVerify } from '../middlewares/auth-middlewares';
 
 export const manager = express.Router();
 
-manager.route('/:id?').get(getAllManagerDetails).delete(paramsIdValidate,changeManagerStatus)
 manager.post('/signup',adminVerify,managerSignupValidate, signup);
 manager.post('/login',validateLogin, login)
+manager.route('/:id?').get(getAllManagerDetails).delete(paramsIdValidate,changeManagerStatus)

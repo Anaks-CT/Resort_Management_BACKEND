@@ -24,17 +24,17 @@ exports.authMiddleware = (0, express_async_handler_1.default)((req, res, next) =
         if (!((_a = req.headers) === null || _a === void 0 ? void 0 : _a.authorization))
             throw errorResponse_1.default.unauthorized("Access Denied");
         const token = req.headers.authorization.replace("Bearer ", "");
-        console.log(token + 'njn aan vli');
+        console.log(token);
         const secret = process.env.JWT_SECRET;
         if (!secret)
-            throw errorResponse_1.default.badRequest('JWT Secret not found');
+            throw errorResponse_1.default.unauthorized('JWT Secret not found');
         jsonwebtoken_1.default.verify(token, secret, (err, user) => {
             // console.log(user);
             if (err || !user || typeof user === 'string' || !(user === null || user === void 0 ? void 0 : user._id))
-                next(errorResponse_1.default.badRequest('Authorization Failed !! Please Login'));
+                next(errorResponse_1.default.unauthorized('Authorization Failed !! Please Login'));
             req.user = user;
+            next();
         });
-        next();
     }
     catch (err) {
         throw errorResponse_1.default.unauthorized(err.message);
@@ -43,7 +43,6 @@ exports.authMiddleware = (0, express_async_handler_1.default)((req, res, next) =
 exports.userVerify = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         (0, exports.authMiddleware)(req, res, () => {
-            console.log(req.user);
             if (!req.user)
                 next(errorResponse_1.default.unauthorized('You are not Authenticated'));
             const user = userService.getSingleUserDetails(req.user._id);
@@ -58,7 +57,6 @@ exports.userVerify = (0, express_async_handler_1.default)((req, res, next) => __
 }));
 exports.adminVerify = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     (0, exports.authMiddleware)(req, res, () => {
-        console.log(req.user);
         try {
             if (!req.user)
                 next(errorResponse_1.default.unauthorized('You are not Authenticated'));

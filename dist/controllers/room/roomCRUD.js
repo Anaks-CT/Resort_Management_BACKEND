@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateRoom = exports.getRoomsByResortId = exports.addRoom = void 0;
+exports.updateRoom = exports.getAvailableRooms = exports.getRoomsByResortId = exports.addRoom = void 0;
 const room_service_1 = __importDefault(require("../../services/room.service"));
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const roomService = new room_service_1.default();
@@ -29,10 +29,15 @@ exports.getRoomsByResortId = (0, express_async_handler_1.default)((req, res) => 
     const response = yield roomService.getRoomsByResortId(resortId);
     res.status(200).json({ message: "Successful", data: response });
 }));
+exports.getAvailableRooms = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { destination: resortId, roomDetail, date } = req.body.formValues;
+    const getAvailableRooms = yield roomService.getAvailableRooms(resortId, roomDetail, date);
+    res.json({ data: getAvailableRooms });
+}));
 exports.updateRoom = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { resortId } = req.params;
     const { roomId, formValues } = req.body;
     console.log(formValues);
-    const response = yield roomService.updateRoomDetails(resortId, roomId, formValues);
+    yield roomService.updateRoomDetails(resortId, roomId, formValues);
     res.status(200).json({ message: "Update Room Successfull" });
 }));

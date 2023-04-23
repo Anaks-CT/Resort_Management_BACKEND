@@ -11,7 +11,7 @@ import { company } from "./routes/company.routes";
 import { restaurant } from "./routes/restaurant.routes";
 import { room } from "./routes/room.routes";
 import { manager } from "./routes/manager.routes";
-import { adminVerify, authMiddleware, userVerify } from "./middlewares/auth-middlewares";
+import { adminVerify } from "./middlewares/auth-middlewares";
 
 class App {
     public express: express.Application;
