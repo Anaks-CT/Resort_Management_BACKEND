@@ -73,6 +73,9 @@ class RoomService {
     }
     getAvailableRooms(resortId, roomDetails, date) {
         return __awaiter(this, void 0, void 0, function* () {
+            // getting all the dates between the start date and end date and including them
+            const allDates = (0, getDatesInRange_1.getDateInRange)(date.startDate, date.endDate);
+            const allDatesStrings = allDates.map(date => date.toISOString());
             // finding the roomOccupancy with the given input
             const evenNumberMaker = (number) => {
                 if (number % 2 === 1)
@@ -81,37 +84,64 @@ class RoomService {
                     return number;
             };
             // converting the input number of guests to the nearest room occupancy of room types
-            const roomOccupancy = roomDetails.map(item => evenNumberMaker(item));
-            // getting all the roomtypes with input roomDetails value
-            const getAvailableRooms = yield Promise.all(roomOccupancy.map(item => this.roomRepositary.getAll({ resortId: resortId.id, maxPeople: item })));
-            // getting all the dates between the start date and end date
-            const allDates = (0, getDatesInRange_1.getDateInRange)(date.startDate, date.endDate);
+            const roomOccupancy = roomDetails.map((item) => evenNumberMaker(item));
+            // changing the roomOccupancy in to an object with the number of count of a single number
+            const result = new Map();
+            for (let i = 0; i < roomOccupancy.length; i++) {
+                const element = roomOccupancy[i];
+                const count = result.get(element) || 0;
+                result.set(element, count + 1);
+            }
+            // converting the map object to regular object Object.fromEntries(result)
+            const roomOccupancyAndCount = Object.fromEntries(result);
             // function for checking the unavailable dates in rooms to check if it is available on given dates
             const isAvailable = (roomNumber) => {
-                const isFound = roomNumber.unavailableDates.some((date) => allDates.includes(new Date(date)));
+                // console.log(roomNumber);
+                const isFound = roomNumber.unavailableDates.some((date) => allDatesStrings.includes(new Date(date).toISOString()));
+                // returning true if the room is available and false if the room is unavailable
                 return !isFound;
             };
-            // declaring an array for all the room types
             const availableRoomTypes = [];
-            // looping the array of available roomtypes with a fixed number of people
-            getAvailableRooms.forEach((roomTypeArray) => {
-                // looping the array of selected number of peple room type
-                roomTypeArray.forEach((roomType) => {
+            for (const item in roomOccupancyAndCount) {
+                // putting the index value to a variable
+                const availableRoomTypesIndex = Object.keys(roomOccupancyAndCount).indexOf(item);
+                // creating an array in the index of the availableRoomTypes array
+                availableRoomTypes[availableRoomTypesIndex] = [];
+                // fetching the required roomType according to the roomOccupancy and resortId
+                const roomType = yield this.roomRepositary.getAll({
+                    resortId: resortId.id,
+                    maxPeople: item,
+                });
+                // throwing an error if no room types are available for given roomOccupancy(maximum people)
+                if (roomType.length === 0)
+                    throw errorResponse_1.default.notFound(`No Room available with occupancy of ${+item - 1} or ${item} people`);
+                // looping through single room type
+                roomType.forEach((singleRoomType) => {
+                    // console.log(singleRoomType);
+                    // initializing a flag to check if the rooms are available according to the given input of rooms
+                    let flag = 0;
                     // looping the rooms inside room type
-                    for (let i = 0; i < roomType.roomNumbers.length; i++) {
-                        const item = roomType.roomNumbers[i];
-                        // breaking the loop if the first room is availble in the roomtype
-                        if (isAvailable(item)) {
-                            console.log('came here' + i);
-                            availableRoomTypes.push(roomType);
+                    for (let i = 0; i < singleRoomType.roomNumbers.length; i++) {
+                        const roomNumber = singleRoomType.roomNumbers[i];
+                        // checking if the room if available, if available incrementing the flag and deleting the room
+                        if (isAvailable(roomNumber))
+                            flag++;
+                        // stoping the loop if all the rooms are available 
+                        if (flag === roomOccupancyAndCount[item]) {
+                            // pushing the singleroomtype into the above decalred array
+                            availableRoomTypes[availableRoomTypesIndex].push(singleRoomType);
                             break;
                         }
                     }
                 });
-            });
-            // throwing error if the rooms aren't availble
-            if (!availableRoomTypes)
-                throw errorResponse_1.default.notFound("My Rooms available in this date");
+                // throwing error if no roomtypes are pushed inside the array since no room is available for the date
+                if (availableRoomTypes[availableRoomTypesIndex].length === 0)
+                    throw errorResponse_1.default.notFound('No Rooms are available for this dates');
+            }
+            // throwing an error if the no room types inside the availablr room types array
+            // ******* no needed actually because if there is not room type available the above error will be thrown and will never reach this error. this is for extra security
+            if (availableRoomTypes.length === 0)
+                throw errorResponse_1.default.notFound("NO Rooms available for this dates");
             return availableRoomTypes;
         });
     }
@@ -121,7 +151,7 @@ class RoomService {
             const roomTypeCount = yield this.roomRepositary.count();
             // throwing error if room type exeeds 50
             if (roomTypeCount === 50)
-                throw errorResponse_1.default.badRequest('Cannot add more than 50 Room Types');
+                throw errorResponse_1.default.badRequest("Cannot add more than 50 Room Types");
             // checking if the room exist in resort
             const room = yield this.roomRepositary.getRoomByResortIdRoomId(resortId, roomId);
             // throwing erro if room id or resortid given is wrong
@@ -132,7 +162,9 @@ class RoomService {
             if (roomLength > roomDetails.noOfRooms)
                 throw errorResponse_1.default.badRequest(`Rooms should be more than ${roomLength}`);
             // initializing an array with all the existing room numbers to not lose the id
-            const roomNumbers = [...room.roomNumbers];
+            const roomNumbers = [
+                ...room.roomNumbers,
+            ];
             // finding the room number alphabet after 3 digits (101b) for example
             const roomNumberAlphabet = room.roomNumbers[0].number.substring(3, room.roomNumbers[0].number.length);
             // pushing to the created array of newly created room numbers with alphabet
