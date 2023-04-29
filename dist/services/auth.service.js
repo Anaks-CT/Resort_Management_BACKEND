@@ -18,6 +18,7 @@ const errorResponse_1 = __importDefault(require("../error/errorResponse"));
 const user_repository_1 = __importDefault(require("../repositories/user.repository"));
 const manager_repositary_1 = __importDefault(require("../repositories/manager.repositary"));
 const jwtTokenManage_1 = require("../utils/jwtTokenManage");
+const twilio_1 = require("../utils/twilio");
 class AuthService {
     constructor(userRepository = new user_repository_1.default(), managerRepositary = new manager_repositary_1.default()) {
         this.userRepository = userRepository;
@@ -48,6 +49,28 @@ class AuthService {
             return { user, token: (0, jwtTokenManage_1.signToken)(user._id) };
         });
     }
+    verifyPhone(phoneNumber, email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const emailDupe = yield this.userRepository.getOne({ email: email });
+            if (emailDupe)
+                throw errorResponse_1.default.conflict("Email already registered");
+            const checkDupePhone = yield this.userRepository.getAll({ phone: phoneNumber });
+            if (checkDupePhone.length >= 5)
+                throw errorResponse_1.default.conflict("Can't create more than 5 account with single mobile number");
+            const sendOTP = yield (0, twilio_1.sendVerificationToken)(phoneNumber);
+            if (!sendOTP)
+                throw errorResponse_1.default.internalError('Some error occured, please try again');
+            return true;
+        });
+    }
+    verifyOTP(OTP, phoneNumber) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const verifyOTp = yield (0, twilio_1.checkVerificationToken)(OTP, phoneNumber);
+            if (!verifyOTp)
+                throw errorResponse_1.default.badRequest('Incorrect OTP');
+            return true;
+        });
+    }
     signup(role, signupDetails) {
         return __awaiter(this, void 0, void 0, function* () {
             let repositary;
@@ -67,7 +90,7 @@ class AuthService {
                 throw errorResponse_1.default.badRequest('Please provide role');
             const checkUserDupe = yield repositary.getByEmail(signupDetails.email);
             if (checkUserDupe)
-                throw errorResponse_1.default.unauthorized('Email aldready Registered');
+                throw errorResponse_1.default.conflict('Email aldready Registered');
             const hashedPassword = yield bcrypt_1.default.hash(signupDetails.password, 10);
             const userDetails = Object.assign(Object.assign({}, signupDetails), { password: hashedPassword });
             const user = yield repositary.create(userDetails);

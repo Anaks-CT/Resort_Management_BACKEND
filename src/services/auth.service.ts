@@ -4,6 +4,7 @@ import { IUser, IloginResponse, IsignupResponse } from "../interface/user.interf
 import UserRepository from "../repositories/user.repository";
 import MangerRepositary from "../repositories/manager.repositary";
 import { signToken } from "../utils/jwtTokenManage";
+import { checkVerificationToken, sendVerificationToken } from "../utils/twilio";
 
 type role = "user" | "admin" | "manager";
 // type loginDetails = {
@@ -42,6 +43,22 @@ export class AuthService {
         return { user, token: signToken(user._id) };
     }
 
+    async verifyPhone(phoneNumber: string, email: string){
+        const emailDupe = await this.userRepository.getOne<IUser>({email: email})
+        if(emailDupe) throw ErrorResponse.conflict("Email already registered")
+        const checkDupePhone = await this.userRepository.getAll<IUser>({phone: phoneNumber})
+        if(checkDupePhone.length >= 5) throw ErrorResponse.conflict("Can't create more than 5 account with single mobile number")
+        const sendOTP = await sendVerificationToken(phoneNumber)
+        if(!sendOTP) throw ErrorResponse.internalError('Some error occured, please try again')
+        return true
+    }
+
+    async verifyOTP(OTP: string, phoneNumber: string){
+        const verifyOTp = await checkVerificationToken(OTP, phoneNumber)
+        if(!verifyOTp) throw ErrorResponse.badRequest('Incorrect OTP')
+        return true
+    }
+
     async signup<T extends signUpCred>(role: role, signupDetails: T): Promise<T> {
         let repositary
         if (role === "user") {
@@ -57,7 +74,7 @@ export class AuthService {
         // }
         if(!repositary) throw ErrorResponse.badRequest('Please provide role')
         const checkUserDupe = await repositary.getByEmail<T>(signupDetails.email)
-        if (checkUserDupe) throw ErrorResponse.unauthorized('Email aldready Registered')
+        if (checkUserDupe) throw ErrorResponse.conflict('Email aldready Registered')
         const hashedPassword = await bcrypt.hash(signupDetails.password, 10)
         const userDetails = { ...signupDetails, password: hashedPassword }
         const user = await repositary.create(userDetails);

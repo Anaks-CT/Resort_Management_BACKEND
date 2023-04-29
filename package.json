@@ -10,6 +10,7 @@
   "author": "Anaks",
   "license": "ISC",
   "dependencies": {
+    "@types/twilio": "^3.19.3",
     "bcrypt": "^5.1.0",
     "cloudinary": "^1.35.0",
     "cors": "^2.8.5",
@@ -24,6 +25,7 @@
     "multer": "^1.4.5-lts.1",
     "multer-storage-cloudinary": "^4.0.0",
     "nodemon": "^2.0.21",
+    "twilio": "^4.10.0",
     "validator": "^13.9.0",
     "yup": "^1.0.2"
   },

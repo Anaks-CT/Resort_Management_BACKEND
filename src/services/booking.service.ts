@@ -6,7 +6,7 @@ import BookingRepositary from "../repositories/booking.repositary";
 export default class BookingService {
     constructor(private bookingRepositary = new BookingRepositary()) {}
 
-    // async createCompany(
+    // async createBooking(
     //     companyName: string,
     //     bannerDetails: bannerDetails,
     //     circleBanners: circleBanner[],

@@ -11,3 +11,4 @@ const bodyValidation_1 = require("../middlewares/bodyValidation");
 exports.user = express_1.default.Router();
 exports.user.post('/signup', bodyValidation_1.validateSignup, signup_1.signup);
 exports.user.post('/login', bodyValidation_1.validateLogin, login_1.login);
+exports.user.route('/verifyPhone').get(signup_1.verifyPhone).post(signup_1.verifyOTP);

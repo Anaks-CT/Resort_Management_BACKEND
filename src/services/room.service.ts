@@ -70,7 +70,7 @@ export default class RoomService {
     ) {
         // getting all the dates between the start date and end date and including them
         const allDates = getDateInRange(date.startDate, date.endDate);
-        const allDatesStrings = allDates.map(date => date.toISOString());
+        const allDatesStrings = allDates.map((date) => date.toISOString());
         // finding the roomOccupancy with the given input
         const evenNumberMaker = (number: number) => {
             if (number % 2 === 1) return number + 1;
@@ -91,17 +91,20 @@ export default class RoomService {
 
         // function for checking the unavailable dates in rooms to check if it is available on given dates
         const isAvailable = (roomNumber: any) => {
-            // console.log(roomNumber);
-            const isFound = roomNumber.unavailableDates.some((date: any) => allDatesStrings.includes(new Date(date).toISOString()));
+            const isFound = roomNumber.unavailableDates.some((date: any) =>
+                allDatesStrings.includes(new Date(date).toISOString())
+            );
             // returning true if the room is available and false if the room is unavailable
             return !isFound;
         };
         const availableRoomTypes: any = [];
         for (const item in roomOccupancyAndCount) {
             // putting the index value to a variable
-            const availableRoomTypesIndex = Object.keys(roomOccupancyAndCount).indexOf(item)
+            const availableRoomTypesIndex = Object.keys(
+                roomOccupancyAndCount
+            ).indexOf(item);
             // creating an array in the index of the availableRoomTypes array
-             availableRoomTypes[availableRoomTypesIndex] = []
+            availableRoomTypes[availableRoomTypesIndex] = [];
             // fetching the required roomType according to the roomOccupancy and resortId
             const roomType = await this.roomRepositary.getAll<IRoom>({
                 resortId: resortId.id,
@@ -116,7 +119,6 @@ export default class RoomService {
                 );
             // looping through single room type
             roomType.forEach((singleRoomType) => {
-                // console.log(singleRoomType);
                 // initializing a flag to check if the rooms are available according to the given input of rooms
                 let flag = 0;
                 // looping the rooms inside room type
@@ -124,22 +126,54 @@ export default class RoomService {
                     const roomNumber = singleRoomType.roomNumbers[i];
                     // checking if the room if available, if available incrementing the flag and deleting the room
                     if (isAvailable(roomNumber)) flag++;
-                    // stoping the loop if all the rooms are available 
+                    // stoping the loop if all the rooms are available
                     if (flag === roomOccupancyAndCount[item]) {
                         // pushing the singleroomtype into the above decalred array
-                        availableRoomTypes[availableRoomTypesIndex].push(singleRoomType);
+                        availableRoomTypes[availableRoomTypesIndex].push(
+                            singleRoomType
+                        );
                         break;
                     }
                 }
             });
             // throwing error if no roomtypes are pushed inside the array since no room is available for the date
-            if(availableRoomTypes[availableRoomTypesIndex].length === 0) throw ErrorResponse.notFound('No Rooms are available for this dates')
+            if (availableRoomTypes[availableRoomTypesIndex].length === 0)
+                throw ErrorResponse.notFound(
+                    "No Rooms are available for this dates"
+                );
         }
+
         // throwing an error if the no room types inside the availablr room types array
         // ******* no needed actually because if there is not room type available the above error will be thrown and will never reach this error. this is for extra security
         if (availableRoomTypes.length === 0)
             throw ErrorResponse.notFound("NO Rooms available for this dates");
         return availableRoomTypes;
+    }
+
+    async addDatesToRoom(
+        date: any,
+        roomTypeId: any
+    ){
+        const allDates = getDateInRange(date.startDate, date.endDate);
+        const allDatesStrings = allDates.map((date) => date.toISOString());
+        const isAvailable = (roomNumber: any) => {
+            const isFound = roomNumber.unavailableDates.some((date: any) =>
+                allDatesStrings.includes(new Date(date).toISOString())
+            );
+            // returning true if the room is available and false if the room is unavailable
+            return !isFound;
+        };
+            
+            const roomType = await this.roomRepositary.getOne<IRoom>({_id: roomTypeId})
+            if(!roomType) throw ErrorResponse.notFound('Room not found')
+            for(let i=0; i<roomType?.roomNumbers.length; i++) {
+                if (isAvailable(roomType?.roomNumbers[i])) {
+                    await this.roomRepositary.addDatesToRoom(roomType._id, roomType?.roomNumbers[i]._id, allDatesStrings)
+                    break;
+                }
+            }
+            
+            
     }
 
     async updateRoomDetails(

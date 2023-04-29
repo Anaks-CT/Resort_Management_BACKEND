@@ -22,6 +22,10 @@ class ErrorResponse extends Error {
     static internalError(msg: string) {
       return new ErrorResponse(500, msg);
     }
+
+    static conflict(msg: string) {
+      return new ErrorResponse(409, msg);
+    }
   }
   
   export default ErrorResponse;

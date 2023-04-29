@@ -26,12 +26,24 @@ class RoomRespositary extends baseRepositary_1.BaseRepository {
     }
     getRoomByResortIdRoomId(resortId, roomId) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield room_model_1.default.findOne({ resortId: new mongodb_1.ObjectId(resortId), _id: new mongodb_1.ObjectId(roomId) });
+            return yield room_model_1.default.findOne({
+                resortId: new mongodb_1.ObjectId(resortId),
+                _id: new mongodb_1.ObjectId(roomId),
+            });
         });
     }
     updateRoomDetailById(roomId, roomDetail, roomNumber) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield room_model_1.default.updateOne({ _id: roomId }, { $set: Object.assign(Object.assign({}, roomDetail), { roomNumbers: roomNumber }) });
+        });
+    }
+    addDatesToRoom(roomTypeId, roomId, newDatesArray) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield room_model_1.default.updateOne({ _id: roomTypeId, "roomNumbers._id": roomId }, {
+                $addToSet: {
+                    "roomNumbers.$.unavailableDates": { $each: newDatesArray },
+                },
+            });
         });
     }
 }

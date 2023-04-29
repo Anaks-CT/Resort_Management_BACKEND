@@ -13,7 +13,7 @@ export interface IRoom{
         features: string[]
     }],
     maxPeople: number
-    roomNumbers: {number: string, unavailableDates: Date[]}[]
+    roomNumbers: {_id?: string, number: string, unavailableDates: Date[]}[]
     highlights: string[]
     amenities: string[]
     facilities: string[]

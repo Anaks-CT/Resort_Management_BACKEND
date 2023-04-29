@@ -12,6 +12,7 @@ import { restaurant } from "./routes/restaurant.routes";
 import { room } from "./routes/room.routes";
 import { manager } from "./routes/manager.routes";
 import { adminVerify } from "./middlewares/auth-middlewares";
+import { booking } from "./routes/booking.routes";
 
 class App {
     public express: express.Application;
@@ -41,6 +42,8 @@ class App {
         this.express.use("/company", company);
         this.express.use("/restaurant", restaurant);
         this.express.use("/manager/",manager)
+        this.express.use("/booking/",booking)
+
 
         this.express.use('/checkCredential', adminVerify, (req, res) => {
             res.json({message:"credentials successfull"})

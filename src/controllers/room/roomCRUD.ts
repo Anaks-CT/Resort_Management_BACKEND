@@ -25,6 +25,8 @@ export const getAvailableRooms = asyncHandler(async (req, res) => {
     res.json({data: getAvailableRooms });
 });
 
+
+
 export const updateRoom = asyncHandler( async (req, res) => {
     const {resortId} = req.params
     const {roomId, formValues} = req.body

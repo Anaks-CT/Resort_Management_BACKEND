@@ -40,6 +40,7 @@ const restaurant_routes_1 = require("./routes/restaurant.routes");
 const room_routes_1 = require("./routes/room.routes");
 const manager_routes_1 = require("./routes/manager.routes");
 const auth_middlewares_1 = require("./middlewares/auth-middlewares");
+const booking_routes_1 = require("./routes/booking.routes");
 class App {
     constructor() {
         this.dotenvConfig();
@@ -64,6 +65,7 @@ class App {
         this.express.use("/company", company_routes_1.company);
         this.express.use("/restaurant", restaurant_routes_1.restaurant);
         this.express.use("/manager/", manager_routes_1.manager);
+        this.express.use("/booking/", booking_routes_1.booking);
         this.express.use('/checkCredential', auth_middlewares_1.adminVerify, (req, res) => {
             res.json({ message: "credentials successfull" });
         });

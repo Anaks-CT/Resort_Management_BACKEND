@@ -16,3 +16,14 @@ export const signup = asyncHandler(async (req, res, next) => {
         return next(error);
     }
 })
+
+export const verifyPhone = asyncHandler( async (req, res) => {
+    await authService.verifyPhone(req.query.phone as string, req.query.email as string)
+    res.status(200).json({message: "Phone verification successful"})
+})
+
+export const verifyOTP = asyncHandler( async (req, res) => {
+    const {otp, phone} = req.query
+    await authService.verifyOTP(otp as string, phone as string)
+    res.status(200).json({message: "OTP verification successful"})
+})
