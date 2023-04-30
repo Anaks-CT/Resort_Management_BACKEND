@@ -9,7 +9,7 @@ const roomCRUD_1 = require("../controllers/room/roomCRUD");
 const bodyValidation_1 = require("../middlewares/bodyValidation");
 const auth_middlewares_1 = require("../middlewares/auth-middlewares");
 exports.room = express_1.default.Router();
-exports.room.route("/availableRooms").post(roomCRUD_1.getAvailableRooms);
+exports.room.route("/availableRooms").post(auth_middlewares_1.userVerify, roomCRUD_1.getAvailableRooms);
 exports.room.route("/:resortId?")
     .get(roomCRUD_1.getRoomsByResortId)
     .post(auth_middlewares_1.adminVerify, bodyValidation_1.roomValidate, roomCRUD_1.addRoom)

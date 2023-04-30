@@ -15,7 +15,7 @@ export const authMiddleware = expressAsyncHandler(async (req: RequestWithUser, r
     if (!req.headers?.authorization)
       throw ErrorResponse.unauthorized("Access Denied");
     const token = req.headers.authorization.replace("Bearer ", "");
-    console.log(token);
+    if(!token) throw ErrorResponse.unauthorized('Authorization Failed !! Please Login')
     const secret = process.env.JWT_SECRET;
     if (!secret) throw ErrorResponse.unauthorized('JWT Secret not found');
     jwt.verify(token, secret, (err, user) => {
@@ -33,10 +33,10 @@ export const userVerify = expressAsyncHandler(async(req: RequestWithUser, res, n
   try { 
     
     authMiddleware(req, res, () => {
-      if(!req.user) next(ErrorResponse.unauthorized('You are not Authenticated'))
+      if(!req.user) return next(ErrorResponse.unauthorized('You are not Authenticated'))
       const user = userService.getSingleUserDetails(req.user._id)
-      if(!user) next( ErrorResponse.unauthorized('You are not authorized'))
-      next()
+      if(!user) return next( ErrorResponse.unauthorized('You are not authorized'))
+      return next()
 
     })
   } catch (err: any) {

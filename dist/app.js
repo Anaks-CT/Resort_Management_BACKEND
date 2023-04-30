@@ -66,9 +66,9 @@ class App {
         this.express.use("/restaurant", restaurant_routes_1.restaurant);
         this.express.use("/manager/", manager_routes_1.manager);
         this.express.use("/booking/", booking_routes_1.booking);
-        this.express.use('/checkCredential', auth_middlewares_1.adminVerify, (req, res) => {
-            res.json({ message: "credentials successfull" });
-        });
+        // protecting routes in the front end by verifying the token
+        this.express.use('/checkCredential/admin', auth_middlewares_1.adminVerify, (req, res) => res.json({ message: "credentials successfull" }));
+        this.express.use('/checkCredential/user', auth_middlewares_1.userVerify, (req, res) => res.json({ message: "credentials successfull" }));
     }
     // connecting database(MongoDB)
     connectDB() {

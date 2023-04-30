@@ -25,19 +25,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.login = void 0;
 const auth_service_1 = __importDefault(require("../../../services/auth.service"));
-// import AuthService from "../../../services/user.service/auth.user.service";
+const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const authService = new auth_service_1.default();
-const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+exports.login = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
-    // console.log(email, password);
-    try {
-        const { user, token } = yield authService.login("user", email, password);
-        const _a = user._doc, { password: hashedPassword, role } = _a, userDetails = __rest(_a, ["password", "role"]);
-        console.log(token);
-        res.json({ message: "user found", data: userDetails, token });
-    }
-    catch (error) {
-        return next(error);
-    }
-});
-exports.login = login;
+    const { user, token } = yield authService.login("user", email, password);
+    const _a = user._doc, { password: hashedPassword, role } = _a, userDetails = __rest(_a, ["password", "role"]);
+    console.log(token);
+    res.json({ message: "user found", data: userDetails, token });
+}));
