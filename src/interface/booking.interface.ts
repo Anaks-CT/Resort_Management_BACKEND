@@ -4,14 +4,17 @@ export interface IBooking{
     id?: string
     userId: string
     resortId: string
-    BookingDate: Date,
+    BookingDate?: Date,
     checkInDate: Date
     checkOutDate: Date
     roomDetail: [
         {
             roomType: string
-            roomNumber: number,
-            noOfGuests: number
+            roomId: string
+            roomName: string
+            roomNumber: string,
+            packageName: string,
+            packageCost: number
         }
     ],
     amount: {
@@ -20,6 +23,7 @@ export interface IBooking{
         pointsUsed: number,
         totalCost: number,
     },
-    status: boolean
+    status?: boolean
+    paymentSuccess?: boolean
 
 }

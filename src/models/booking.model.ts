@@ -1,4 +1,4 @@
-import { model, Schema } from "mongoose";
+import mongoose, { model, Schema } from "mongoose";
 import { IBooking } from "../interface/booking.interface";
 
 const bookingSchema = new Schema<IBooking>({
@@ -9,19 +9,22 @@ const bookingSchema = new Schema<IBooking>({
     checkOutDate: {type: Date, required: true},
     roomDetail: [
         {
-            roomType: {type: String, required: true},
-            roomNumber: {type: Number, required: true},
-            noOfGuests: {type: Number, required: true}
+            roomTypeId: {type: mongoose.Types.ObjectId, required: true},
+            roomName: {type: String, required: true},
+            roomNumber: {type: String, required: true},
+            roomId: {type: mongoose.Types.ObjectId, required: true},
+            packagename: {type: String, required: true},
+            packageCost: {type: Number, required: true}
         }
     ],
     amount: {
-        roomCost: {type: Number, required: true},
+        totalRoomCost: {type: Number, required: true},
         taxCost: {type: Number, required: true},
         pointsUsed: {type: Number, required: true},
         totalCost: {type: Number, required: true},
     },
-    status: {type: Boolean, default: true}
-
-});
+    status: {type: Boolean, default: true},
+    paymentSuccess: {type: Boolean, default: false}
+},{timestamps: true});
 
 export default model<IBooking>("Booking", bookingSchema);

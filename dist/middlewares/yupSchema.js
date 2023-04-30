@@ -23,7 +23,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addRoomSchema = exports.faqSchema = exports.addResort = exports.loginSchema = exports.signupSchema = void 0;
+exports.bookingValidation = exports.addRoomSchema = exports.faqSchema = exports.addResort = exports.loginSchema = exports.signupSchema = void 0;
+const mongoose_1 = require("mongoose");
 const yup = __importStar(require("yup"));
 exports.signupSchema = yup.object().shape({
     name: yup
@@ -114,3 +115,10 @@ exports.addRoomSchema = yup.object().shape({
     facilities: yup.array()
         .of(yup.string().trim().required('Facility is required')),
 });
+exports.bookingValidation = yup.array().of(yup.object().shape({
+    roomName: yup.string().trim().required(),
+    roomId: yup.string().trim().required().test("Valid MongoDB _id", "Invalid Room", (arg) => (0, mongoose_1.isValidObjectId)(arg)),
+    packageName: yup.string().trim().required(),
+    packageId: yup.string().trim().required().test("Valid MongoDB _id", "Invalid Package", (arg) => (0, mongoose_1.isValidObjectId)(arg)),
+    packageCost: yup.number().required()
+}));

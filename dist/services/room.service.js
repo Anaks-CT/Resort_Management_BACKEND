@@ -152,15 +152,27 @@ class RoomService {
                 // returning true if the room is available and false if the room is unavailable
                 return !isFound;
             };
-            const roomType = yield this.roomRepositary.getOne({ _id: roomTypeId });
+            const roomType = yield this.roomRepositary.getOne({
+                _id: roomTypeId,
+            });
+            let roomNumberId;
             if (!roomType)
-                throw errorResponse_1.default.notFound('Room not found');
+                throw errorResponse_1.default.notFound("Room not found");
             for (let i = 0; i < (roomType === null || roomType === void 0 ? void 0 : roomType.roomNumbers.length); i++) {
                 if (isAvailable(roomType === null || roomType === void 0 ? void 0 : roomType.roomNumbers[i])) {
+                    roomNumberId = roomType === null || roomType === void 0 ? void 0 : roomType.roomNumbers[i]._id;
                     yield this.roomRepositary.addDatesToRoom(roomType._id, roomType === null || roomType === void 0 ? void 0 : roomType.roomNumbers[i]._id, allDatesStrings);
                     break;
                 }
             }
+            return roomNumberId;
+        });
+    }
+    removeDatesFromRoom(roomTypeId, roomId, date) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const allDates = (0, getDatesInRange_1.getDateInRange)(date.startDate, date.endDate);
+            const allDatesStrings = allDates.map((date) => date.toISOString());
+            yield this.roomRepositary.removeDatesFromRoom(roomTypeId, roomId, allDatesStrings);
         });
     }
     updateRoomDetails(resortId, roomId, roomDetails) {

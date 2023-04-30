@@ -6,9 +6,12 @@ import { Request } from 'express';
 import UserService from '../services/user.service';
 const userService = new UserService();
 
-interface RequestWithUser extends Request {
+export interface RequestWithUser extends Request {
   user?: any;
 }
+
+
+
 export const authMiddleware = expressAsyncHandler(async (req: RequestWithUser, res, next) => {
   try {
     
@@ -34,8 +37,12 @@ export const userVerify = expressAsyncHandler(async(req: RequestWithUser, res, n
     
     authMiddleware(req, res, () => {
       if(!req.user) return next(ErrorResponse.unauthorized('You are not Authenticated'))
-      const user = userService.getSingleUserDetails(req.user._id)
-      if(!user) return next( ErrorResponse.unauthorized('You are not authorized'))
+
+      userService.getSingleUserDetails(req.user._id)
+        .then(res => req.user = res)
+      if(!req.user) return next( ErrorResponse.unauthorized('You are not authorized'))
+      
+      console.log(req.user)
       return next()
 
     })

@@ -5,6 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.booking = void 0;
 const express_1 = __importDefault(require("express"));
-const booking_1 = require("../controllers/booking/booking");
+const bookingCRUD_1 = require("../controllers/booking/bookingCRUD");
+const auth_middlewares_1 = require("../middlewares/auth-middlewares");
+const bodyValidation_1 = require("../middlewares/bodyValidation");
 exports.booking = express_1.default.Router();
-exports.booking.post("/confirmPart1", booking_1.bookingConfirmationPart1);
+exports.booking.post("/confirmPart1", auth_middlewares_1.userVerify, bodyValidation_1.bookingRoomDetailsValidate, bookingCRUD_1.bookingConfirmationPart1);

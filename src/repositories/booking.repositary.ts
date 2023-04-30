@@ -1,23 +1,23 @@
 import { UpdateQuery, UpdateWriteOpResult } from "mongoose";
 import { ICompany } from "../interface/company.interface";
-import companyModel from "../models/company.model";
 import { BaseRepository } from "./baseRepositary";
 import { ObjectId } from "mongodb";
+import bookingModel from "../models/booking.model";
 
 
 class BookingRepositary extends BaseRepository {
     constructor() {
-        super(companyModel);
+        super(bookingModel);
     }
 
 
-    async addFaqs(Q: string, A: string): Promise<ICompany | null> {
-        return await companyModel.findOneAndUpdate(
-            {},
-            { $addToSet: { faqs: { Q: Q, A: A } } },
-            { new: true }
-        );
-    }
+    // async newBooking(): Promise<ICompany | null> {
+    //     return await companyModel.findOneAndUpdate(
+    //         {},
+    //         { $addToSet: { faqs: { Q: Q, A: A } } },
+    //         { new: true }
+    //     );
+    // }
 
 }
 

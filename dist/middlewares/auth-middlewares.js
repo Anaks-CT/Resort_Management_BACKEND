@@ -46,9 +46,11 @@ exports.userVerify = (0, express_async_handler_1.default)((req, res, next) => __
         (0, exports.authMiddleware)(req, res, () => {
             if (!req.user)
                 return next(errorResponse_1.default.unauthorized('You are not Authenticated'));
-            const user = userService.getSingleUserDetails(req.user._id);
-            if (!user)
+            userService.getSingleUserDetails(req.user._id)
+                .then(res => req.user = res);
+            if (!req.user)
                 return next(errorResponse_1.default.unauthorized('You are not authorized'));
+            console.log(req.user);
             return next();
         });
     }

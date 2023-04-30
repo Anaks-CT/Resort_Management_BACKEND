@@ -3,6 +3,7 @@ import ErrorResponse from "../error/errorResponse";
 import {
     addResort,
     addRoomSchema,
+    bookingValidation,
     faqSchema,
     loginSchema,
     signupSchema,
@@ -84,6 +85,15 @@ export const paramsIdValidate = asyncHandler( async (req, res, next) => {
         throw ErrorResponse.unauthorized(err.errors[0]);
     }
 })
+
+export const bookingRoomDetailsValidate = asyncHandler(async (req, res, next) => {
+    try {
+        req.body.stayDetails = await bookingValidation.validate(req.body.stayDetails);
+        next();
+    } catch (err: any) {
+        throw ErrorResponse.unauthorized(err.errors[0]);
+    }
+});
 
 // export const managerValidate = asyncHandler(
 //     async (req, res, next) => {

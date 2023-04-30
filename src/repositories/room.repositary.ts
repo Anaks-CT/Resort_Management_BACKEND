@@ -42,6 +42,23 @@ class RoomRespositary extends BaseRepository {
             }
         );
     }
+
+    async removeDatesFromRoom(
+        roomTypeId: string | undefined,
+        roomId: string | undefined,
+        existingDatesArray: string[]
+    ) {
+        return await roomModel.updateOne(
+            { _id: roomTypeId, "roomNumbers._id": roomId },
+            {
+                $pull: {
+                    "roomNumbers.$.unavailableDates": {
+                        $in: existingDatesArray,
+                    },
+                },
+            }
+        );
+    }
 }
 
 export default RoomRespositary;

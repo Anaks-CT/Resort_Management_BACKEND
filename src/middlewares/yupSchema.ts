@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { isValidObjectId } from "mongoose";
 import * as yup from "yup";
 
 export const signupSchema = yup.object().shape({
@@ -114,4 +114,13 @@ export const addRoomSchema = yup.object().shape({
     .of(yup.string().trim().required('Facility is required')),
 });
 
+export const bookingValidation = yup.array().of(
+  yup.object().shape({
+    roomName: yup.string().trim().required(),
+    roomId: yup.string().trim().required().test("Valid MongoDB _id", "Invalid Room", (arg) => isValidObjectId(arg!)),
+    packageName: yup.string().trim().required(),
+    packageId: yup.string().trim().required().test("Valid MongoDB _id", "Invalid Package", (arg) => isValidObjectId(arg!)),
+    packageCost: yup.number().required()
+  })
+);
 

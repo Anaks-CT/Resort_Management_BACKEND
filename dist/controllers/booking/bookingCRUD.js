@@ -26,6 +26,12 @@ exports.bookingConfirmationPart1 = (0, express_async_handler_1.default)((req, re
     yield roomService.getAvailableRooms(resortId, roomDetail, date);
     const roomNumber = yield Promise.all((_a = req.body.stayDetails) === null || _a === void 0 ? void 0 : _a.map((singleStayDetail) => roomService.addDatesToRoom(date, singleStayDetail.roomId)));
     const bookingDetails = yield bookingService.createBooking(req.user._id, resortId.id, date, req.body.stayDetails, roomNumber);
-    console.log(bookingDetails);
+    setTimeout(() => {
+        bookingService.deleteBooking(bookingDetails && bookingDetails);
+        if (bookingDetails) {
+            const details = bookingDetails;
+            Promise.all(details.roomDetail.map((singleRoomDetail) => roomService.removeDatesFromRoom(singleRoomDetail.roomTypeId, singleRoomDetail.roomId, date)));
+        }
+    }, 10000);
     res.json({ message: "Booking confirmation part 1 successful" });
 }));

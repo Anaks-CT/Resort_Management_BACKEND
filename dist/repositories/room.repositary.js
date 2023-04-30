@@ -46,5 +46,16 @@ class RoomRespositary extends baseRepositary_1.BaseRepository {
             });
         });
     }
+    removeDatesFromRoom(roomTypeId, roomId, existingDatesArray) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield room_model_1.default.updateOne({ _id: roomTypeId, "roomNumbers._id": roomId }, {
+                $pull: {
+                    "roomNumbers.$.unavailableDates": {
+                        $in: existingDatesArray,
+                    },
+                },
+            });
+        });
+    }
 }
 exports.default = RoomRespositary;

@@ -150,10 +150,7 @@ export default class RoomService {
         return availableRoomTypes;
     }
 
-    async addDatesToRoom(
-        date: any,
-        roomTypeId: any
-    ){
+    async addDatesToRoom(date: any, roomTypeId: any) {
         const allDates = getDateInRange(date.startDate, date.endDate);
         const allDatesStrings = allDates.map((date) => date.toISOString());
         const isAvailable = (roomNumber: any) => {
@@ -163,17 +160,30 @@ export default class RoomService {
             // returning true if the room is available and false if the room is unavailable
             return !isFound;
         };
-            
-            const roomType = await this.roomRepositary.getOne<IRoom>({_id: roomTypeId})
-            if(!roomType) throw ErrorResponse.notFound('Room not found')
-            for(let i=0; i<roomType?.roomNumbers.length; i++) {
-                if (isAvailable(roomType?.roomNumbers[i])) {
-                    await this.roomRepositary.addDatesToRoom(roomType._id, roomType?.roomNumbers[i]._id, allDatesStrings)
-                    break;
-                }
+
+        const roomType = await this.roomRepositary.getOne<IRoom>({
+            _id: roomTypeId,
+        });
+        let roomNumberId
+        if (!roomType) throw ErrorResponse.notFound("Room not found");
+        for (let i = 0; i < roomType?.roomNumbers.length; i++) {
+            if (isAvailable(roomType?.roomNumbers[i])) {
+                roomNumberId = roomType?.roomNumbers[i]._id
+                await this.roomRepositary.addDatesToRoom(
+                    roomType._id,
+                    roomType?.roomNumbers[i]._id,
+                    allDatesStrings
+                );
+                break;
             }
-            
-            
+        }
+        return roomNumberId
+    }
+
+    async removeDatesFromRoom(roomTypeId: string, roomId: string, date: any){
+        const allDates = getDateInRange(date.startDate, date.endDate);
+        const allDatesStrings = allDates.map((date) => date.toISOString());
+        await this.roomRepositary.removeDatesFromRoom(roomTypeId, roomId, allDatesStrings)
     }
 
     async updateRoomDetails(
@@ -234,4 +244,6 @@ export default class RoomService {
         );
         return editRoom;
     }
+
+
 }
