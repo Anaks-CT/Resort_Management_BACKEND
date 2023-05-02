@@ -4,8 +4,10 @@ import {
     addResort,
     addRoomSchema,
     bookingValidation,
+    emailVerifySchema,
     faqSchema,
     loginSchema,
+    newPasswordSchema,
     signupSchema,
 } from "./yupSchema";
 import validator from "validator";
@@ -95,6 +97,24 @@ export const bookingRoomDetailsValidate = asyncHandler(async (req, res, next) =>
     }
 });
 
+export const emailQueryValidate = asyncHandler( async (req, res, next) => {
+    try {
+        req.query.email = (await emailVerifySchema.validate({email: req.query.email})).email;
+        next();
+    } catch (err: any) {
+        throw ErrorResponse.unauthorized(err.errors[0]);
+    }
+})
+
+export const passwordValidate = asyncHandler(async (req, res, next) => {
+    try {
+        console.log(req.body);
+        req.body.passwordDetails = await newPasswordSchema.validate(req.body);
+        next();
+    } catch (err: any) {
+        throw ErrorResponse.unauthorized(err.errors[0]);
+    }
+});
 // export const managerValidate = asyncHandler(
 //     async (req, res, next) => {
 

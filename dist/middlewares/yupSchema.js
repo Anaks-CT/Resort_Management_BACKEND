@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.bookingValidation = exports.addRoomSchema = exports.faqSchema = exports.addResort = exports.loginSchema = exports.signupSchema = void 0;
+exports.newPasswordSchema = exports.emailVerifySchema = exports.bookingValidation = exports.addRoomSchema = exports.faqSchema = exports.addResort = exports.loginSchema = exports.signupSchema = void 0;
 const mongoose_1 = require("mongoose");
 const yup = __importStar(require("yup"));
 exports.signupSchema = yup.object().shape({
@@ -122,3 +122,24 @@ exports.bookingValidation = yup.array().of(yup.object().shape({
     packageId: yup.string().trim().required().test("Valid MongoDB _id", "Invalid Package", (arg) => (0, mongoose_1.isValidObjectId)(arg)),
     packageCost: yup.number().required()
 }));
+exports.emailVerifySchema = yup.object().shape({
+    email: yup
+        .string()
+        .trim()
+        .required("Enter you email")
+        .test("isvalidEmail", "Enter a valid Email", (arg) => /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(arg)),
+});
+exports.newPasswordSchema = yup.object().shape({
+    password: yup
+        .string()
+        .trim()
+        .required("Password can not be empty")
+        .min(8, "Too short password")
+        .max(16, "Too long password")
+        .test("isPerfectPasswrod", "Enter a strong password", (arg) => /((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W])(?!.*\s).{8,16})/.test(arg)),
+    cPassword: yup
+        .string()
+        .trim()
+        .required("Confirm password can't be empty")
+        .oneOf([yup.ref("password")], "Passwords must match"),
+});

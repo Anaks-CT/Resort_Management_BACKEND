@@ -14,6 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const errorResponse_1 = __importDefault(require("../error/errorResponse"));
 const user_repository_1 = __importDefault(require("../repositories/user.repository"));
+const twilio_1 = require("../utils/twilio");
+const bcrypt_1 = __importDefault(require("bcrypt"));
 class UserService {
     constructor(userRepositary = new user_repository_1.default()) {
         this.userRepositary = userRepositary;
@@ -24,6 +26,28 @@ class UserService {
             if (!user)
                 throw errorResponse_1.default.notFound('User not found');
             return user;
+        });
+    }
+    forgotPasswordverifyEmail(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield this.userRepositary.getByEmail(email);
+            if (!user)
+                throw errorResponse_1.default.notFound('User not found');
+            const sendOTP = yield (0, twilio_1.sendVerificationToken)(user.phone.toString());
+            if (!sendOTP)
+                throw errorResponse_1.default.internalError('Some error occured, please try again');
+            return user.phone;
+        });
+    }
+    changePassword(email, password) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield this.userRepositary.getByEmail(email);
+            if (!user)
+                throw errorResponse_1.default.notFound('User not found');
+            const hashedPassword = yield bcrypt_1.default.hash(password, 10);
+            const updateResult = yield this.userRepositary.changePassword(email, hashedPassword);
+            if (updateResult.modifiedCount === 0)
+                throw errorResponse_1.default.internalError("Password not changed, Please try again");
         });
     }
 }
