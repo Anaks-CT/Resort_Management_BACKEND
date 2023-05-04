@@ -11,8 +11,8 @@ const companySchema = new Schema<ICompany>({
     circleBanners: [
         {
             miniHeading: String,
-            heading: String,
-            description: String,
+            description1: String,
+            description2: String,
             image: String,
         },
     ],

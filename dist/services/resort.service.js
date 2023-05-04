@@ -55,6 +55,14 @@ class ResortService {
             return { resort };
         });
     }
+    getActiveMangerOfResort(resortId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const populatedResortDetails = this.resortRepositary.populatedResortDetailsOfManager(resortId);
+            if (!populatedResortDetails)
+                throw errorResponse_1.default.notFound('No Resort details');
+            return populatedResortDetails;
+        });
+    }
     editResort(resortDetails, image, resortId) {
         return __awaiter(this, void 0, void 0, function* () {
             const editResort = yield this.resortRepositary.editResort(resortDetails, resortId, image);

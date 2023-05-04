@@ -22,7 +22,7 @@ export const validateSignup: RequestHandler = asyncHandler(
             req.body = await signupSchema.validate(req.body);
             next();
         } catch (err: any) {
-            throw ErrorResponse.unauthorized(err.errors[0]);
+            throw ErrorResponse.badRequest(err.errors[0]);
         }
     }
 );
@@ -34,7 +34,7 @@ export const validateLogin = asyncHandler(async (req, res, next) => {
         req.body = await loginSchema.validate(req.body);
         next();
     } catch (err: any) {
-        throw ErrorResponse.unauthorized(err.errors[0]);
+        throw ErrorResponse.badRequest(err.errors[0]);
     }
 });
 
@@ -44,7 +44,7 @@ export const resortValidate = asyncHandler(async (req, res, next) => {
         req.body = await addResort.validate(req.body);
         next();
     } catch (err: any) {
-        throw ErrorResponse.unauthorized(err.errors[0]);
+        throw ErrorResponse.badRequest(err.errors[0]);
     }
 });
 
@@ -53,7 +53,7 @@ export const faqValidate = asyncHandler(async (req, res, next) => {
         req.body = await faqSchema.validate(req.body);
         next();
     } catch (err: any) {
-        throw ErrorResponse.unauthorized(err.errors[0]);
+        throw ErrorResponse.badRequest(err.errors[0]);
     }
 });
 
@@ -62,7 +62,7 @@ export const roomValidate = asyncHandler(async (req, res, next) => {
         req.body.roomData = await addRoomSchema.validate(req.body.roomData);
         next();
     } catch (err: any) {
-        throw ErrorResponse.unauthorized(err.errors[0]);
+        throw ErrorResponse.badRequest(err.errors[0]);
     }
 });
 
@@ -74,17 +74,17 @@ export const managerSignupValidate = asyncHandler(async (req, res, next) => {
         req.body = await signupSchema.validate(req.body);
         next();
     } catch (err: any) {
-        throw ErrorResponse.unauthorized(err.errors[0]);
+        throw ErrorResponse.badRequest(err.errors[0]);
     }
 });
 
 export const paramsIdValidate = asyncHandler( async (req, res, next) => {
     try {
         if(!req.params.id || !validator.isMongoId(req.params.id))
-            throw ErrorResponse.badRequest('Cannot find Resort')
+            throw ErrorResponse.badRequest('Invalid Id')
         next()
     } catch (err: any) {
-        throw ErrorResponse.unauthorized(err.errors[0]);
+        throw ErrorResponse.badRequest(err.errors[0]);
     }
 })
 
@@ -93,7 +93,7 @@ export const bookingRoomDetailsValidate = asyncHandler(async (req, res, next) =>
         req.body.stayDetails = await bookingValidation.validate(req.body.stayDetails);
         next();
     } catch (err: any) {
-        throw ErrorResponse.unauthorized(err.errors[0]);
+        throw ErrorResponse.badRequest(err.errors[0]);
     }
 });
 
@@ -102,7 +102,7 @@ export const emailQueryValidate = asyncHandler( async (req, res, next) => {
         req.query.email = (await emailVerifySchema.validate({email: req.query.email})).email;
         next();
     } catch (err: any) {
-        throw ErrorResponse.unauthorized(err.errors[0]);
+        throw ErrorResponse.badRequest(err.errors[0]);
     }
 })
 
@@ -112,7 +112,7 @@ export const passwordValidate = asyncHandler(async (req, res, next) => {
         req.body.passwordDetails = await newPasswordSchema.validate(req.body);
         next();
     } catch (err: any) {
-        throw ErrorResponse.unauthorized(err.errors[0]);
+        throw ErrorResponse.badRequest(err.errors[0]);
     }
 });
 // export const managerValidate = asyncHandler(

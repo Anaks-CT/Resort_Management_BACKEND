@@ -34,8 +34,8 @@ const companySchema = new mongoose_1.Schema({
     circleBanners: [
         {
             miniHeading: String,
-            heading: String,
-            description: String,
+            description1: String,
+            description2: String,
             image: String,
         },
     ],

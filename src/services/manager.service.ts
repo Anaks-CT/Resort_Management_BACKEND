@@ -17,7 +17,11 @@ export default class ManagerService {
         return managerDetails
     }
 
-
+    async getManagerDetailsByResortId(resortId: string){
+        const managerDetails = this.managerRepositary.getOne<IManager>({resortId: resortId})
+        if(!managerDetails) throw ErrorResponse.notFound('No managers')
+        return managerDetails
+    }
 
      
 //*********************will change this to pagination, sort and search */

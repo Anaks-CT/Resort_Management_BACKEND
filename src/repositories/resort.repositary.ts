@@ -68,6 +68,10 @@ class ResortRepositary extends BaseRepository {
         }
         return await query;
     }
+
+    async populatedResortDetailsOfManager(resortId: string){
+        return await resortModel.findOne({_id: resortId}).populate("manager")
+    }
 }
 
 export default ResortRepositary;

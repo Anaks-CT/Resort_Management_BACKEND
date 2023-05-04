@@ -25,7 +25,7 @@ exports.validateSignup = (0, express_async_handler_1.default)((req, res, next) =
         next();
     }
     catch (err) {
-        throw errorResponse_1.default.unauthorized(err.errors[0]);
+        throw errorResponse_1.default.badRequest(err.errors[0]);
     }
 }));
 // login body validation
@@ -35,7 +35,7 @@ exports.validateLogin = (0, express_async_handler_1.default)((req, res, next) =>
         next();
     }
     catch (err) {
-        throw errorResponse_1.default.unauthorized(err.errors[0]);
+        throw errorResponse_1.default.badRequest(err.errors[0]);
     }
 }));
 // add resort body validation
@@ -45,7 +45,7 @@ exports.resortValidate = (0, express_async_handler_1.default)((req, res, next) =
         next();
     }
     catch (err) {
-        throw errorResponse_1.default.unauthorized(err.errors[0]);
+        throw errorResponse_1.default.badRequest(err.errors[0]);
     }
 }));
 exports.faqValidate = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -54,7 +54,7 @@ exports.faqValidate = (0, express_async_handler_1.default)((req, res, next) => _
         next();
     }
     catch (err) {
-        throw errorResponse_1.default.unauthorized(err.errors[0]);
+        throw errorResponse_1.default.badRequest(err.errors[0]);
     }
 }));
 exports.roomValidate = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -63,7 +63,7 @@ exports.roomValidate = (0, express_async_handler_1.default)((req, res, next) => 
         next();
     }
     catch (err) {
-        throw errorResponse_1.default.unauthorized(err.errors[0]);
+        throw errorResponse_1.default.badRequest(err.errors[0]);
     }
 }));
 exports.managerSignupValidate = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -75,17 +75,17 @@ exports.managerSignupValidate = (0, express_async_handler_1.default)((req, res, 
         next();
     }
     catch (err) {
-        throw errorResponse_1.default.unauthorized(err.errors[0]);
+        throw errorResponse_1.default.badRequest(err.errors[0]);
     }
 }));
 exports.paramsIdValidate = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         if (!req.params.id || !validator_1.default.isMongoId(req.params.id))
-            throw errorResponse_1.default.badRequest('Cannot find Resort');
+            throw errorResponse_1.default.badRequest('Invalid Id');
         next();
     }
     catch (err) {
-        throw errorResponse_1.default.unauthorized(err.errors[0]);
+        throw errorResponse_1.default.badRequest(err.errors[0]);
     }
 }));
 exports.bookingRoomDetailsValidate = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -94,7 +94,7 @@ exports.bookingRoomDetailsValidate = (0, express_async_handler_1.default)((req, 
         next();
     }
     catch (err) {
-        throw errorResponse_1.default.unauthorized(err.errors[0]);
+        throw errorResponse_1.default.badRequest(err.errors[0]);
     }
 }));
 exports.emailQueryValidate = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -103,7 +103,7 @@ exports.emailQueryValidate = (0, express_async_handler_1.default)((req, res, nex
         next();
     }
     catch (err) {
-        throw errorResponse_1.default.unauthorized(err.errors[0]);
+        throw errorResponse_1.default.badRequest(err.errors[0]);
     }
 }));
 exports.passwordValidate = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -113,7 +113,7 @@ exports.passwordValidate = (0, express_async_handler_1.default)((req, res, next)
         next();
     }
     catch (err) {
-        throw errorResponse_1.default.unauthorized(err.errors[0]);
+        throw errorResponse_1.default.badRequest(err.errors[0]);
     }
 }));
 // export const managerValidate = asyncHandler(

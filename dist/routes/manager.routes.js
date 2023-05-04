@@ -13,3 +13,4 @@ exports.manager = express_1.default.Router();
 exports.manager.post('/signup', auth_middlewares_1.adminVerify, bodyValidation_1.managerSignupValidate, auth_1.signup);
 exports.manager.post('/login', bodyValidation_1.validateLogin, auth_1.login);
 exports.manager.route('/:id?').get(managerCRUD_1.getAllManagerDetails).delete(bodyValidation_1.paramsIdValidate, managerCRUD_1.changeManagerStatus);
+exports.manager.get('resortMangers:id', bodyValidation_1.paramsIdValidate, managerCRUD_1.getManagerDetailsByResortId);

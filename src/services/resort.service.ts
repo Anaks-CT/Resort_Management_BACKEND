@@ -67,6 +67,11 @@ export default class ResortService {
         return { resort };
     }
 
+    async getActiveMangerOfResort(resortId: string){
+        const populatedResortDetails = this.resortRepositary.populatedResortDetailsOfManager(resortId)
+        if(!populatedResortDetails) throw ErrorResponse.notFound('No Resort details')
+        return populatedResortDetails
+    }
 
     async editResort(resortDetails:IResort, image: string, resortId: string ): Promise<UpdateWriteOpResult | null>{
         const editResort = await this.resortRepositary.editResort(resortDetails, resortId, image )

@@ -1,18 +1,19 @@
 import asyncHandler from "express-async-handler";
 import ResortService from "../../services/resort.service";
-import { RequestHandler } from "express";
 
 const resortService = new ResortService();
 
 export const createResort = asyncHandler(async (req, res) => {
   const { image, name, heading, description, features, location, email, customerCareNo } = req.body;
   const resortDetails = {image, name, heading, description, features}
-    await resortService.createResort(
+  await resortService.createResort(
       resortDetails,
       location,
       email,
       customerCareNo
     );
+    
+    // const 
     const allResortDetails = await resortService.allResortDetails()
     res.status(201).json({ message: "New Resort created", data: allResortDetails });
 });

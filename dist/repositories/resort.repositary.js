@@ -68,5 +68,10 @@ class ResortRepositary extends baseRepositary_1.BaseRepository {
             return yield query;
         });
     }
+    populatedResortDetailsOfManager(resortId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield resort_model_1.default.findOne({ _id: resortId }).populate("manager");
+        });
+    }
 }
 exports.default = ResortRepositary;

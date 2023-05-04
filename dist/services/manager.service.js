@@ -30,6 +30,14 @@ class ManagerService {
             return managerDetails;
         });
     }
+    getManagerDetailsByResortId(resortId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const managerDetails = this.managerRepositary.getOne({ resortId: resortId });
+            if (!managerDetails)
+                throw errorResponse_1.default.notFound('No managers');
+            return managerDetails;
+        });
+    }
     //*********************will change this to pagination, sort and search */
     searchSortedManagerDetails(searchInput, sortOrder, sortBy) {
         return __awaiter(this, void 0, void 0, function* () {

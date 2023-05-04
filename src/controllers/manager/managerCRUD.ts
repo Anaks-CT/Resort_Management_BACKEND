@@ -17,3 +17,8 @@ export const changeManagerStatus = asyncHandler( async (req, res) => {
   res.status(200).json({message: "Manager Status updated successfully", data: updatedManagerDetails})
 
 })
+
+export const getManagerDetailsByResortId = asyncHandler(async (req, res) => {
+  const managerDetails = await managerService.getManagerDetailsByResortId(req.params.resortId)
+  res.status(200).json({message: "Manger detailss fetched successfully", data: managerDetails})
+})
