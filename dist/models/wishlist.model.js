@@ -24,20 +24,14 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
-const userSchema = new mongoose_1.Schema({
-    name: { type: String, required: true },
-    phone: { type: Number, required: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    address: {
-        addressLine1: { type: String },
-        addressLine2: { type: String },
-        addressLine3: { type: String },
-        city: { type: String },
-        pincode: { type: Number },
-        country: { type: String },
+const wishlistSchema = new mongoose_1.Schema({
+    userId: { type: mongoose_1.default.Types.ObjectId, required: true },
+    resortId: { type: mongoose_1.default.Types.ObjectId, required: true, ref: "Resort" },
+    noOfRooms: { type: Number, required: true },
+    noOfGuests: { type: Number, required: true },
+    dates: {
+        startDate: { type: Date, required: true },
+        endDate: { type: Date, required: true },
     },
-    wishlist: [mongoose_1.default.Types.ObjectId],
-    role: { type: String, default: "user" }
-}, { timestamps: true });
-exports.default = (0, mongoose_1.model)("User", userSchema);
+});
+exports.default = (0, mongoose_1.model)("Wishlist", wishlistSchema);

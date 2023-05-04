@@ -7,6 +7,10 @@ export abstract class BaseRepository {
     return this.model.find(Object);
   }
 
+  async populate<T>(data: T, path: string, options?: any): Promise<T> {
+    return this.model.populate(data, { path, ...options });
+  }
+
   async getOne<T>(object: any): Promise<T | null> {
     return this.model.findOne(object);
   }

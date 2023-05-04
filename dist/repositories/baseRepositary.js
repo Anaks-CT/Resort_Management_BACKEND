@@ -19,6 +19,11 @@ class BaseRepository {
             return this.model.find(Object);
         });
     }
+    populate(data, path, options) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.model.populate(data, Object.assign({ path }, options));
+        });
+    }
     getOne(object) {
         return __awaiter(this, void 0, void 0, function* () {
             return this.model.findOne(object);

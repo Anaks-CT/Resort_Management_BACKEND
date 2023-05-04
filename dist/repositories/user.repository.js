@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const user_model_1 = __importDefault(require("../models/user.model"));
 const baseRepositary_1 = require("./baseRepositary");
+const mongodb_1 = require("mongodb");
 class UserRepository extends baseRepositary_1.BaseRepository {
     constructor() {
         super(user_model_1.default);
@@ -21,7 +22,25 @@ class UserRepository extends baseRepositary_1.BaseRepository {
     changePassword(email, password) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield user_model_1.default.updateOne({ email: email }, {
-                $set: { password: password }
+                $set: { password: password },
+            });
+        });
+    }
+    addToWishlist(userId, wishlistId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield user_model_1.default.updateOne({ _id: new mongodb_1.ObjectId(userId) }, {
+                $addToSet: {
+                    wishlist: wishlistId,
+                },
+            });
+        });
+    }
+    deleteFromWishlist(userId, wishlistId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield user_model_1.default.updateOne({ _id: new mongodb_1.ObjectId(userId) }, {
+                $pull: {
+                    wishlist: wishlistId,
+                },
             });
         });
     }

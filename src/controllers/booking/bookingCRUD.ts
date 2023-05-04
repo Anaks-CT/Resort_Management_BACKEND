@@ -8,8 +8,6 @@ const roomService = new RoomService();
 const bookingService = new BookingService()
 
 export const bookingConfirmationPart1 = expressAsyncHandler(async(req: RequestWithUser, res) => {
-    console.log(req.user._id);
-    console.log(req.body.stayDetails)
     const { destination: resortId, roomDetail, date } = req.body.bookingForm1Details;
     await roomService.getAvailableRooms(resortId, roomDetail, date)
     const roomNumber = await Promise.all(req.body.stayDetails?.map((singleStayDetail: any) => 

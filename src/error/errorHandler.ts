@@ -7,7 +7,7 @@ export const errorHandler = (
   res: Response,
   next: NextFunction
 ): Response => {
-  console.error(err.message);
+  console.error(err);
 
   if (err instanceof ErrorResponse) {
     return res.status(err.status).json({ message: err.message });

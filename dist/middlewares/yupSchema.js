@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.newPasswordSchema = exports.emailVerifySchema = exports.bookingValidation = exports.addRoomSchema = exports.faqSchema = exports.addResort = exports.loginSchema = exports.signupSchema = void 0;
+exports.wishlistValidation = exports.newPasswordSchema = exports.emailVerifySchema = exports.bookingValidation = exports.addRoomSchema = exports.faqSchema = exports.addResort = exports.loginSchema = exports.signupSchema = void 0;
 const mongoose_1 = require("mongoose");
 const yup = __importStar(require("yup"));
 exports.signupSchema = yup.object().shape({
@@ -41,7 +41,7 @@ exports.signupSchema = yup.object().shape({
         .string()
         .trim()
         .required("Enter you email")
-        .test('isvalidEmail', "Enter a valid Email", (arg) => /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(arg)),
+        .test("isvalidEmail", "Enter a valid Email", (arg) => /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(arg)),
     password: yup
         .string()
         .trim()
@@ -53,7 +53,7 @@ exports.signupSchema = yup.object().shape({
         .string()
         .trim()
         .required("Confirm password can't be empty")
-        .oneOf([yup.ref('password')], 'Passwords must match')
+        .oneOf([yup.ref("password")], "Passwords must match"),
 });
 exports.loginSchema = yup.object().shape({
     email: yup
@@ -97,30 +97,52 @@ exports.addRoomSchema = yup.object().shape({
         .matches(/^https:\/\/res\.cloudinary\.com\/.*\/image\/upload\/.*$/, "Invalid Cloudinary URL"))
         .required()
         .min(1, "At least one Image is required"),
-    name: yup.string().trim().required('Name is required'),
-    description: yup.string().trim().required('Description is required'),
-    area: yup.string().trim().required('Area is required'),
-    packages: yup.array()
-        .of(yup.object().shape({
-        packageName: yup.string().trim().required('Package name is required'),
-        cost: yup.string().trim().required('Cost is required'),
-        features: yup.array().of(yup.string().trim().required('Feature is required')),
+    name: yup.string().trim().required("Name is required"),
+    description: yup.string().trim().required("Description is required"),
+    area: yup.string().trim().required("Area is required"),
+    packages: yup.array().of(yup.object().shape({
+        packageName: yup
+            .string()
+            .trim()
+            .required("Package name is required"),
+        cost: yup.string().trim().required("Cost is required"),
+        features: yup
+            .array()
+            .of(yup.string().trim().required("Feature is required")),
     })),
-    maxPeople: yup.string().trim().matches(/^[0-9]{1}$/, "max People should be less than 10 ").required('Max people is required'),
-    noOfRooms: yup.number().max(899, "Rooms should be less than 900 ").required('Number of rooms is required'),
-    highlights: yup.array()
-        .of(yup.string().trim().required('Highlight is required')),
-    amenities: yup.array()
-        .of(yup.string().trim().required('Amenity is required')),
-    facilities: yup.array()
-        .of(yup.string().trim().required('Facility is required')),
+    maxPeople: yup
+        .string()
+        .trim()
+        .matches(/^[0-9]{1}$/, "max People should be less than 10 ")
+        .required("Max people is required"),
+    noOfRooms: yup
+        .number()
+        .max(899, "Rooms should be less than 900 ")
+        .required("Number of rooms is required"),
+    highlights: yup
+        .array()
+        .of(yup.string().trim().required("Highlight is required")),
+    amenities: yup
+        .array()
+        .of(yup.string().trim().required("Amenity is required")),
+    facilities: yup
+        .array()
+        .of(yup.string().trim().required("Facility is required")),
 });
 exports.bookingValidation = yup.array().of(yup.object().shape({
     roomName: yup.string().trim().required(),
-    roomId: yup.string().trim().required().test("Valid MongoDB _id", "Invalid Room", (arg) => (0, mongoose_1.isValidObjectId)(arg)),
+    roomId: yup
+        .string()
+        .trim()
+        .required()
+        .test("Valid MongoDB _id", "Invalid Room", (arg) => (0, mongoose_1.isValidObjectId)(arg)),
     packageName: yup.string().trim().required(),
-    packageId: yup.string().trim().required().test("Valid MongoDB _id", "Invalid Package", (arg) => (0, mongoose_1.isValidObjectId)(arg)),
-    packageCost: yup.number().required()
+    packageId: yup
+        .string()
+        .trim()
+        .required()
+        .test("Valid MongoDB _id", "Invalid Package", (arg) => (0, mongoose_1.isValidObjectId)(arg)),
+    packageCost: yup.number().required(),
 }));
 exports.emailVerifySchema = yup.object().shape({
     email: yup
@@ -142,4 +164,17 @@ exports.newPasswordSchema = yup.object().shape({
         .trim()
         .required("Confirm password can't be empty")
         .oneOf([yup.ref("password")], "Passwords must match"),
+});
+exports.wishlistValidation = yup.object().shape({
+    resortId: yup
+        .string()
+        .trim()
+        .required()
+        .test("Valid MongoDB _id", "Invalid Package", (arg) => (0, mongoose_1.isValidObjectId)(arg)),
+    noOfRooms: yup.number().required(),
+    noOfGuests: yup.number().required(),
+    dates: yup.object().shape({
+        startDate: yup.date().required(),
+        endDate: yup.date().required(),
+    }),
 });

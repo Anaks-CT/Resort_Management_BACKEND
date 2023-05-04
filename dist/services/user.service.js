@@ -50,5 +50,25 @@ class UserService {
                 throw errorResponse_1.default.internalError("Password not changed, Please try again");
         });
     }
+    updateUserWishlist(userId, wishlistId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield this.userRepositary.getById(userId);
+            if (!user)
+                throw errorResponse_1.default.notFound('User not found');
+            const updateResult = yield this.userRepositary.addToWishlist(userId, wishlistId);
+            if (updateResult.modifiedCount !== 1)
+                throw errorResponse_1.default.internalError('Dates not added to wishlist, Please try again later');
+        });
+    }
+    deleteWishlistFromUser(userId, wishlistId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield this.userRepositary.getById(userId);
+            if (!user)
+                throw errorResponse_1.default.notFound('User not found');
+            const updateResult = yield this.userRepositary.deleteFromWishlist(userId, wishlistId);
+            if (updateResult.modifiedCount !== 1)
+                throw errorResponse_1.default.internalError('Dates not discarded from wishlist');
+        });
+    }
 }
 exports.default = UserService;

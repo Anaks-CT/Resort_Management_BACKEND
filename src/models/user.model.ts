@@ -1,4 +1,4 @@
-import { model, Schema } from "mongoose";
+import mongoose, { model, Schema } from "mongoose";
 import { IUser } from "../interface/user.interface";
 
 const userSchema = new Schema<IUser>({
@@ -14,6 +14,7 @@ const userSchema = new Schema<IUser>({
     pincode: { type: Number},
     country: { type: String},
   },
+  wishlist: [mongoose.Types.ObjectId],
   role: {type: String, default: "user"}
 },{ timestamps: true });
 

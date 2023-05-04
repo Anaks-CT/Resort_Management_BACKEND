@@ -31,4 +31,18 @@ export default class UserService {
         if(updateResult.modifiedCount === 0 ) throw ErrorResponse.internalError("Password not changed, Please try again")
     }
 
+    async updateUserWishlist (userId: string, wishlistId: string){
+        const user = await this.userRepositary.getById(userId)
+        if(!user) throw ErrorResponse.notFound('User not found')
+        const updateResult = await this.userRepositary.addToWishlist(userId, wishlistId)
+        if(updateResult.modifiedCount !== 1) throw ErrorResponse.internalError('Dates not added to wishlist, Please try again later')
+    }
+
+    async deleteWishlistFromUser(userId: string, wishlistId: string){
+        const user = await this.userRepositary.getById(userId)
+        if(!user) throw ErrorResponse.notFound('User not found')
+        const updateResult = await this.userRepositary.deleteFromWishlist(userId, wishlistId)
+        if(updateResult.modifiedCount !== 1) throw ErrorResponse.internalError('Dates not discarded from wishlist')
+    }
+
 }

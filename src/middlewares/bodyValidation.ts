@@ -9,6 +9,7 @@ import {
     loginSchema,
     newPasswordSchema,
     signupSchema,
+    wishlistValidation,
 } from "./yupSchema";
 import validator from "validator";
 import { RequestHandler } from "express";
@@ -108,8 +109,16 @@ export const emailQueryValidate = asyncHandler( async (req, res, next) => {
 
 export const passwordValidate = asyncHandler(async (req, res, next) => {
     try {
-        console.log(req.body);
         req.body.passwordDetails = await newPasswordSchema.validate(req.body);
+        next();
+    } catch (err: any) {
+        throw ErrorResponse.badRequest(err.errors[0]);
+    }
+});
+
+export const wishlistDetails = asyncHandler(async (req, res, next) => {
+    try {
+        req.body.wishlistDetails = await wishlistValidation.validate(req.body.wishlistDetails);
         next();
     } catch (err: any) {
         throw ErrorResponse.badRequest(err.errors[0]);

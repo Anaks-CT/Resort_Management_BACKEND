@@ -16,6 +16,7 @@ export interface IUser extends Document {
       country: string;
     };
     role: string
+    wishlist: string[]
   }
   
   
