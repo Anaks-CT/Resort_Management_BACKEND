@@ -117,7 +117,7 @@ exports.passwordValidate = (0, express_async_handler_1.default)((req, res, next)
 }));
 exports.wishlistDetails = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        req.body.wishlistDetails = yield yupSchema_1.wishlistValidation.validate(req.body.wishlistDetails);
+        req.body.wishlistDetails = yield yupSchema_1.WishlistSchema.validate(req.body.wishlistDetails);
         next();
     }
     catch (err) {

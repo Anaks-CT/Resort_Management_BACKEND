@@ -20,6 +20,7 @@ export const getRoomsByResortId = asyncHandler( async(req, res) => {
 })
 
 export const getAvailableRooms = asyncHandler(async (req, res) => {
+    console.log(req.body.formValues);
     const { destination: resortId, roomDetail, date } = req.body.formValues;
     const getAvailableRooms = await roomService.getAvailableRooms(resortId, roomDetail, date)
     res.json({data: getAvailableRooms });

@@ -25,6 +25,7 @@
     "multer": "^1.4.5-lts.1",
     "multer-storage-cloudinary": "^4.0.0",
     "nodemon": "^2.0.21",
+    "razorpay": "^2.8.6",
     "twilio": "^4.10.0",
     "validator": "^13.9.0",
     "yup": "^1.0.2"

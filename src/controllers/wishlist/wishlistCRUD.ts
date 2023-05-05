@@ -28,5 +28,6 @@ export const deleteWishlist = asyncHandler(async (req: RequestWithUser, res) => 
     const {id} = req.params
     await wishlistService.deleteWishlist(id)
     await userService.deleteWishlistFromUser(_id, id)
-    res.status(200).json({message: "Dates removed from your wishlist"})
+    const allWishlist = await wishlistService.getAllUserWishlist(_id)
+    res.status(200).json({message: "Dates removed from your wishlist", data: allWishlist})
 })

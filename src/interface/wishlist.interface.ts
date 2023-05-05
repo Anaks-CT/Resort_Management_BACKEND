@@ -5,10 +5,10 @@ export interface IWishlist{
     _id?: string
     userId: ObjectId
     resortId: ObjectId
-    noOfRooms: number
-    noOfGuests: number
+    roomDetail: number[];
     dates: {
-        startDate: Date
-        endDate: Date
-    }
+        startDate: Date;
+        endDate: Date;
+        key: string;
+    };
 }

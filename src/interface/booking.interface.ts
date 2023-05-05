@@ -27,3 +27,16 @@ export interface IBooking{
     paymentSuccess?: boolean
 
 }
+
+export interface IBookingForm1{
+    destination: {
+        name: string;
+        id: string;
+    };
+    roomDetail: number[];
+    date: {
+        startDate: Date;
+        endDate: Date;
+        key: string;
+    };
+}

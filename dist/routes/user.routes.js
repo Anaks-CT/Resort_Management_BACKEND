@@ -18,7 +18,7 @@ exports.user.route("/verifyPhone").get(signup_1.verifyPhone).post(signup_1.verif
 exports.user.route("/forgotPassword")
     .get(bodyValidation_1.emailQueryValidate, forgotPassword_1.verifyEmail)
     .put(bodyValidation_1.emailQueryValidate, bodyValidation_1.passwordValidate, forgotPassword_1.changePassword);
-exports.user.route("/wishlist:id?")
+exports.user.route("/wishlist/:id?")
     .get(auth_middlewares_1.userVerify, wishlistCRUD_1.getWishlistByUserId)
     .post(auth_middlewares_1.userVerify, bodyValidation_1.wishlistDetails, wishlistCRUD_1.addToWishlist)
-    .delete(bodyValidation_1.paramsIdValidate);
+    .delete(auth_middlewares_1.userVerify, bodyValidation_1.paramsIdValidate, wishlistCRUD_1.deleteWishlist);

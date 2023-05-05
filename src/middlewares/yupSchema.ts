@@ -179,18 +179,20 @@ export const newPasswordSchema = yup.object().shape({
         .oneOf([yup.ref("password")], "Passwords must match"),
 });
 
-export const wishlistValidation = yup.object().shape({
-    resortId: yup
-        .string()
-        .trim()
-        .required()
-        .test("Valid MongoDB _id", "Invalid Package", (arg) =>
-            isValidObjectId(arg!)
-        ),
-    noOfRooms: yup.number().required(),
-    noOfGuests: yup.number().required(),
-    dates: yup.object().shape({
+export const WishlistSchema = yup.object().shape({
+    destination: yup.object().shape({
+        name: yup.string().required(),
+        id: yup
+            .string()
+            .required()
+            .test("Valid MongoDB _id", "Invalid Room", (arg) =>
+                isValidObjectId(arg!)
+            ),
+    }),
+    roomDetail: yup.array().of(yup.number().required()).required(),
+    date: yup.object().shape({
         startDate: yup.date().required(),
         endDate: yup.date().required(),
+        key: yup.string().required(),
     }),
 });

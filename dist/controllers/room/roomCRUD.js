@@ -30,6 +30,7 @@ exports.getRoomsByResortId = (0, express_async_handler_1.default)((req, res) => 
     res.status(200).json({ message: "Successful", data: response });
 }));
 exports.getAvailableRooms = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(req.body.formValues);
     const { destination: resortId, roomDetail, date } = req.body.formValues;
     const getAvailableRooms = yield roomService.getAvailableRooms(resortId, roomDetail, date);
     res.json({ data: getAvailableRooms });

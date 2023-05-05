@@ -37,13 +37,12 @@ class WishlistService {
             const checkUser = yield this.userRepositary.getById(userId);
             if (!checkUser)
                 throw errorResponse_1.default.notFound("User not found");
-            const { dates, noOfGuests, noOfRooms, resortId } = wishlistDetails;
+            const { destination, roomDetail, date } = wishlistDetails;
             const wishlist = {
                 userId: new mongodb_1.ObjectId(userId),
-                resortId: new mongodb_1.ObjectId(resortId),
-                noOfRooms: noOfRooms,
-                noOfGuests: noOfGuests,
-                dates: dates,
+                resortId: new mongodb_1.ObjectId(destination.id),
+                roomDetail: roomDetail,
+                dates: date,
             };
             return yield this.wishlistRepositary.create(wishlist);
         });
@@ -56,7 +55,7 @@ class WishlistService {
             const populatedWishlist = yield this.wishlistRepositary.populate(wishlistDetails, "resortId");
             const data = populatedWishlist.map((wishlist) => {
                 const _a = wishlist._doc, { resortId, userId } = _a, rest = __rest(_a, ["resortId", "userId"]);
-                return Object.assign({ resortName: resortId.resortDetails.name }, rest);
+                return Object.assign({ resortName: resortId.resortDetails.name, resortId: resortId._id }, rest);
             });
             return data;
         });

@@ -36,5 +36,6 @@ exports.deleteWishlist = (0, express_async_handler_1.default)((req, res) => __aw
     const { id } = req.params;
     yield wishlistService.deleteWishlist(id);
     yield userService.deleteWishlistFromUser(_id, id);
-    res.status(200).json({ message: "Dates removed from your wishlist" });
+    const allWishlist = yield wishlistService.getAllUserWishlist(_id);
+    res.status(200).json({ message: "Dates removed from your wishlist", data: allWishlist });
 }));

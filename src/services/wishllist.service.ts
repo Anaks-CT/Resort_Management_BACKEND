@@ -1,4 +1,5 @@
 import ErrorResponse from "../error/errorResponse";
+import { IBookingForm1 } from "../interface/booking.interface";
 import { IResort } from "../interface/resort.interface";
 import { IUser } from "../interface/user.interface";
 import { IWishlist } from "../interface/wishlist.interface";
@@ -12,16 +13,15 @@ export default class WishlistService {
         private userRepositary = new UserRepository()
     ) {}
 
-    async createWishlist(userId: string, wishlistDetails: IWishlist) {
+    async createWishlist(userId: string, wishlistDetails: IBookingForm1) {
         const checkUser = await this.userRepositary.getById<IUser>(userId);
         if (!checkUser) throw ErrorResponse.notFound("User not found");
-        const { dates, noOfGuests, noOfRooms, resortId } = wishlistDetails;
+        const { destination, roomDetail, date } = wishlistDetails;
         const wishlist: IWishlist = {
             userId: new ObjectId(userId),
-            resortId: new ObjectId(resortId),
-            noOfRooms: noOfRooms,
-            noOfGuests: noOfGuests,
-            dates: dates,
+            resortId: new ObjectId(destination.id),
+            roomDetail: roomDetail,
+            dates: date,
         };
         return await this.wishlistRepositary.create<IWishlist>(wishlist);
     }
@@ -37,7 +37,7 @@ export default class WishlistService {
         );
         const data: IWishlist[] = populatedWishlist.map((wishlist: any) => {
             const {resortId, userId, ...rest} = wishlist._doc
-            return {resortName: resortId.resortDetails.name, ...rest}
+            return {resortName: resortId.resortDetails.name,resortId: resortId._id, ...rest}
         })
         return data
     }

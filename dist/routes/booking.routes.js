@@ -9,4 +9,8 @@ const bookingCRUD_1 = require("../controllers/booking/bookingCRUD");
 const auth_middlewares_1 = require("../middlewares/auth-middlewares");
 const bodyValidation_1 = require("../middlewares/bodyValidation");
 exports.booking = express_1.default.Router();
-exports.booking.post("/confirmPart1", auth_middlewares_1.userVerify, bodyValidation_1.bookingRoomDetailsValidate, bookingCRUD_1.bookingConfirmationPart1);
+exports.booking
+    .route("/")
+    .post(auth_middlewares_1.userVerify, bodyValidation_1.bookingRoomDetailsValidate, bookingCRUD_1.bookingConfirmationPart1)
+    .patch(bookingCRUD_1.verifyPayment)
+    .get(auth_middlewares_1.userVerify, bookingCRUD_1.getBookingDetailsOfUser);

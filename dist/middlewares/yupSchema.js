@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.wishlistValidation = exports.newPasswordSchema = exports.emailVerifySchema = exports.bookingValidation = exports.addRoomSchema = exports.faqSchema = exports.addResort = exports.loginSchema = exports.signupSchema = void 0;
+exports.WishlistSchema = exports.newPasswordSchema = exports.emailVerifySchema = exports.bookingValidation = exports.addRoomSchema = exports.faqSchema = exports.addResort = exports.loginSchema = exports.signupSchema = void 0;
 const mongoose_1 = require("mongoose");
 const yup = __importStar(require("yup"));
 exports.signupSchema = yup.object().shape({
@@ -165,16 +165,18 @@ exports.newPasswordSchema = yup.object().shape({
         .required("Confirm password can't be empty")
         .oneOf([yup.ref("password")], "Passwords must match"),
 });
-exports.wishlistValidation = yup.object().shape({
-    resortId: yup
-        .string()
-        .trim()
-        .required()
-        .test("Valid MongoDB _id", "Invalid Package", (arg) => (0, mongoose_1.isValidObjectId)(arg)),
-    noOfRooms: yup.number().required(),
-    noOfGuests: yup.number().required(),
-    dates: yup.object().shape({
+exports.WishlistSchema = yup.object().shape({
+    destination: yup.object().shape({
+        name: yup.string().required(),
+        id: yup
+            .string()
+            .required()
+            .test("Valid MongoDB _id", "Invalid Room", (arg) => (0, mongoose_1.isValidObjectId)(arg)),
+    }),
+    roomDetail: yup.array().of(yup.number().required()).required(),
+    date: yup.object().shape({
         startDate: yup.date().required(),
         endDate: yup.date().required(),
+        key: yup.string().required(),
     }),
 });

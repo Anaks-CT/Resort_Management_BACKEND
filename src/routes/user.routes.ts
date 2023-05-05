@@ -20,6 +20,7 @@ import {
 } from "../controllers/user/auth/forgotPassword";
 import {
     addToWishlist,
+    deleteWishlist,
     getWishlistByUserId,
 } from "../controllers/wishlist/wishlistCRUD";
 import { userVerify } from "../middlewares/auth-middlewares";
@@ -33,7 +34,7 @@ user.route("/forgotPassword")
     .get(emailQueryValidate, verifyEmail)
     .put(emailQueryValidate, passwordValidate, changePassword);
 
-user.route("/wishlist:id?")
+user.route("/wishlist/:id?")
     .get(userVerify, getWishlistByUserId)
     .post(userVerify, wishlistDetails, addToWishlist)
-    .delete(paramsIdValidate)
+    .delete(userVerify, paramsIdValidate, deleteWishlist)

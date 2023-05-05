@@ -84,7 +84,7 @@ class RoomService {
                     return number;
             };
             // converting the input number of guests to the nearest room occupancy of room types
-            const roomOccupancy = roomDetails.map((item) => evenNumberMaker(item));
+            const roomOccupancy = roomDetails.map((item) => evenNumberMaker(+item));
             // changing the roomOccupancy in to an object with the number of count of a single number
             const result = new Map();
             for (let i = 0; i < roomOccupancy.length; i++) {
@@ -177,6 +177,7 @@ class RoomService {
     }
     updateRoomDetails(resortId, roomId, roomDetails) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log(roomDetails);
             //checking if the room type exeeds 50
             const roomTypeCount = yield this.roomRepositary.count();
             // throwing error if room type exeeds 50

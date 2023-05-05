@@ -27,8 +27,7 @@ const mongoose_1 = __importStar(require("mongoose"));
 const wishlistSchema = new mongoose_1.Schema({
     userId: { type: mongoose_1.default.Types.ObjectId, required: true },
     resortId: { type: mongoose_1.default.Types.ObjectId, required: true, ref: "Resort" },
-    noOfRooms: { type: Number, required: true },
-    noOfGuests: { type: Number, required: true },
+    roomDetail: [Number],
     dates: {
         startDate: { type: Date, required: true },
         endDate: { type: Date, required: true },

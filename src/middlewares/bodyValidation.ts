@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler";
 import ErrorResponse from "../error/errorResponse";
 import {
+    WishlistSchema,
     addResort,
     addRoomSchema,
     bookingValidation,
@@ -9,7 +10,6 @@ import {
     loginSchema,
     newPasswordSchema,
     signupSchema,
-    wishlistValidation,
 } from "./yupSchema";
 import validator from "validator";
 import { RequestHandler } from "express";
@@ -118,7 +118,7 @@ export const passwordValidate = asyncHandler(async (req, res, next) => {
 
 export const wishlistDetails = asyncHandler(async (req, res, next) => {
     try {
-        req.body.wishlistDetails = await wishlistValidation.validate(req.body.wishlistDetails);
+        req.body.wishlistDetails = await WishlistSchema.validate(req.body.wishlistDetails);
         next();
     } catch (err: any) {
         throw ErrorResponse.badRequest(err.errors[0]);
