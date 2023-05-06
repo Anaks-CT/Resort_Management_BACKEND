@@ -16,8 +16,10 @@ exports.getBookingDetailsOfUser = exports.verifyPayment = exports.bookingConfirm
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const room_service_1 = __importDefault(require("../../services/room.service"));
 const booking_service_1 = __importDefault(require("../../services/booking.service"));
+const user_service_1 = __importDefault(require("../../services/user.service"));
 const roomService = new room_service_1.default();
 const bookingService = new booking_service_1.default();
+const userService = new user_service_1.default();
 exports.bookingConfirmationPart1 = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const { destination: resortId, roomDetail, date, } = req.body.bookingForm1Details;
@@ -25,10 +27,12 @@ exports.bookingConfirmationPart1 = (0, express_async_handler_1.default)((req, re
     const roomNumber = yield Promise.all((_a = req.body.stayDetails) === null || _a === void 0 ? void 0 : _a.map((singleStayDetail) => roomService.addDatesToRoom(date, singleStayDetail.roomId)));
     const bookingDetails = (yield bookingService.createBooking(req.user._id, resortId.id, date, req.body.stayDetails, roomNumber));
     const booking = bookingDetails;
+    yield userService.addBookingId(req.user._id, booking._id);
     const orderDetails = yield bookingService.initializePayment(booking.amount.totalCost);
     setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
         const result = yield bookingService.deleteBooking(bookingDetails && bookingDetails);
         if (bookingDetails && result) {
+            yield userService.removeBookingId(req.user._id, booking._id);
             const details = bookingDetails;
             Promise.all(details.roomDetail.map((singleRoomDetail) => roomService.removeDatesFromRoom(singleRoomDetail.roomTypeId, singleRoomDetail.roomId, date)));
         }
@@ -36,7 +40,7 @@ exports.bookingConfirmationPart1 = (0, express_async_handler_1.default)((req, re
     res.json({
         message: "Booking confirmation part 1 successful",
         data: orderDetails,
-        bookingId: booking.id
+        bookingId: booking._id
     });
 }));
 exports.verifyPayment = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {

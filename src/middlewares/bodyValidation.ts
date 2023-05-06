@@ -10,6 +10,7 @@ import {
     loginSchema,
     newPasswordSchema,
     signupSchema,
+    updateUserDetailSchema,
 } from "./yupSchema";
 import validator from "validator";
 import { RequestHandler } from "express";
@@ -124,8 +125,13 @@ export const wishlistDetails = asyncHandler(async (req, res, next) => {
         throw ErrorResponse.badRequest(err.errors[0]);
     }
 });
-// export const managerValidate = asyncHandler(
-//     async (req, res, next) => {
 
-//     }
-// )
+
+export const updateUserDetailValidate = asyncHandler(async (req, res, next) => {
+    try {
+        req.body.updateDetails = await updateUserDetailSchema.validate(req.body.updateDetails);
+        next();
+    } catch (err: any) {
+        throw ErrorResponse.badRequest(err.errors[0]);
+    }
+});

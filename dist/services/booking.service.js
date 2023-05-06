@@ -128,7 +128,6 @@ class BookingService {
             if (signature !== razorpaySignature) {
                 throw errorResponse_1.default.badRequest("Transcation is not legit");
             }
-            console.log(bookingId);
             const updateResult = yield this.bookingRepositary.updateBookingPayment(bookingId);
             if (updateResult.modifiedCount === 0)
                 throw errorResponse_1.default.internalError("An Error occured, if your money is been debited, please contact us");
@@ -136,14 +135,19 @@ class BookingService {
     }
     getBookingDetails(userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const bookingDetails = yield this.bookingRepositary.getAll({ userId: userId });
+            const bookingDetails = yield this.bookingRepositary.getAll({
+                userId: userId,
+                paymentSuccess: true,
+            });
             if (!bookingDetails)
                 throw errorResponse_1.default.notFound("Cannot find Bookings, Please try again later");
-            const filteredBookingDetails = bookingDetails.map((item) => {
-                const _a = item._doc, { paymentSuccess, status } = _a, rest = __rest(_a, ["paymentSuccess", "status"]);
-                return rest;
+            const resortPopulated = yield this.bookingRepositary.populate(bookingDetails, "resortId");
+            const userPopulated = yield this.bookingRepositary.populate(resortPopulated, "userId");
+            console.log(userPopulated);
+            return userPopulated.map((_a) => {
+                var _b = _a._doc, { paymentSuccess, status, resortId: { resortDetails: { name: resortName }, }, userId: { name, phone, email } } = _b, rest = __rest(_b, ["paymentSuccess", "status", "resortId", "userId"]);
+                return (Object.assign(Object.assign({}, rest), { resortName, name, phone, email }));
             });
-            return filteredBookingDetails;
         });
     }
 }

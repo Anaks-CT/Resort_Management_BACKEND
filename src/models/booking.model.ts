@@ -2,8 +2,8 @@ import mongoose, { model, Schema } from "mongoose";
 import { IBooking } from "../interface/booking.interface";
 
 const bookingSchema = new Schema<IBooking>({
-    userId: {type: String, required: true},
-    resortId: {type: String, required: true},
+    userId: {type: String, required: true, ref:"User"},
+    resortId: {type: String, required: true, ref: "Resort"},
     BookingDate: {type: Date, default: new Date()},
     checkInDate: {type: Date, required: true},
     checkOutDate: {type: Date, required: true},

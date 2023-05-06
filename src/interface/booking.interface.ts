@@ -1,7 +1,8 @@
 
 
 export interface IBooking{
-    id?: string
+    _doc? : any
+    _id?: string
     userId: string
     resortId: string
     BookingDate?: Date,

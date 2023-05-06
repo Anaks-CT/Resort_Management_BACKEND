@@ -25,8 +25,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
 const bookingSchema = new mongoose_1.Schema({
-    userId: { type: String, required: true },
-    resortId: { type: String, required: true },
+    userId: { type: String, required: true, ref: "User" },
+    resortId: { type: String, required: true, ref: "Resort" },
     BookingDate: { type: Date, default: new Date() },
     checkInDate: { type: Date, required: true },
     checkOutDate: { type: Date, required: true },

@@ -22,7 +22,7 @@ class UserService {
     }
     getSingleUserDetails(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield this.userRepositary.getOne({ _id: id });
+            const user = yield this.userRepositary.getById(id);
             if (!user)
                 throw errorResponse_1.default.notFound('User not found');
             return user;
@@ -68,6 +68,38 @@ class UserService {
             const updateResult = yield this.userRepositary.deleteFromWishlist(userId, wishlistId);
             if (updateResult.modifiedCount !== 1)
                 throw errorResponse_1.default.internalError('Dates not discarded from wishlist');
+        });
+    }
+    addBookingId(userId, bookingId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield this.userRepositary.getById(userId);
+            if (!user)
+                throw errorResponse_1.default.notFound('User not found');
+            const updateResult = yield this.userRepositary.addBookingId(userId, bookingId);
+            if (updateResult.modifiedCount !== 1)
+                throw errorResponse_1.default.internalError('Booking Id is not added to user Collection due to server error');
+        });
+    }
+    removeBookingId(userId, bookingId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield this.userRepositary.getById(userId);
+            if (!user)
+                throw errorResponse_1.default.notFound('User not found');
+            const updateResult = yield this.userRepositary.removeBookingId(userId, bookingId);
+            if (updateResult.modifiedCount !== 1)
+                throw errorResponse_1.default.internalError('bookingId is not discarded from user"s data');
+        });
+    }
+    updateUserDetails(userId, name, url) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const checkUser = yield this.userRepositary.getById(userId);
+            if (!checkUser)
+                throw errorResponse_1.default.notFound('User not found');
+            const newData = yield this.userRepositary.updateUserDetails(userId, name, url);
+            console.log(newData === null || newData === void 0 ? void 0 : newData.isModified);
+            if (!(newData === null || newData === void 0 ? void 0 : newData.isModified))
+                throw errorResponse_1.default.internalError("Update failed due to internal Error, please try again later");
+            return newData;
         });
     }
 }

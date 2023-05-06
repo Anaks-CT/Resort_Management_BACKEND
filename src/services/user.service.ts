@@ -10,7 +10,8 @@ export default class UserService {
 
 
     async getSingleUserDetails(id: string): Promise<IUser>{
-        const user = await this.userRepositary.getOne<IUser>({_id: id})
+        const user = await this.userRepositary.getById<IUser>(id)
+
         if(!user) throw ErrorResponse.notFound('User not found')
         return user
     }
@@ -45,4 +46,26 @@ export default class UserService {
         if(updateResult.modifiedCount !== 1) throw ErrorResponse.internalError('Dates not discarded from wishlist')
     }
 
+    async addBookingId (userId: string, bookingId: string){
+        const user = await this.userRepositary.getById(userId)
+        if(!user) throw ErrorResponse.notFound('User not found')
+        const updateResult = await this.userRepositary.addBookingId(userId, bookingId)
+        if(updateResult.modifiedCount !== 1) throw ErrorResponse.internalError('Booking Id is not added to user Collection due to server error')
+    }
+
+    async removeBookingId(userId: string, bookingId: string){
+        const user = await this.userRepositary.getById(userId)
+        if(!user) throw ErrorResponse.notFound('User not found')
+        const updateResult = await this.userRepositary.removeBookingId(userId, bookingId)
+        if(updateResult.modifiedCount !== 1) throw ErrorResponse.internalError('bookingId is not discarded from user"s data')
+    }
+
+    async updateUserDetails(userId: string, name: string, url?: string, ){
+        const checkUser = await this.userRepositary.getById(userId)
+        if(!checkUser) throw ErrorResponse.notFound('User not found')
+        const newData = await this.userRepositary.updateUserDetails(userId, name, url)
+        console.log(newData?.isModified);
+        if(!newData?.isModified) throw ErrorResponse.internalError("Update failed due to internal Error, please try again later")
+        return newData
+    }
 }

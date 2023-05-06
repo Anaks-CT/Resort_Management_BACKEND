@@ -11,6 +11,7 @@ const bodyValidation_1 = require("../middlewares/bodyValidation");
 const forgotPassword_1 = require("../controllers/user/auth/forgotPassword");
 const wishlistCRUD_1 = require("../controllers/wishlist/wishlistCRUD");
 const auth_middlewares_1 = require("../middlewares/auth-middlewares");
+const userCRUD_1 = require("../controllers/user/auth/userCRUD");
 exports.user = express_1.default.Router();
 exports.user.post("/signup", bodyValidation_1.validateSignup, signup_1.signup);
 exports.user.post("/login", bodyValidation_1.validateLogin, login_1.login);
@@ -22,3 +23,6 @@ exports.user.route("/wishlist/:id?")
     .get(auth_middlewares_1.userVerify, wishlistCRUD_1.getWishlistByUserId)
     .post(auth_middlewares_1.userVerify, bodyValidation_1.wishlistDetails, wishlistCRUD_1.addToWishlist)
     .delete(auth_middlewares_1.userVerify, bodyValidation_1.paramsIdValidate, wishlistCRUD_1.deleteWishlist);
+exports.user.route("/")
+    .get(auth_middlewares_1.userVerify, userCRUD_1.getUserDetail)
+    .patch(auth_middlewares_1.userVerify, bodyValidation_1.updateUserDetailValidate, userCRUD_1.updateUserDetails);

@@ -39,6 +39,40 @@ class UserRepository extends BaseRepository {
             }
         );
     }
+
+    async addBookingId(userId: string, bookingId: string) {
+        return await userModel.updateOne(
+            { _id: new ObjectId(userId) },
+            {
+                $addToSet: {
+                    bookings: bookingId,
+                },
+            }
+        );
+    }
+
+    async removeBookingId(userId: string, bookingId: string) {
+        return await userModel.updateOne(
+            { _id: new ObjectId(userId) },
+            {
+                $pull: {
+                    bookings: bookingId,
+                },
+            }
+        );
+    }
+
+    async updateUserDetails(userId: string, name: string, url?: string) {
+        const update: any = { name: name };
+        if (url) {
+            update["image"] = url;
+        }
+        return await userModel.findOneAndUpdate(
+            { _id: userId },
+            { $set: update },
+            { new: true }
+        );
+    }
 }
 
 export default UserRepository;

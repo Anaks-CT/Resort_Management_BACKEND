@@ -94,9 +94,11 @@ export default class BookingService {
             throw ErrorResponse.internalError(
                 "Cannot find the booknig details"
             );
-        if (!bookingDetails.paymentSuccess)
-            {await this.bookingRepositary.deleteById(bookingSchemaDetails._id!); return true}
-        return false
+        if (!bookingDetails.paymentSuccess) {
+            await this.bookingRepositary.deleteById(bookingSchemaDetails._id!);
+            return true;
+        }
+        return false;
     }
 
     async initializePayment(totalAmount: number) {
@@ -110,7 +112,7 @@ export default class BookingService {
 
         const order = await instance.orders.create(options);
         if (!order) throw new Error("something went wrong");
-        return order
+        return order;
     }
 
     async verifyPayment(
@@ -119,7 +121,6 @@ export default class BookingService {
         razorpaySignature: string,
         bookingId: string
     ) {
-
         const signature = crypto
             .createHmac("sha256", process.env.RAZORPAY_SECRET as string)
             .update(`${orderCreationId}|${razorpayPaymentId}`)
@@ -128,19 +129,45 @@ export default class BookingService {
         if (signature !== razorpaySignature) {
             throw ErrorResponse.badRequest("Transcation is not legit");
         }
-        console.log(bookingId);
-        const updateResult =await this.bookingRepositary.updateBookingPayment(bookingId)
-        if(updateResult.modifiedCount ===0 ) throw ErrorResponse.internalError("An Error occured, if your money is been debited, please contact us")
-
+        const updateResult = await this.bookingRepositary.updateBookingPayment(
+            bookingId
+        );
+        if (updateResult.modifiedCount === 0)
+            throw ErrorResponse.internalError(
+                "An Error occured, if your money is been debited, please contact us"
+            );
     }
 
-    async getBookingDetails(userId: string){
-        const bookingDetails =  await this.bookingRepositary.getAll<IBooking>({userId: userId})
-        if(!bookingDetails) throw ErrorResponse.notFound("Cannot find Bookings, Please try again later")
-        const filteredBookingDetails = bookingDetails.map((item: any) => {
-            const {paymentSuccess, status, ...rest} = item._doc
-            return rest
-        })
-        return filteredBookingDetails
+    async getBookingDetails(userId: string) {
+        const bookingDetails = await this.bookingRepositary.getAll<IBooking>({
+            userId: userId,
+            paymentSuccess: true,
+        });
+        if (!bookingDetails)
+            throw ErrorResponse.notFound(
+                "Cannot find Bookings, Please try again later"
+            );
+        const resortPopulated = await this.bookingRepositary.populate(
+            bookingDetails,
+            "resortId"
+        );
+        const userPopulated = await this.bookingRepositary.populate(
+            resortPopulated,
+            "userId"
+        );
+        console.log(userPopulated);
+        return userPopulated.map(
+            ({
+                _doc: {
+                    paymentSuccess,
+                    status,
+                    resortId: {
+                        resortDetails: { name: resortName },
+                    }, 
+                    userId: { name, phone, email },
+                    ...rest
+                },
+            }) => ({ ...rest, resortName, name, phone, email })
+        );
     }
 }

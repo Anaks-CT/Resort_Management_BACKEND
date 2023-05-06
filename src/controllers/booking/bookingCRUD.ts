@@ -3,9 +3,11 @@ import RoomService from "../../services/room.service";
 import { RequestWithUser } from "../../middlewares/auth-middlewares";
 import BookingService from "../../services/booking.service";
 import { IBooking } from "../../interface/booking.interface";
+import UserService from "../../services/user.service";
 
 const roomService = new RoomService();
 const bookingService = new BookingService();
+const userService = new UserService()
 
 export const bookingConfirmationPart1 = expressAsyncHandler(
     async (req: RequestWithUser, res) => {
@@ -29,6 +31,8 @@ export const bookingConfirmationPart1 = expressAsyncHandler(
         )) as unknown;
         const booking = bookingDetails as IBooking;
 
+        await userService.addBookingId(req.user._id, booking._id!)
+
         const orderDetails = await bookingService.initializePayment(
             booking.amount.totalCost
         );
@@ -36,6 +40,7 @@ export const bookingConfirmationPart1 = expressAsyncHandler(
         setTimeout(async() => {
             const result = await bookingService.deleteBooking(bookingDetails && bookingDetails)
             if (bookingDetails && result) {
+                await userService.removeBookingId(req.user._id, booking._id!)
                 const details = bookingDetails as IBooking;
                 Promise.all(
                     details.roomDetail.map((singleRoomDetail: any) =>
@@ -51,7 +56,7 @@ export const bookingConfirmationPart1 = expressAsyncHandler(
         res.json({
             message: "Booking confirmation part 1 successful",
             data: orderDetails,
-            bookingId: booking.id
+            bookingId: booking._id
         });
     }
 );

@@ -196,3 +196,16 @@ export const WishlistSchema = yup.object().shape({
         key: yup.string().required(),
     }),
 });
+
+export const updateUserDetailSchema = yup.object().shape({
+    image: yup
+        .string()
+        .trim(),
+    name: yup
+        .string()
+        .trim()
+        .required("Name can not be empty")
+        .test("isPerfectString", "Enter a valid name", (arg) =>
+            /^[A-Za-z ]+$/.test(arg)
+        ),
+});

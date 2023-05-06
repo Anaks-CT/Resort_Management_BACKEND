@@ -23,13 +23,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.login = void 0;
-const auth_service_1 = __importDefault(require("../../../services/auth.service"));
+exports.updateUserDetails = exports.getUserDetail = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
-const authService = new auth_service_1.default();
-exports.login = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email, password } = req.body;
-    const { user, token } = yield authService.login("user", email, password);
-    const _a = user._doc, { password: hashedPassword, role } = _a, userDetails = __rest(_a, ["password", "role"]);
-    res.json({ message: "user found", data: userDetails, token });
+const user_service_1 = __importDefault(require("../../../services/user.service"));
+const userService = new user_service_1.default();
+exports.getUserDetail = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { _id } = req.user;
+    const user = yield userService.getSingleUserDetails(_id);
+    const _a = user._doc, { password, role } = _a, userDetails = __rest(_a, ["password", "role"]);
+    res.status(200).json({ message: "User details fetched successfully", data: userDetails });
+}));
+exports.updateUserDetails = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { _id } = req.user;
+    const { image, name } = req.body.updateDetails;
+    const updatedUserDetails = yield userService.updateUserDetails(_id, name, image);
+    res.status(200).json({ message: "User details updates successfully", data: updatedUserDetails });
 }));

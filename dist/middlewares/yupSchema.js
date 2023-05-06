@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.WishlistSchema = exports.newPasswordSchema = exports.emailVerifySchema = exports.bookingValidation = exports.addRoomSchema = exports.faqSchema = exports.addResort = exports.loginSchema = exports.signupSchema = void 0;
+exports.updateUserDetailSchema = exports.WishlistSchema = exports.newPasswordSchema = exports.emailVerifySchema = exports.bookingValidation = exports.addRoomSchema = exports.faqSchema = exports.addResort = exports.loginSchema = exports.signupSchema = void 0;
 const mongoose_1 = require("mongoose");
 const yup = __importStar(require("yup"));
 exports.signupSchema = yup.object().shape({
@@ -179,4 +179,14 @@ exports.WishlistSchema = yup.object().shape({
         endDate: yup.date().required(),
         key: yup.string().required(),
     }),
+});
+exports.updateUserDetailSchema = yup.object().shape({
+    image: yup
+        .string()
+        .trim(),
+    name: yup
+        .string()
+        .trim()
+        .required("Name can not be empty")
+        .test("isPerfectString", "Enter a valid name", (arg) => /^[A-Za-z ]+$/.test(arg)),
 });

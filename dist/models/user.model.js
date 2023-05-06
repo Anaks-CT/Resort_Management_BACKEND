@@ -29,6 +29,7 @@ const userSchema = new mongoose_1.Schema({
     phone: { type: Number, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
+    image: { type: String },
     address: {
         addressLine1: { type: String },
         addressLine2: { type: String },
@@ -37,6 +38,8 @@ const userSchema = new mongoose_1.Schema({
         pincode: { type: Number },
         country: { type: String },
     },
+    bookings: [mongoose_1.default.Types.ObjectId],
+    points: { type: Number, default: 100 },
     wishlist: [mongoose_1.default.Types.ObjectId],
     role: { type: String, default: "user" }
 }, { timestamps: true });

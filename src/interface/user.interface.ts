@@ -3,10 +3,13 @@ import { Document } from "mongoose";
 
 
 export interface IUser extends Document {
+    _doc: IUser
     name: string;
     phone: number;
     email: string;
     password: string;
+    points: number
+    image: string
     address?: {
       addressLine1: string;
       addressLine2: string;
@@ -15,6 +18,7 @@ export interface IUser extends Document {
       pincode: number;
       country: string;
     };
+    bookings: string[]
     role: string
     wishlist: string[]
   }
