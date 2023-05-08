@@ -10,14 +10,8 @@ export interface IUser extends Document {
     password: string;
     points: number
     image: string
-    address?: {
-      addressLine1: string;
-      addressLine2: string;
-      addressLine3: string;
-      city: string;
-      pincode: number;
-      country: string;
-    };
+    totalmoneySpent: number
+    type: "member" | "platinum" | "diamond"
     bookings: string[]
     role: string
     wishlist: string[]

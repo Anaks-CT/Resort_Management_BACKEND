@@ -1,5 +1,3 @@
-import ErrorResponse from "../error/errorResponse";
-import { IUser } from "../interface/user.interface";
 import userModel from "../models/user.model";
 import { BaseRepository } from "./baseRepositary";
 import { ObjectId } from "mongodb";
@@ -62,8 +60,43 @@ class UserRepository extends BaseRepository {
         );
     }
 
+    async updateMemberDetailsToPlatinum(userId: string){
+        return await userModel.updateOne({_id: userId}, {
+            $set: {
+                type: "platinum"
+            }
+        })
+    }
+
+    async updateMemberDetailsToDiamond(userId: string){
+        return await userModel.updateOne({_id: userId}, {
+            $set: {
+                type: "diamond"
+            }
+        })
+    }
+
+    async updateUserPoints(userId: string, points: number){
+        return await userModel.updateOne({_id: userId},{
+            $set : {
+                points: points
+            }
+        })
+    }
+
+    async incUserPoints(userId: string, points: number) {
+        return await userModel.updateOne(
+            { _id: new ObjectId(userId) },
+            {
+                $inc: {
+                    points: +points,
+                },
+            }
+        );
+    }
+
     async updateUserDetails(userId: string, name: string, url?: string) {
-        const update: any = { name: name };
+        const update: { name: string; image?: string } = { name: name };
         if (url) {
             update["image"] = url;
         }
@@ -71,6 +104,18 @@ class UserRepository extends BaseRepository {
             { _id: userId },
             { $set: update },
             { new: true }
+        );
+    }
+
+    async updatePointsAndMoneySpent(userId: string, points: number, amount: number) {
+        return await userModel.updateOne(
+            { _id: userId },
+            {
+                $inc: {
+                    points: points,
+                    totalmoneySpent: amount
+                },
+            }
         );
     }
 }

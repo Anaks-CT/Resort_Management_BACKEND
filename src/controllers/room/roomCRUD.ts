@@ -1,13 +1,14 @@
 
+import { RequestWithUser } from "../../middlewares/auth-middlewares";
 import RoomService from "../../services/room.service";
 import asyncHandler from "express-async-handler";
+import UserService from "../../services/user.service";
 
 const roomService = new RoomService();
+const userService = new UserService();
 
 export const addRoom = asyncHandler(async (req, res) => {
     const {roomData} = req.body
-    console.log(roomData);
-    console.log(req.body);
     const {resortId} = req.params
     const response = await roomService.createRoom(roomData, resortId)
     res.status(201).json({ message: "Room Added Successfully", data: response});
@@ -19,14 +20,13 @@ export const getRoomsByResortId = asyncHandler( async(req, res) => {
     res.status(200).json({message: "Successful", data: response})
 })
 
-export const getAvailableRooms = asyncHandler(async (req, res) => {
-    console.log(req.body.formValues);
+export const getAvailableRooms = asyncHandler(async (req: RequestWithUser, res) => {
+    const {_id} = req.user
     const { destination: resortId, roomDetail, date } = req.body.formValues;
     const getAvailableRooms = await roomService.getAvailableRooms(resortId, roomDetail, date)
-    res.json({data: getAvailableRooms });
+    const userDetails = await userService.getSingleUserDetails(_id)
+    res.json({data: getAvailableRooms, type: userDetails.type, points: userDetails.points });
 });
-
-
 
 export const updateRoom = asyncHandler( async (req, res) => {
     const {resortId} = req.params

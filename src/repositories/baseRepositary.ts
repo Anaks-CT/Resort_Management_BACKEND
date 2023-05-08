@@ -1,15 +1,23 @@
-import { FilterQuery, UpdateQuery } from "mongoose";
+import { FilterQuery, UpdateQuery, Query } from "mongoose";
 
 export abstract class BaseRepository {
   constructor(private readonly model:any) {}
 
-   async getAll<T>(Object: any): Promise<T[]> {
-    return this.model.find(Object);
+  async getAll<T>(filter: any, sortOptions?: any): Promise<T[]> {
+    const query = this.model.find(filter);
+    if (sortOptions) {
+      query.sort(sortOptions);
+    }
+    return query;
   }
 
   async populate<T>(data: T, path: string, options?: any): Promise<T> {
     return this.model.populate(data, { path, ...options });
   }
+
+  // async sort<T>(query: any, sortBy: keyof T, sortOrder: 1 | -1): Promise<T[]> {
+  //   return query.sort({ [sortBy]: sortOrder });
+  // }
 
   async getOne<T>(object: any): Promise<T | null> {
     return this.model.findOne(object);

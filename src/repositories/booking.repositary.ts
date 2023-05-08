@@ -19,6 +19,17 @@ class BookingRepositary extends BaseRepository {
             }
         );
     }
+
+    async cancelbookingStatus(bookingId: string){
+        return await bookingModel.updateOne(
+            { _id: bookingId },
+            {
+                $set: {
+                    status: false
+                }
+            }
+        )
+    }
 }
 
 export default BookingRepositary;

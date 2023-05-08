@@ -14,9 +14,13 @@ class BaseRepository {
     constructor(model) {
         this.model = model;
     }
-    getAll(Object) {
+    getAll(filter, sortOptions) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.model.find(Object);
+            const query = this.model.find(filter);
+            if (sortOptions) {
+                query.sort(sortOptions);
+            }
+            return query;
         });
     }
     populate(data, path, options) {
@@ -24,6 +28,9 @@ class BaseRepository {
             return this.model.populate(data, Object.assign({ path }, options));
         });
     }
+    // async sort<T>(query: any, sortBy: keyof T, sortOrder: 1 | -1): Promise<T[]> {
+    //   return query.sort({ [sortBy]: sortOrder });
+    // }
     getOne(object) {
         return __awaiter(this, void 0, void 0, function* () {
             return this.model.findOne(object);

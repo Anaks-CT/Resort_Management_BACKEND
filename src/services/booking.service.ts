@@ -1,3 +1,4 @@
+import { Query } from "mongoose";
 import { instance } from "../config/razorpay";
 import ErrorResponse from "../error/errorResponse";
 import { IBooking } from "../interface/booking.interface";
@@ -20,7 +21,9 @@ export default class BookingService {
         resortId: string,
         date: any,
         stayDetails: any[],
-        roomNumberIds: string[]
+        roomNumberIds: string[],
+        userType: "member" | "platinum" | "diamond",
+        userPoints?: number
     ) {
         const user = await this.userRepositary.getOne<IUser>({ _id: userId });
         if (!user)
@@ -28,30 +31,61 @@ export default class BookingService {
                 "Authorization Error. Please try again later"
             );
         let roomDetails;
-        let bookingDetail;
+        let bookingDetail: IBooking;
+        let userPointsLeft: number | undefined;
         await Promise.all(
             stayDetails.map((singleDetails, i) => {
                 let roomNumber;
                 return this.roomRepositary
-                    .getOne<IRoom>({ _id: singleDetails.roomId })
+                    .getOne<IRoom>({
+                        _id: singleDetails.roomId,
+                        "packages._id": singleDetails.packageId,
+                    })
                     .then((res) => {
-                        const room = res?.roomNumbers.filter((num) => {
+                        if (!res)
+                            throw ErrorResponse.notFound(
+                                "Cannot find room Details"
+                            );
+                        const packageDetails = res.packages.find(
+                            (pkg) =>
+                                pkg._id.toString() ===
+                                singleDetails.packageId.toString()
+                        );
+                        if (!packageDetails)
+                            throw ErrorResponse.notFound(
+                                "Cannot find package details"
+                            );
+                        // how can i get the details of the packge i have id with
+                        const room = res.roomNumbers.filter((num) => {
                             return (
                                 num._id?.toString() ==
                                 roomNumberIds[i].toString()
                             );
                         });
                         roomNumber = room && room[0].number;
+                        let packageCost;
+                        if (userType === "platinum") {
+                            packageCost =
+                                Math.floor(packageDetails.cost -
+                                (packageDetails.cost * 5 / 100))
+                        } else if (userType === "diamond") {
+                            packageCost =
+                                Math.floor(packageDetails.cost -
+                                (packageDetails.cost * 15 / 100))
+                        } else {
+                            packageCost = Math.floor(packageDetails.cost);
+                        }
+                        console.log(packageCost);
                         return {
-                            roomTypeId: singleDetails.roomId,
-                            roomName: singleDetails.roomName,
-                            roomNumber: roomNumber,
+                            roomTypeId: res?._id,
+                            roomName: res?.name,
+                            roomNumber,
                             roomId: room && room[0]._id,
-                            packagename: singleDetails.packageName,
-                            packageCost: singleDetails.packageCost,
+                            packagename: packageDetails?.packageName,
+                            packageCost,
                         };
                     })
-                    .catch((err) => {
+                    .catch(() => {
                         throw ErrorResponse.notFound(
                             "cannot find Room Details"
                         );
@@ -59,19 +93,40 @@ export default class BookingService {
             })
         ).then((result) => {
             roomDetails = result;
-            const totalRoomCost = stayDetails.reduce(
+            const totalRoomCost = result.reduce(
                 (acc, item) => (acc += item.packageCost),
                 0
             );
-            const pointsUsed = 0;
+            const taxCost = Math.floor((totalRoomCost * 22) / 100);
+            const currentTotal = totalRoomCost + taxCost;
+            let totalCost: number;
+            let remainingUserPoints: number | undefined;
+            if (userPoints) {
+                if (
+                    currentTotal < userPoints ||
+                    userPoints > currentTotal - 1000
+                ) {
+                    totalCost = 1000;
+                    remainingUserPoints = userPoints - currentTotal;
+                } else {
+                    totalCost = currentTotal - userPoints;
+                    remainingUserPoints = 0;
+                }
+            } else {
+                totalCost = currentTotal;
+            }
             const amount = {
                 totalRoomCost,
-                taxCost: (totalRoomCost * 22) / 100,
-                pointsUsed: pointsUsed,
-                totalCost:
-                    totalRoomCost + (totalRoomCost * 22) / 100 + pointsUsed,
+                taxCost,
+                pointsUsed:
+                    userPoints &&
+                    remainingUserPoints &&
+                    (userPoints > remainingUserPoints
+                        ? userPoints - remainingUserPoints
+                        : remainingUserPoints - userPoints),
+                totalCost,
             };
-            const newBookingDetails = {
+            const newBookingDetails: any = {
                 userId: userId,
                 resortId: resortId,
                 checkInDate: date.startDate,
@@ -79,32 +134,47 @@ export default class BookingService {
                 roomDetail: roomDetails,
                 amount: amount,
             };
+            userPointsLeft = remainingUserPoints;
             return this.bookingRepositary
-                .create(newBookingDetails)
-                .then((res) => (bookingDetail = res));
+                .create<IBooking>(newBookingDetails)
+                .then((res) => (bookingDetail = res as IBooking));
         });
-        return bookingDetail;
+        return { ...bookingDetail!, userPointsLeft };
     }
 
-    async deleteBooking(bookingSchemaDetails: any) {
+    async deleteBooking(bookingId: string) {
         const bookingDetails = await this.bookingRepositary.getOne<IBooking>({
-            _id: bookingSchemaDetails._id,
+            _id: bookingId,
         });
         if (!bookingDetails)
             throw ErrorResponse.internalError(
                 "Cannot find the booknig details"
             );
         if (!bookingDetails.paymentSuccess) {
-            await this.bookingRepositary.deleteById(bookingSchemaDetails._id!);
+            await this.bookingRepositary.deleteById(bookingId);
             return true;
         }
         return false;
     }
 
+    async cancelBooking(bookingId: string){
+        const bookingDetails = await this.bookingRepositary.getOne<IBooking>({
+            _id: bookingId,
+        });
+        if (!bookingDetails)
+            throw ErrorResponse.internalError(
+                "Cannot find the booknig details"
+            );
+        if(!bookingDetails.status) throw ErrorResponse.conflict("Booking is already canceled")
+        const {modifiedCount} = await this.bookingRepositary.cancelbookingStatus(bookingId)
+        if(modifiedCount === 0 ) throw ErrorResponse.internalError("Couldn't cancel booking, please contact TRINITY helping desk")
+        return bookingDetails
+    }
+
     async initializePayment(totalAmount: number) {
         const receiptId = Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000; // random reciept id generating
         const options = {
-            amount: totalAmount * 100, // amount in smallest currency unit
+            amount: Math.floor(totalAmount * 100), // amount in smallest currency unit
             currency: "INR",
             receipt: `receipt_order_${receiptId}`,
             payment_capture: 1,
@@ -138,11 +208,20 @@ export default class BookingService {
             );
     }
 
+    async getBookingById(bookingId: string) {
+        const bookingDetails = await this.bookingRepositary.getById<IBooking>(
+            bookingId
+        );
+        if (!bookingDetails)
+            throw ErrorResponse.notFound("Cannot find booking details");
+        return bookingDetails;
+    }
+
     async getBookingDetails(userId: string) {
         const bookingDetails = await this.bookingRepositary.getAll<IBooking>({
             userId: userId,
             paymentSuccess: true,
-        });
+        }, {"createdAt": -1})
         if (!bookingDetails)
             throw ErrorResponse.notFound(
                 "Cannot find Bookings, Please try again later"
@@ -155,15 +234,13 @@ export default class BookingService {
             resortPopulated,
             "userId"
         );
-        console.log(userPopulated);
         return userPopulated.map(
             ({
                 _doc: {
                     paymentSuccess,
-                    status,
                     resortId: {
                         resortDetails: { name: resortName },
-                    }, 
+                    },
                     userId: { name, phone, email },
                     ...rest
                 },

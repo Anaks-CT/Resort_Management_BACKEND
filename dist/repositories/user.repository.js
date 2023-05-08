@@ -62,6 +62,42 @@ class UserRepository extends baseRepositary_1.BaseRepository {
             });
         });
     }
+    updateMemberDetailsToPlatinum(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield user_model_1.default.updateOne({ _id: userId }, {
+                $set: {
+                    type: "platinum"
+                }
+            });
+        });
+    }
+    updateMemberDetailsToDiamond(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield user_model_1.default.updateOne({ _id: userId }, {
+                $set: {
+                    type: "diamond"
+                }
+            });
+        });
+    }
+    updateUserPoints(userId, points) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield user_model_1.default.updateOne({ _id: userId }, {
+                $set: {
+                    points: points
+                }
+            });
+        });
+    }
+    incUserPoints(userId, points) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield user_model_1.default.updateOne({ _id: new mongodb_1.ObjectId(userId) }, {
+                $inc: {
+                    points: +points,
+                },
+            });
+        });
+    }
     updateUserDetails(userId, name, url) {
         return __awaiter(this, void 0, void 0, function* () {
             const update = { name: name };
@@ -69,6 +105,16 @@ class UserRepository extends baseRepositary_1.BaseRepository {
                 update["image"] = url;
             }
             return yield user_model_1.default.findOneAndUpdate({ _id: userId }, { $set: update }, { new: true });
+        });
+    }
+    updatePointsAndMoneySpent(userId, points, amount) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield user_model_1.default.updateOne({ _id: userId }, {
+                $inc: {
+                    points: points,
+                    totalmoneySpent: amount
+                },
+            });
         });
     }
 }

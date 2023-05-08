@@ -15,11 +15,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateRoom = exports.getAvailableRooms = exports.getRoomsByResortId = exports.addRoom = void 0;
 const room_service_1 = __importDefault(require("../../services/room.service"));
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
+const user_service_1 = __importDefault(require("../../services/user.service"));
 const roomService = new room_service_1.default();
+const userService = new user_service_1.default();
 exports.addRoom = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { roomData } = req.body;
-    console.log(roomData);
-    console.log(req.body);
     const { resortId } = req.params;
     const response = yield roomService.createRoom(roomData, resortId);
     res.status(201).json({ message: "Room Added Successfully", data: response });
@@ -30,10 +30,11 @@ exports.getRoomsByResortId = (0, express_async_handler_1.default)((req, res) => 
     res.status(200).json({ message: "Successful", data: response });
 }));
 exports.getAvailableRooms = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(req.body.formValues);
+    const { _id } = req.user;
     const { destination: resortId, roomDetail, date } = req.body.formValues;
     const getAvailableRooms = yield roomService.getAvailableRooms(resortId, roomDetail, date);
-    res.json({ data: getAvailableRooms });
+    const userDetails = yield userService.getSingleUserDetails(_id);
+    res.json({ data: getAvailableRooms, type: userDetails.type, points: userDetails.points });
 }));
 exports.updateRoom = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { resortId } = req.params;

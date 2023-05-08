@@ -28,5 +28,14 @@ class BookingRepositary extends baseRepositary_1.BaseRepository {
             });
         });
     }
+    cancelbookingStatus(bookingId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield booking_model_1.default.updateOne({ _id: bookingId }, {
+                $set: {
+                    status: false
+                }
+            });
+        });
+    }
 }
 exports.default = BookingRepositary;

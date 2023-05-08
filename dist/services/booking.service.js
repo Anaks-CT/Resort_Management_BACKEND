@@ -35,45 +35,92 @@ class BookingService {
         this.userRepositary = userRepositary;
         this.roomRepositary = roomRepositary;
     }
-    createBooking(userId, resortId, date, stayDetails, roomNumberIds) {
+    createBooking(userId, resortId, date, stayDetails, roomNumberIds, userType, userPoints) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield this.userRepositary.getOne({ _id: userId });
             if (!user)
                 throw errorResponse_1.default.unauthorized("Authorization Error. Please try again later");
             let roomDetails;
             let bookingDetail;
+            let userPointsLeft;
             yield Promise.all(stayDetails.map((singleDetails, i) => {
                 let roomNumber;
                 return this.roomRepositary
-                    .getOne({ _id: singleDetails.roomId })
+                    .getOne({
+                    _id: singleDetails.roomId,
+                    "packages._id": singleDetails.packageId,
+                })
                     .then((res) => {
-                    const room = res === null || res === void 0 ? void 0 : res.roomNumbers.filter((num) => {
+                    if (!res)
+                        throw errorResponse_1.default.notFound("Cannot find room Details");
+                    const packageDetails = res.packages.find((pkg) => pkg._id.toString() ===
+                        singleDetails.packageId.toString());
+                    if (!packageDetails)
+                        throw errorResponse_1.default.notFound("Cannot find package details");
+                    // how can i get the details of the packge i have id with
+                    const room = res.roomNumbers.filter((num) => {
                         var _a;
                         return (((_a = num._id) === null || _a === void 0 ? void 0 : _a.toString()) ==
                             roomNumberIds[i].toString());
                     });
                     roomNumber = room && room[0].number;
+                    let packageCost;
+                    if (userType === "platinum") {
+                        packageCost =
+                            Math.floor(packageDetails.cost -
+                                (packageDetails.cost * 5 / 100));
+                    }
+                    else if (userType === "diamond") {
+                        packageCost =
+                            Math.floor(packageDetails.cost -
+                                (packageDetails.cost * 15 / 100));
+                    }
+                    else {
+                        packageCost = Math.floor(packageDetails.cost);
+                    }
+                    console.log(packageCost);
                     return {
-                        roomTypeId: singleDetails.roomId,
-                        roomName: singleDetails.roomName,
-                        roomNumber: roomNumber,
+                        roomTypeId: res === null || res === void 0 ? void 0 : res._id,
+                        roomName: res === null || res === void 0 ? void 0 : res.name,
+                        roomNumber,
                         roomId: room && room[0]._id,
-                        packagename: singleDetails.packageName,
-                        packageCost: singleDetails.packageCost,
+                        packagename: packageDetails === null || packageDetails === void 0 ? void 0 : packageDetails.packageName,
+                        packageCost,
                     };
                 })
-                    .catch((err) => {
+                    .catch(() => {
                     throw errorResponse_1.default.notFound("cannot find Room Details");
                 });
             })).then((result) => {
                 roomDetails = result;
-                const totalRoomCost = stayDetails.reduce((acc, item) => (acc += item.packageCost), 0);
-                const pointsUsed = 0;
+                const totalRoomCost = result.reduce((acc, item) => (acc += item.packageCost), 0);
+                const taxCost = Math.floor((totalRoomCost * 22) / 100);
+                const currentTotal = totalRoomCost + taxCost;
+                let totalCost;
+                let remainingUserPoints;
+                if (userPoints) {
+                    if (currentTotal < userPoints ||
+                        userPoints > currentTotal - 1000) {
+                        totalCost = 1000;
+                        remainingUserPoints = userPoints - currentTotal;
+                    }
+                    else {
+                        totalCost = currentTotal - userPoints;
+                        remainingUserPoints = 0;
+                    }
+                }
+                else {
+                    totalCost = currentTotal;
+                }
                 const amount = {
                     totalRoomCost,
-                    taxCost: (totalRoomCost * 22) / 100,
-                    pointsUsed: pointsUsed,
-                    totalCost: totalRoomCost + (totalRoomCost * 22) / 100 + pointsUsed,
+                    taxCost,
+                    pointsUsed: userPoints &&
+                        remainingUserPoints &&
+                        (userPoints > remainingUserPoints
+                            ? userPoints - remainingUserPoints
+                            : remainingUserPoints - userPoints),
+                    totalCost,
                 };
                 const newBookingDetails = {
                     userId: userId,
@@ -83,32 +130,48 @@ class BookingService {
                     roomDetail: roomDetails,
                     amount: amount,
                 };
+                userPointsLeft = remainingUserPoints;
                 return this.bookingRepositary
                     .create(newBookingDetails)
                     .then((res) => (bookingDetail = res));
             });
-            return bookingDetail;
+            return Object.assign(Object.assign({}, bookingDetail), { userPointsLeft });
         });
     }
-    deleteBooking(bookingSchemaDetails) {
+    deleteBooking(bookingId) {
         return __awaiter(this, void 0, void 0, function* () {
             const bookingDetails = yield this.bookingRepositary.getOne({
-                _id: bookingSchemaDetails._id,
+                _id: bookingId,
             });
             if (!bookingDetails)
                 throw errorResponse_1.default.internalError("Cannot find the booknig details");
             if (!bookingDetails.paymentSuccess) {
-                yield this.bookingRepositary.deleteById(bookingSchemaDetails._id);
+                yield this.bookingRepositary.deleteById(bookingId);
                 return true;
             }
             return false;
+        });
+    }
+    cancelBooking(bookingId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const bookingDetails = yield this.bookingRepositary.getOne({
+                _id: bookingId,
+            });
+            if (!bookingDetails)
+                throw errorResponse_1.default.internalError("Cannot find the booknig details");
+            if (!bookingDetails.status)
+                throw errorResponse_1.default.conflict("Booking is already canceled");
+            const { modifiedCount } = yield this.bookingRepositary.cancelbookingStatus(bookingId);
+            if (modifiedCount === 0)
+                throw errorResponse_1.default.internalError("Couldn't cancel booking, please contact TRINITY helping desk");
+            return bookingDetails;
         });
     }
     initializePayment(totalAmount) {
         return __awaiter(this, void 0, void 0, function* () {
             const receiptId = Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000; // random reciept id generating
             const options = {
-                amount: totalAmount * 100,
+                amount: Math.floor(totalAmount * 100),
                 currency: "INR",
                 receipt: `receipt_order_${receiptId}`,
                 payment_capture: 1,
@@ -133,19 +196,26 @@ class BookingService {
                 throw errorResponse_1.default.internalError("An Error occured, if your money is been debited, please contact us");
         });
     }
+    getBookingById(bookingId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const bookingDetails = yield this.bookingRepositary.getById(bookingId);
+            if (!bookingDetails)
+                throw errorResponse_1.default.notFound("Cannot find booking details");
+            return bookingDetails;
+        });
+    }
     getBookingDetails(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             const bookingDetails = yield this.bookingRepositary.getAll({
                 userId: userId,
                 paymentSuccess: true,
-            });
+            }, { "createdAt": -1 });
             if (!bookingDetails)
                 throw errorResponse_1.default.notFound("Cannot find Bookings, Please try again later");
             const resortPopulated = yield this.bookingRepositary.populate(bookingDetails, "resortId");
             const userPopulated = yield this.bookingRepositary.populate(resortPopulated, "userId");
-            console.log(userPopulated);
             return userPopulated.map((_a) => {
-                var _b = _a._doc, { paymentSuccess, status, resortId: { resortDetails: { name: resortName }, }, userId: { name, phone, email } } = _b, rest = __rest(_b, ["paymentSuccess", "status", "resortId", "userId"]);
+                var _b = _a._doc, { paymentSuccess, resortId: { resortDetails: { name: resortName }, }, userId: { name, phone, email } } = _b, rest = __rest(_b, ["paymentSuccess", "resortId", "userId"]);
                 return (Object.assign(Object.assign({}, rest), { resortName, name, phone, email }));
             });
         });

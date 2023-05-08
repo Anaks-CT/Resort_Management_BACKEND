@@ -45,8 +45,8 @@ class UserService {
             if (!user)
                 throw errorResponse_1.default.notFound('User not found');
             const hashedPassword = yield bcrypt_1.default.hash(password, 10);
-            const updateResult = yield this.userRepositary.changePassword(email, hashedPassword);
-            if (updateResult.modifiedCount === 0)
+            const { modifiedCount } = yield this.userRepositary.changePassword(email, hashedPassword);
+            if (modifiedCount === 0)
                 throw errorResponse_1.default.internalError("Password not changed, Please try again");
         });
     }
@@ -55,8 +55,8 @@ class UserService {
             const user = yield this.userRepositary.getById(userId);
             if (!user)
                 throw errorResponse_1.default.notFound('User not found');
-            const updateResult = yield this.userRepositary.addToWishlist(userId, wishlistId);
-            if (updateResult.modifiedCount !== 1)
+            const { modifiedCount } = yield this.userRepositary.addToWishlist(userId, wishlistId);
+            if (modifiedCount !== 1)
                 throw errorResponse_1.default.internalError('Dates not added to wishlist, Please try again later');
         });
     }
@@ -65,28 +65,85 @@ class UserService {
             const user = yield this.userRepositary.getById(userId);
             if (!user)
                 throw errorResponse_1.default.notFound('User not found');
-            const updateResult = yield this.userRepositary.deleteFromWishlist(userId, wishlistId);
-            if (updateResult.modifiedCount !== 1)
+            const { modifiedCount } = yield this.userRepositary.deleteFromWishlist(userId, wishlistId);
+            if (modifiedCount !== 1)
                 throw errorResponse_1.default.internalError('Dates not discarded from wishlist');
         });
     }
-    addBookingId(userId, bookingId) {
+    updateMemberDetails(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield this.userRepositary.getById(userId);
             if (!user)
                 throw errorResponse_1.default.notFound('User not found');
-            const updateResult = yield this.userRepositary.addBookingId(userId, bookingId);
-            if (updateResult.modifiedCount !== 1)
+            if (user.totalmoneySpent > 100000) {
+                yield this.userRepositary.updateMemberDetailsToDiamond(userId);
+            }
+            else if (user.totalmoneySpent > 30000) {
+                yield this.userRepositary.updateMemberDetailsToPlatinum(userId);
+            }
+        });
+    }
+    updateUserPoints(userId, points) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield this.userRepositary.getById(userId);
+            if (!user)
+                throw errorResponse_1.default.notFound('User not found');
+            const { modifiedCount } = yield this.userRepositary.updateUserPoints(userId, points);
+            if (modifiedCount === 0)
+                throw errorResponse_1.default.internalError("Count not update user points");
+        });
+    }
+    calculateUserPointsAndType(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield this.userRepositary.getById(userId);
+            if (!user)
+                throw errorResponse_1.default.notFound('User not found');
+            return { points: user.points, type: user.type };
+        });
+    }
+    addBookingDetails(userId, bookingId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield this.userRepositary.getById(userId);
+            if (!user)
+                throw errorResponse_1.default.notFound('User not found');
+            const { modifiedCount } = yield this.userRepositary.addBookingId(userId, bookingId);
+            if (modifiedCount !== 1)
                 throw errorResponse_1.default.internalError('Booking Id is not added to user Collection due to server error');
         });
     }
-    removeBookingId(userId, bookingId) {
+    updateMoneySpentandPoints(userId, taxCost, amount, userPoints) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield this.userRepositary.getById(userId);
             if (!user)
                 throw errorResponse_1.default.notFound('User not found');
-            const updateResult = yield this.userRepositary.removeBookingId(userId, bookingId);
-            if (updateResult.modifiedCount !== 1)
+            // decreasing the points used if any
+            const { modifiedCount } = yield this.userRepositary.updatePointsAndMoneySpent(userId, Math.floor(taxCost / 3 - userPoints), amount);
+            if (modifiedCount === 0)
+                throw errorResponse_1.default.internalError('Cannot update your points, Please contact TRINITY helping desk');
+        });
+    }
+    updateCancelBooking(userId, bookingAmountDetails) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield this.userRepositary.getById(userId);
+            if (!user)
+                throw errorResponse_1.default.notFound('User not found');
+            const { pointsUsed, taxCost, totalCost } = bookingAmountDetails;
+            // 2000 cancellation fee
+            console.log(pointsUsed, taxCost, totalCost);
+            const points = Math.floor(pointsUsed + (-taxCost / 3) + totalCost - 2000);
+            console.log(points);
+            const { modifiedCount } = yield this.userRepositary.incUserPoints(userId, points);
+            if (modifiedCount === 0)
+                throw errorResponse_1.default.internalError("Couldn't add amount to points, please contact the TRINITY helping desk");
+        });
+    }
+    removeBookingDetails(userId, bookingId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield this.userRepositary.getById(userId);
+            if (!user)
+                throw errorResponse_1.default.notFound('User not found');
+            const { modifiedCount } = yield this.userRepositary.removeBookingId(userId, bookingId);
+            if (modifiedCount !== 1)
                 throw errorResponse_1.default.internalError('bookingId is not discarded from user"s data');
         });
     }
@@ -96,7 +153,6 @@ class UserService {
             if (!checkUser)
                 throw errorResponse_1.default.notFound('User not found');
             const newData = yield this.userRepositary.updateUserDetails(userId, name, url);
-            console.log(newData === null || newData === void 0 ? void 0 : newData.isModified);
             if (!(newData === null || newData === void 0 ? void 0 : newData.isModified))
                 throw errorResponse_1.default.internalError("Update failed due to internal Error, please try again later");
             return newData;

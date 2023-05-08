@@ -14,3 +14,4 @@ exports.booking
     .post(auth_middlewares_1.userVerify, bodyValidation_1.bookingRoomDetailsValidate, bookingCRUD_1.bookingConfirmationPart1)
     .patch(bookingCRUD_1.verifyPayment)
     .get(auth_middlewares_1.userVerify, bookingCRUD_1.getBookingDetailsOfUser);
+exports.booking.delete('/:id', auth_middlewares_1.userVerify, bodyValidation_1.paramsIdValidate, bookingCRUD_1.cancelBooking);

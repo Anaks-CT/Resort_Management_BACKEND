@@ -18,15 +18,16 @@ export interface IBooking{
             packageCost: number
         }
     ],
-    amount: {
-        roomCost: number,
-        taxCost: number,
-        pointsUsed: number,
-        totalCost: number,
-    },
+    amount: BookingAmount
     status?: boolean
     paymentSuccess?: boolean
+}
 
+export interface BookingAmount {
+    roomCost: number,
+        taxCost: number,
+        pointsUsed: number,
+        totalCost: number
 }
 
 export interface IBookingForm1{

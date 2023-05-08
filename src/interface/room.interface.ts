@@ -8,6 +8,7 @@ export interface IRoom {
     resortId: ObjectId
     images: string[]
     packages: [{
+        _id: string
         packageName: string
         cost: number
         features: string[]
