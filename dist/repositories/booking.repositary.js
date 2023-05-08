@@ -37,5 +37,14 @@ class BookingRepositary extends baseRepositary_1.BaseRepository {
             });
         });
     }
+    searchSortService(searchValue, sortOrder, sortBy) {
+        return __awaiter(this, void 0, void 0, function* () {
+            //************************************ major error will change later */
+            let query = booking_model_1.default.find({ "resortDetails.name": { $regex: new RegExp(searchValue ? searchValue : '', 'i') } }).populate('manager');
+            if (sortOrder && sortBy)
+                query = query.sort({ [sortBy]: sortOrder });
+            return yield query;
+        });
+    }
 }
 exports.default = BookingRepositary;

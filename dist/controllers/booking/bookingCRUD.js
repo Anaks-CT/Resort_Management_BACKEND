@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.cancelBooking = exports.getBookingDetailsOfUser = exports.verifyPayment = exports.bookingConfirmationPart1 = void 0;
+exports.searchSortedBookingDetails = exports.getResortBookings = exports.cancelBooking = exports.getBookingDetailsOfUser = exports.verifyPayment = exports.bookingConfirmationPart1 = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const room_service_1 = __importDefault(require("../../services/room.service"));
 const booking_service_1 = __importDefault(require("../../services/booking.service"));
@@ -23,13 +23,11 @@ const userService = new user_service_1.default();
 exports.bookingConfirmationPart1 = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const { destination: resortId, roomDetail, date, applyPoints, } = req.body.bookingForm1Details;
-    console.log(applyPoints);
     yield roomService.getAvailableRooms(resortId, roomDetail, date);
     const roomNumber = yield Promise.all((_a = req.body.stayDetails) === null || _a === void 0 ? void 0 : _a.map((singleStayDetail) => roomService.addDatesToRoom(date, singleStayDetail.roomId)));
     const { points, type } = yield userService.calculateUserPointsAndType(req.user._id);
     const bookingDetails = (yield bookingService.createBooking(req.user._id, resortId.id, date, req.body.stayDetails, roomNumber, type, applyPoints && points));
     const booking = bookingDetails;
-    console.log(booking._doc);
     yield userService.addBookingDetails(req.user._id, booking._doc._id);
     const orderDetails = yield bookingService.initializePayment(booking._doc.amount.totalCost);
     if (booking._doc.userPointsLeft) {
@@ -58,8 +56,8 @@ exports.verifyPayment = (0, express_async_handler_1.default)((req, res) => __awa
     res.status(200).json({ message: "Booking verified successfull" });
 }));
 exports.getBookingDetailsOfUser = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { _id } = req.user;
-    const bookingDetails = yield bookingService.getBookingDetails(_id);
+    const { _id: userId } = req.user;
+    const bookingDetails = yield bookingService.getBookingDetailsbyId(userId, "user");
     res.status(200).json({
         message: "Booking details fetched successfully",
         data: bookingDetails,
@@ -70,9 +68,24 @@ exports.cancelBooking = (0, express_async_handler_1.default)((req, res) => __awa
     const { id: bookingId } = req.params;
     const { amount } = yield bookingService.cancelBooking(bookingId);
     yield userService.updateCancelBooking(userId, amount);
-    const bookingDetails = yield bookingService.getBookingDetails(userId);
+    const bookingDetails = yield bookingService.getBookingDetailsbyId(userId, "user");
     res.status(200).json({
         message: "Cancelation successfull",
         data: bookingDetails,
     });
+}));
+exports.getResortBookings = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id: resortId } = req.params;
+    const bookingDetails = yield bookingService.getBookingDetailsbyId(resortId, "resort");
+    res.status(200).json({
+        message: "Booking details fetched successfully",
+        data: bookingDetails,
+    });
+}));
+exports.searchSortedBookingDetails = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id: resortId } = req.params;
+    const { sortBy, searchInput, sortOrder } = req.body;
+    console.log(sortBy, searchInput, sortOrder);
+    const searchResult = yield bookingService.searchSortBookingService(resortId, searchInput, sortBy, sortOrder);
+    res.status(200).json({ message: "Booking details fetched successfully", data: searchResult });
 }));

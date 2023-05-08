@@ -25,6 +25,7 @@ export default class BookingService {
         userType: "member" | "platinum" | "diamond",
         userPoints?: number
     ) {
+        console.log(roomNumberIds);
         const user = await this.userRepositary.getOne<IUser>({ _id: userId });
         if (!user)
             throw ErrorResponse.unauthorized(
@@ -57,6 +58,7 @@ export default class BookingService {
                             );
                         // how can i get the details of the packge i have id with
                         const room = res.roomNumbers.filter((num) => {
+                            console.log(num._id, roomNumberIds[i]);
                             return (
                                 num._id?.toString() ==
                                 roomNumberIds[i].toString()
@@ -65,17 +67,18 @@ export default class BookingService {
                         roomNumber = room && room[0].number;
                         let packageCost;
                         if (userType === "platinum") {
-                            packageCost =
-                                Math.floor(packageDetails.cost -
-                                (packageDetails.cost * 5 / 100))
+                            packageCost = Math.floor(
+                                packageDetails.cost -
+                                    (packageDetails.cost * 5) / 100
+                            );
                         } else if (userType === "diamond") {
-                            packageCost =
-                                Math.floor(packageDetails.cost -
-                                (packageDetails.cost * 15 / 100))
+                            packageCost = Math.floor(
+                                packageDetails.cost -
+                                    (packageDetails.cost * 15) / 100
+                            );
                         } else {
                             packageCost = Math.floor(packageDetails.cost);
                         }
-                        console.log(packageCost);
                         return {
                             roomTypeId: res?._id,
                             roomName: res?.name,
@@ -157,7 +160,7 @@ export default class BookingService {
         return false;
     }
 
-    async cancelBooking(bookingId: string){
+    async cancelBooking(bookingId: string) {
         const bookingDetails = await this.bookingRepositary.getOne<IBooking>({
             _id: bookingId,
         });
@@ -165,10 +168,15 @@ export default class BookingService {
             throw ErrorResponse.internalError(
                 "Cannot find the booknig details"
             );
-        if(!bookingDetails.status) throw ErrorResponse.conflict("Booking is already canceled")
-        const {modifiedCount} = await this.bookingRepositary.cancelbookingStatus(bookingId)
-        if(modifiedCount === 0 ) throw ErrorResponse.internalError("Couldn't cancel booking, please contact TRINITY helping desk")
-        return bookingDetails
+        if (!bookingDetails.status)
+            throw ErrorResponse.conflict("Booking is already canceled");
+        const { modifiedCount } =
+            await this.bookingRepositary.cancelbookingStatus(bookingId);
+        if (modifiedCount === 0)
+            throw ErrorResponse.internalError(
+                "Couldn't cancel booking, please contact TRINITY helping desk"
+            );
+        return bookingDetails;
     }
 
     async initializePayment(totalAmount: number) {
@@ -217,11 +225,34 @@ export default class BookingService {
         return bookingDetails;
     }
 
-    async getBookingDetails(userId: string) {
+    async searchSortBookingService(
+        resortId: string,
+        searchInput: string,
+        sortBy: string,
+        sortOrder: string
+    ) {
         const bookingDetails = await this.bookingRepositary.getAll<IBooking>({
-            userId: userId,
-            paymentSuccess: true,
-        }, {"createdAt": -1})
+            resortId,
+        });
+        if (!bookingDetails)
+            throw ErrorResponse.notFound("Cannot find booking details");
+
+        return await this.bookingRepositary.searchSortService(
+            searchInput,
+            sortOrder === "asc" ? 1 : -1,
+            sortBy
+        );
+
+    }
+
+    async getBookingDetailsbyId(id: string, field: "user" | "resort") {
+        const bookingDetails = await this.bookingRepositary.getAll<IBooking>(
+            {
+                [field === "resort" ? "resortId" : "userId"]: id,
+                paymentSuccess: true,
+            },
+            { createdAt: -1 }
+        );
         if (!bookingDetails)
             throw ErrorResponse.notFound(
                 "Cannot find Bookings, Please try again later"

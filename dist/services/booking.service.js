@@ -37,6 +37,7 @@ class BookingService {
     }
     createBooking(userId, resortId, date, stayDetails, roomNumberIds, userType, userPoints) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log(roomNumberIds);
             const user = yield this.userRepositary.getOne({ _id: userId });
             if (!user)
                 throw errorResponse_1.default.unauthorized("Authorization Error. Please try again later");
@@ -60,25 +61,23 @@ class BookingService {
                     // how can i get the details of the packge i have id with
                     const room = res.roomNumbers.filter((num) => {
                         var _a;
+                        console.log(num._id, roomNumberIds[i]);
                         return (((_a = num._id) === null || _a === void 0 ? void 0 : _a.toString()) ==
                             roomNumberIds[i].toString());
                     });
                     roomNumber = room && room[0].number;
                     let packageCost;
                     if (userType === "platinum") {
-                        packageCost =
-                            Math.floor(packageDetails.cost -
-                                (packageDetails.cost * 5 / 100));
+                        packageCost = Math.floor(packageDetails.cost -
+                            (packageDetails.cost * 5) / 100);
                     }
                     else if (userType === "diamond") {
-                        packageCost =
-                            Math.floor(packageDetails.cost -
-                                (packageDetails.cost * 15 / 100));
+                        packageCost = Math.floor(packageDetails.cost -
+                            (packageDetails.cost * 15) / 100);
                     }
                     else {
                         packageCost = Math.floor(packageDetails.cost);
                     }
-                    console.log(packageCost);
                     return {
                         roomTypeId: res === null || res === void 0 ? void 0 : res._id,
                         roomName: res === null || res === void 0 ? void 0 : res.name,
@@ -204,12 +203,22 @@ class BookingService {
             return bookingDetails;
         });
     }
-    getBookingDetails(userId) {
+    searchSortBookingService(resortId, searchInput, sortBy, sortOrder) {
         return __awaiter(this, void 0, void 0, function* () {
             const bookingDetails = yield this.bookingRepositary.getAll({
-                userId: userId,
+                resortId,
+            });
+            if (!bookingDetails)
+                throw errorResponse_1.default.notFound("Cannot find booking details");
+            return yield this.bookingRepositary.searchSortService(searchInput, sortOrder === "asc" ? 1 : -1, sortBy);
+        });
+    }
+    getBookingDetailsbyId(id, field) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const bookingDetails = yield this.bookingRepositary.getAll({
+                [field === "resort" ? "resortId" : "userId"]: id,
                 paymentSuccess: true,
-            }, { "createdAt": -1 });
+            }, { createdAt: -1 });
             if (!bookingDetails)
                 throw errorResponse_1.default.notFound("Cannot find Bookings, Please try again later");
             const resortPopulated = yield this.bookingRepositary.populate(bookingDetails, "resortId");
