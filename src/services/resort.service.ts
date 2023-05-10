@@ -107,6 +107,10 @@ export default class ResortService {
         return resortDetails as IResort[]
     }  
 
+    async getResortCount() {
+        return await this.resortRepositary.count()
+    }
+
     async getResortById(id: string): Promise<IResort | null>{
         const resort = await this.resortRepositary.getById<IResort>(id)
         if(!resort) throw ErrorResponse.badRequest("Resort not found")

@@ -24,10 +24,13 @@ import {
     deleteWishlist,
     getWishlistByUserId,
 } from "../controllers/wishlist/wishlistCRUD";
-import { userVerify } from "../middlewares/auth-middlewares";
+import { adminVerify, userVerify } from "../middlewares/auth-middlewares";
 import {
+    getAllUserDetails,
     getUserDetail,
+    searchSortedUserDetails,
     updateUserDetails,
+    updateUserStatus,
 } from "../controllers/user/auth/userCRUD";
 
 export const user = express.Router();
@@ -39,11 +42,16 @@ user.route("/forgotPassword")
     .get(emailQueryValidate, verifyEmail)
     .put(emailQueryValidate, passwordValidate, changePassword);
 
+user.get("/fetchAll",adminVerify, getAllUserDetails)
+user.get('/service', adminVerify, searchSortedUserDetails)
+
 user.route("/wishlist/:id?")
     .get(userVerify, getWishlistByUserId)
     .post(userVerify, wishlistDetails, addToWishlist)
     .delete(userVerify, paramsIdValidate, deleteWishlist);
 
-user.route("/")
+user.route("/:id?")
     .get(userVerify, getUserDetail)
-    .patch(userVerify, updateUserDetailValidate, updateUserDetails);
+    .patch(userVerify, updateUserDetailValidate, updateUserDetails)
+    .delete(adminVerify, paramsIdValidate, updateUserStatus)
+

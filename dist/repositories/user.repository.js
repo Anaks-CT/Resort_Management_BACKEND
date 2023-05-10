@@ -98,6 +98,15 @@ class UserRepository extends baseRepositary_1.BaseRepository {
             });
         });
     }
+    searchSortService(searchValue, sortOrder, sortBy) {
+        return __awaiter(this, void 0, void 0, function* () {
+            //************************************ major error will change later */
+            let query = user_model_1.default.find({ email: { $regex: new RegExp(searchValue ? searchValue : '', 'i') } });
+            if (sortOrder && sortBy)
+                query = query.sort({ [sortBy]: sortOrder });
+            return yield query;
+        });
+    }
     updateUserDetails(userId, name, url) {
         return __awaiter(this, void 0, void 0, function* () {
             const update = { name: name };
@@ -115,6 +124,16 @@ class UserRepository extends baseRepositary_1.BaseRepository {
                     totalmoneySpent: amount
                 },
             });
+        });
+    }
+    updateUserStatus(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield user_model_1.default.updateOne({ _id: new mongodb_1.ObjectId(userId) }, [{ $set: { status: { $not: ["$status"] } } }]);
+        });
+    }
+    updateUserBlockedBy(userId, blockedBy) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield user_model_1.default.updateOne({ _id: userId }, blockedBy ? { $set: { blockedBy } } : { $unset: { blockedBy: '' } });
         });
     }
 }

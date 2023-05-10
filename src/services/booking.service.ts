@@ -1,13 +1,14 @@
 import { Query } from "mongoose";
 import { instance } from "../config/razorpay";
 import ErrorResponse from "../error/errorResponse";
-import { IBooking } from "../interface/booking.interface";
+import { IBooking, RevenueReport } from "../interface/booking.interface";
 import { IRoom } from "../interface/room.interface";
 import { IUser } from "../interface/user.interface";
 import BookingRepositary from "../repositories/booking.repositary";
 import RoomRespositary from "../repositories/room.repositary";
 import UserRepository from "../repositories/user.repository";
 import crypto from "crypto";
+import { IResort } from "../interface/resort.interface";
 
 export default class BookingService {
     constructor(
@@ -236,14 +237,118 @@ export default class BookingService {
         });
         if (!bookingDetails)
             throw ErrorResponse.notFound("Cannot find booking details");
+        let sortByValue: string | null;
+        switch (sortBy) {
+            case "Booking Date":
+                sortByValue = "BookingDate";
+                break;
+            case "CheckIn Date":
+                sortByValue = "checkInDate";
+                break;
+            case "CheckOut Date":
+                sortByValue = "checkOutDate";
+                break;
+            case "Status":
+                sortByValue = "status";
+                break;
+            case "Amount":
+                sortByValue = "amount.totalCost";
+                break;
+            default:
+                sortByValue = null;
+                break;
+        }
+        let sortingOrder: 1 | -1 | null;
+        switch (sortOrder) {
+            case "asc":
+                sortingOrder = 1;
+                break;
+            case "des":
+                sortingOrder = -1;
+                break;
+            default:
+                sortingOrder = null;
+                break;
+        }
 
-        return await this.bookingRepositary.searchSortService(
-            searchInput,
-            sortOrder === "asc" ? 1 : -1,
-            sortBy
+        const searchSortedBookingDetails =
+            await this.bookingRepositary.searchSortService(
+                resortId,
+                sortingOrder,
+                sortByValue
+            );
+        const resortPopulated = await this.bookingRepositary.populate(
+            searchSortedBookingDetails,
+            "resortId"
         );
-
+        const userPopulated = await this.bookingRepositary.populate(
+            resortPopulated,
+            "userId"
+        );
+        return userPopulated.map(
+            ({
+                _doc: {
+                    paymentSuccess,
+                    resortId: {
+                        resortDetails: { name: resortName },
+                    },
+                    userId: { name, phone, email },
+                    ...rest
+                },
+            }) => ({ ...rest, resortName, name, phone, email })
+        );
     }
+
+    async getResortRevenue(resortId?: string){
+        return await this.bookingRepositary.resortRevenue(resortId && resortId)
+    }
+
+    async getMonthlyRevenue(resortId?: string) {
+        const bookingDetail =
+            await this.bookingRepositary.getMonthlyRevenue(resortId && resortId);
+        const yearMonths = Array.from({ length: 12 }, (_, i) =>
+            String(i + 1).padStart(2, "0")
+        );
+        console.log(bookingDetail);
+
+        if (!bookingDetail)
+            throw ErrorResponse.internalError(
+                "Cannot find booking details, please try again"
+            );
+
+        const convertedReport: RevenueReport[] = yearMonths.reduce<
+            RevenueReport[]
+        >((acc, month) => {
+            const existingReport = bookingDetail.find((report) =>
+                report._id.endsWith(`-${month}`)
+            );
+            acc.push(
+                existingReport || {
+                    _id: `2023-${month}`,
+                    totalBookings: 0,
+                    totalRevenue: 0,
+                }
+            );
+            return acc;
+        }, []);
+
+        if (convertedReport.length !== 12)
+            throw ErrorResponse.internalError(
+                "couln't process booking details, please try again later"
+            );
+
+        return convertedReport;
+    }
+
+    async getBookingCounts(resortId?: string){
+        if(resortId){
+            const resort = this.bookingRepositary.getAll<IResort>({resortId})
+            return (await resort).length
+        }
+        return await this.bookingRepositary.count()
+    }
+
+
 
     async getBookingDetailsbyId(id: string, field: "user" | "resort") {
         const bookingDetails = await this.bookingRepositary.getAll<IBooking>(

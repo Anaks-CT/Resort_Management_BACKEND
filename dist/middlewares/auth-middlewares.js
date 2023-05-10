@@ -18,6 +18,7 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const errorResponse_1 = __importDefault(require("../error/errorResponse"));
 const user_service_1 = __importDefault(require("../services/user.service"));
 const userService = new user_service_1.default();
+const validator_1 = __importDefault(require("validator"));
 exports.authMiddleware = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
@@ -44,13 +45,14 @@ exports.authMiddleware = (0, express_async_handler_1.default)((req, res, next) =
 exports.userVerify = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         (0, exports.authMiddleware)(req, res, () => {
-            if (!req.user)
+            if (!req.user._id)
                 return next(errorResponse_1.default.unauthorized('You are not Authenticated'));
+            if (!validator_1.default.isMongoId(req.user._id))
+                return next(errorResponse_1.default.unauthorized("You are not Authorized"));
             userService.getSingleUserDetails(req.user._id)
                 .then(res => req.user = res);
             if (!req.user)
                 return next(errorResponse_1.default.unauthorized('You are not authorized'));
-            console.log(req.user);
             return next();
         });
     }

@@ -1,7 +1,7 @@
 import express from 'express';
 import { managerSignupValidate, paramsIdValidate, validateLogin } from '../middlewares/bodyValidation';
 import { login, signup } from '../controllers/manager/auth';
-import { changeManagerStatus, getAllManagerDetails, getManagerDetailsByResortId } from '../controllers/manager/managerCRUD';
+import { changeManagerStatus, getAllManagerDetails, getDashboardDetails, getManagerDetailsByResortId } from '../controllers/manager/managerCRUD';
 import { adminVerify } from '../middlewares/auth-middlewares';
 
 export const manager = express.Router();

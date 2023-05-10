@@ -17,9 +17,11 @@ const express_async_handler_1 = __importDefault(require("express-async-handler")
 const room_service_1 = __importDefault(require("../../services/room.service"));
 const booking_service_1 = __importDefault(require("../../services/booking.service"));
 const user_service_1 = __importDefault(require("../../services/user.service"));
+const resort_service_1 = __importDefault(require("../../services/resort.service"));
 const roomService = new room_service_1.default();
 const bookingService = new booking_service_1.default();
 const userService = new user_service_1.default();
+const resortService = new resort_service_1.default();
 exports.bookingConfirmationPart1 = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const { destination: resortId, roomDetail, date, applyPoints, } = req.body.bookingForm1Details;
@@ -85,7 +87,9 @@ exports.getResortBookings = (0, express_async_handler_1.default)((req, res) => _
 exports.searchSortedBookingDetails = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id: resortId } = req.params;
     const { sortBy, searchInput, sortOrder } = req.body;
-    console.log(sortBy, searchInput, sortOrder);
     const searchResult = yield bookingService.searchSortBookingService(resortId, searchInput, sortBy, sortOrder);
-    res.status(200).json({ message: "Booking details fetched successfully", data: searchResult });
+    res.status(200).json({
+        message: "Booking details fetched successfully",
+        data: searchResult,
+    });
 }));

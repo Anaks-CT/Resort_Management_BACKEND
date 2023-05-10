@@ -12,9 +12,13 @@ export default class UserService {
 
     async getSingleUserDetails(id: string): Promise<IUser>{
         const user = await this.userRepositary.getById<IUser>(id)
-
+        console.log(user);
         if(!user) throw ErrorResponse.notFound('User not found')
         return user
+    }
+
+    async getNumberOfUsers(){
+        return await this.userRepositary.count()
     }
 
     async forgotPasswordverifyEmail(email: string){
@@ -106,11 +110,64 @@ export default class UserService {
     }
 
     async updateUserDetails(userId: string, name: string, url?: string, ){
-        const checkUser = await this.userRepositary.getById(userId)
+        const checkUser = await this.userRepositary.getById<IUser>(userId)
         if(!checkUser) throw ErrorResponse.notFound('User not found')
         const newData = await this.userRepositary.updateUserDetails(userId, name, url)
         if(!newData?.isModified) throw ErrorResponse.internalError("Update failed due to internal Error, please try again later")
         return newData
     }
 
+    async getAllUserDetails(){
+        const userDetails = await this.userRepositary.getAll<IUser>({})
+        if(userDetails.length === 0) throw ErrorResponse.notFound("No user Details found")
+        return userDetails.map(({ _doc: {wishlist, bookings, password, ...userDetails} }) => userDetails);
+    }
+
+    async updateUserStatus(userId: string, blockedBy?: string ){
+        const checkUser = await this.userRepositary.getById<IUser>(userId)
+        if(!checkUser) throw ErrorResponse.notFound('User not found')
+        const {modifiedCount} = await this.userRepositary.updateUserStatus(userId)
+        if(modifiedCount === 0) throw ErrorResponse.internalError("couldn't update user status")
+        if(checkUser.status){
+            const {modifiedCount} = await this.userRepositary.updateUserBlockedBy(userId, blockedBy)
+            if(modifiedCount === 0) throw ErrorResponse.internalError("Couldn't change blocked by status")
+        }
+    }
+
+    async getSerchSortedUserDetails(searchValue: string, sortOrder: string, sortBy: string){
+        let sortorder: 1 | -1 | null
+        if(sortOrder === "asc"){
+            sortorder = 1
+        }else if(sortOrder === "des"){
+            sortorder = -1
+        }else{
+            sortorder = null
+        }
+        let sortValue: string | null
+      switch (sortBy) {
+        case "Name":
+            sortValue = "name"
+            break;
+        case "Email":
+            sortValue = "email"
+            break;
+        case "Member Type":
+            sortValue = "type"
+            break;
+        case "Total investment":
+            sortValue = "totalmoneySpent"
+            break;
+        case "Joined At":
+            sortValue = "createdAt"
+            break;
+        case "Status":
+            sortValue = "status"
+            break;
+        default:
+            sortValue = null
+            break;
+      }
+        const userDetails =  await this.userRepositary.searchSortService(searchValue, sortorder, sortValue)
+        return userDetails.map(({ _doc: {wishlist, bookings, password, ...userDetails} }) => userDetails);
+    }
 }

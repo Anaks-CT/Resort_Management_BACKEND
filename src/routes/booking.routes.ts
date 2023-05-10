@@ -27,3 +27,4 @@ booking
     .route("/resortBookingDetails/:id")
     .get(adminVerify, paramsIdValidate, getResortBookings)
     .post(adminVerify, paramsIdValidate, searchSortedBookingDetails)
+

@@ -175,9 +175,36 @@ class RoomService {
             yield this.roomRepositary.removeDatesFromRoom(roomTypeId, roomId, allDatesStrings);
         });
     }
+    calculateResortRoomOccupancyRate(resortId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // Get the current year and month
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth() + 1; // Note: JavaScript months are 0-indexed, so we add 1
+            // Calculate the start and end dates for the current month
+            const startDate = new Date(`${year}-${month}-01`);
+            const endDate = new Date(year, month, 0); // Note: The second argument to the Date constructor is the month (0-indexed), and the third argument is the day. By setting the day to 0, we get the last day of the previous month.
+            // Use the start and end dates to calculate the occupancy rate
+            // (The rest of the code is the same as in the previous example)
+            const rooms = yield this.roomRepositary.getAll({ resortId });
+            // Calculating the total number of days that each room was unavailable for booking
+            const unavailableDaysByRoom = rooms.map((room) => {
+                const unavailableDates = room.roomNumbers.flatMap((r) => r.unavailableDates);
+                const unavailableDays = unavailableDates.filter((date) => date >= startDate && date <= endDate).length;
+                return { roomId: room._id, unavailableDays };
+            });
+            //Calculating the total number of available days for all rooms
+            const totalAvailableDays = (rooms.length * (endDate.getTime() - startDate.getTime() + 1)) /
+                (24 * 60 * 60 * 1000);
+            // Calculating the occupancy rate as the percentage of total unavailable days divided by total available days
+            const totalUnavailableDays = unavailableDaysByRoom.reduce((acc, { unavailableDays }) => acc + unavailableDays, 0);
+            const occupancyRate = (totalUnavailableDays / totalAvailableDays) * 100;
+            // getting 2 digits after decimal
+            return occupancyRate.toFixed(2);
+        });
+    }
     updateRoomDetails(resortId, roomId, roomDetails) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log(roomDetails);
             //checking if the room type exeeds 50
             const roomTypeCount = yield this.roomRepositary.count();
             // throwing error if room type exeeds 50

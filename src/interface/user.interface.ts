@@ -1,5 +1,5 @@
 import { JwtPayload } from "jsonwebtoken";
-import { Document } from "mongoose";
+import { Document, ObjectId } from "mongoose";
 
 
 export interface IUser extends Document {
@@ -15,6 +15,8 @@ export interface IUser extends Document {
     bookings: string[]
     role: string
     wishlist: string[]
+    status: boolean
+    blockedBy: ObjectId | string
   }
   
   

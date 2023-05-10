@@ -23,19 +23,34 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateUserDetails = exports.getUserDetail = void 0;
+exports.updateUserStatus = exports.searchSortedUserDetails = exports.getAllUserDetails = exports.updateUserDetails = exports.getUserDetail = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const user_service_1 = __importDefault(require("../../../services/user.service"));
 const userService = new user_service_1.default();
 exports.getUserDetail = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { _id } = req.user;
-    const user = yield userService.getSingleUserDetails(_id);
-    const _a = user._doc, { password, role } = _a, userDetails = __rest(_a, ["password", "role"]);
+    const _a = (yield userService.getSingleUserDetails(_id))._doc, { password, role } = _a, userDetails = __rest(_a, ["password", "role"]);
     res.status(200).json({ message: "User details fetched successfully", data: userDetails });
 }));
 exports.updateUserDetails = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { _id } = req.user;
     const { image, name } = req.body.updateDetails;
     const updatedUserDetails = yield userService.updateUserDetails(_id, name, image);
-    res.status(200).json({ message: "User details updates successfully", data: updatedUserDetails });
+    res.status(200).json({ message: "User details updated successfully", data: updatedUserDetails });
+}));
+exports.getAllUserDetails = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const allUsers = yield userService.getAllUserDetails();
+    res.status(200).json({ message: "User details fetched successfully", data: allUsers });
+}));
+exports.searchSortedUserDetails = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { searchInput, sortBy, sortOrder } = req.query;
+    const allUsers = yield userService.getSerchSortedUserDetails(searchInput, sortOrder, sortBy);
+    res.status(200).json({ message: "User details fetched successfully", data: allUsers });
+}));
+exports.updateUserStatus = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { _id } = req.user;
+    const { id: userId } = req.params;
+    yield userService.updateUserStatus(userId, _id != process.env.password && _id);
+    const allUsers = yield userService.getAllUserDetails();
+    res.status(200).json({ message: "User status updated successfully", data: allUsers });
 }));

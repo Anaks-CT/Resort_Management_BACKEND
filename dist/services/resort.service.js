@@ -106,6 +106,11 @@ class ResortService {
             return resortDetails;
         });
     }
+    getResortCount() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.resortRepositary.count();
+        });
+    }
     getResortById(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const resort = yield this.resortRepositary.getById(id);

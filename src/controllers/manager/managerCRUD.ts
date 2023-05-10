@@ -1,7 +1,9 @@
 import asyncHandler from "express-async-handler";
 import ManagerService from "../../services/manager.service";
+import RoomService from "../../services/room.service";
 
 const managerService = new ManagerService();
+const roomService = new RoomService()
 
 
 export const getAllManagerDetails =asyncHandler(async (req, res) => {
@@ -20,5 +22,10 @@ export const changeManagerStatus = asyncHandler( async (req, res) => {
 
 export const getManagerDetailsByResortId = asyncHandler(async (req, res) => {
   const managerDetails = await managerService.getManagerDetailsByResortId(req.params.resortId)
+  res.status(200).json({message: "Manger detailss fetched successfully", data: managerDetails})
+})
+
+export const getDashboardDetails = asyncHandler(async (req, res) => {
+  const managerDetails = await roomService.calculateResortRoomOccupancyRate(req.params.resortId)
   res.status(200).json({message: "Manger detailss fetched successfully", data: managerDetails})
 })

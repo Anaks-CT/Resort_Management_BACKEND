@@ -4,6 +4,8 @@ import { RequestWithUser } from "../../middlewares/auth-middlewares";
 import BookingService from "../../services/booking.service";
 import { IBooking } from "../../interface/booking.interface";
 import UserService from "../../services/user.service";
+import ResortRepositary from "../../repositories/resort.repositary";
+import ResortService from "../../services/resort.service";
 
 interface userPoints {
     userPointsLeft: number;
@@ -12,6 +14,7 @@ interface userPoints {
 const roomService = new RoomService();
 const bookingService = new BookingService();
 const userService = new UserService();
+const resortService = new ResortService();
 
 export const bookingConfirmationPart1 = expressAsyncHandler(
     async (req: RequestWithUser, res) => {
@@ -106,7 +109,10 @@ export const verifyPayment = expressAsyncHandler(async (req, res) => {
 export const getBookingDetailsOfUser = expressAsyncHandler(
     async (req: RequestWithUser, res) => {
         const { _id: userId } = req.user;
-        const bookingDetails = await bookingService.getBookingDetailsbyId(userId, "user");
+        const bookingDetails = await bookingService.getBookingDetailsbyId(
+            userId,
+            "user"
+        );
         res.status(200).json({
             message: "Booking details fetched successfully",
             data: bookingDetails,
@@ -120,7 +126,10 @@ export const cancelBooking = expressAsyncHandler(
         const { id: bookingId } = req.params;
         const { amount } = await bookingService.cancelBooking(bookingId);
         await userService.updateCancelBooking(userId, amount);
-        const bookingDetails = await bookingService.getBookingDetailsbyId(userId, "user")
+        const bookingDetails = await bookingService.getBookingDetailsbyId(
+            userId,
+            "user"
+        );
         res.status(200).json({
             message: "Cancelation successfull",
             data: bookingDetails,
@@ -128,23 +137,35 @@ export const cancelBooking = expressAsyncHandler(
     }
 );
 
-export const getResortBookings = expressAsyncHandler( 
-    async( req: RequestWithUser, res) => {
-        const {id: resortId} = req.params
-        const bookingDetails = await bookingService.getBookingDetailsbyId(resortId, "resort");
+export const getResortBookings = expressAsyncHandler(
+    async (req: RequestWithUser, res) => {
+        const { id: resortId } = req.params;
+        const bookingDetails = await bookingService.getBookingDetailsbyId(
+            resortId,
+            "resort"
+        );
         res.status(200).json({
             message: "Booking details fetched successfully",
             data: bookingDetails,
         });
     }
-)
+);
 
 export const searchSortedBookingDetails = expressAsyncHandler(
-    async(req, res) => {
-        const {id: resortId} = req.params
-        const {sortBy, searchInput, sortOrder} = req.body
-        console.log(sortBy, searchInput, sortOrder);
-        const searchResult = await bookingService.searchSortBookingService(resortId, searchInput, sortBy, sortOrder)
-        res.status(200).json({message: "Booking details fetched successfully", data: searchResult})
+    async (req, res) => {
+        const { id: resortId } = req.params;
+        const { sortBy, searchInput, sortOrder } = req.body;
+        const searchResult = await bookingService.searchSortBookingService(
+            resortId,
+            searchInput,
+            sortBy,
+            sortOrder
+        );
+        res.status(200).json({
+            message: "Booking details fetched successfully",
+            data: searchResult,
+        });
     }
-)
+);
+
+

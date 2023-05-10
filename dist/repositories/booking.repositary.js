@@ -37,13 +37,70 @@ class BookingRepositary extends baseRepositary_1.BaseRepository {
             });
         });
     }
-    searchSortService(searchValue, sortOrder, sortBy) {
+    searchSortService(resortid, sortOrder, sortBy) {
         return __awaiter(this, void 0, void 0, function* () {
             //************************************ major error will change later */
-            let query = booking_model_1.default.find({ "resortDetails.name": { $regex: new RegExp(searchValue ? searchValue : '', 'i') } }).populate('manager');
+            let query = booking_model_1.default.find({ resortId: resortid });
             if (sortOrder && sortBy)
                 query = query.sort({ [sortBy]: sortOrder });
             return yield query;
+        });
+    }
+    resortRevenue(resortId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (resortId) {
+                return yield booking_model_1.default.aggregate([
+                    // Filter bookings by resortId
+                    { $match: { resortId } },
+                    // Filter bookings with paymentSuccess flag set to true
+                    { $match: { paymentSuccess: true } },
+                    // Group bookings by resortId and sum up the totalCost field for each group
+                    { $group: {
+                            _id: '$resortId',
+                            totalRevenue: { $sum: '$amount.totalCost' }
+                        } }
+                ]);
+            }
+            return yield booking_model_1.default.aggregate([
+                { $match: { paymentSuccess: true } },
+                {
+                    $group: {
+                        _id: '$resortId',
+                        totalRevenue: { $sum: '$amount.totalCost' },
+                    },
+                },
+            ]);
+        });
+    }
+    getMonthlyRevenue(resortId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const currentYear = new Date().getFullYear();
+            let match;
+            if (resortId)
+                match = { resortId: resortId };
+            return yield booking_model_1.default.aggregate([
+                {
+                    $match: {
+                        $and: [
+                            match ? match : {},
+                            { createdAt: { $gte: new Date(`${currentYear}-01-01T00:00:00.000Z`) } },
+                            { createdAt: { $lt: new Date(`${currentYear + 1}-01-01T00:00:00.000Z`) } }
+                        ]
+                    }
+                },
+                {
+                    $group: {
+                        _id: {
+                            $dateToString: {
+                                format: "%Y-%m",
+                                date: "$createdAt"
+                            }
+                        },
+                        totalBookings: { $sum: 1 },
+                        totalRevenue: { $sum: "$amount.totalCost" },
+                    }
+                }
+            ]);
         });
     }
 }

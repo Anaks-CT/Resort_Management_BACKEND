@@ -5,7 +5,8 @@ import ErrorResponse from '../error/errorResponse';
 import { Request } from 'express';
 import UserService from '../services/user.service';
 const userService = new UserService();
-
+import { ObjectId } from 'mongoose';
+import validator from 'validator';
 export interface RequestWithUser extends Request {
   user?: any;
 }
@@ -36,13 +37,14 @@ export const userVerify = expressAsyncHandler(async(req: RequestWithUser, res, n
   try { 
     
     authMiddleware(req, res, () => {
-      if(!req.user) return next(ErrorResponse.unauthorized('You are not Authenticated'))
-
+      
+      if(!req.user._id) return next(ErrorResponse.unauthorized('You are not Authenticated'))
+       if(!validator.isMongoId(req.user._id)) return next (ErrorResponse.unauthorized("You are not Authorized"))
+      
       userService.getSingleUserDetails(req.user._id)
         .then(res => req.user = res)
       if(!req.user) return next( ErrorResponse.unauthorized('You are not authorized'))
       
-      console.log(req.user)
       return next()
 
     })

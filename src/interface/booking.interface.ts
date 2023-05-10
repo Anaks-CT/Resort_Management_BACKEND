@@ -42,3 +42,9 @@ export interface IBookingForm1{
         key: string;
     };
 }
+
+export interface RevenueReport {
+    _id: string;
+    totalBookings: number;
+    totalRevenue: number;
+  }

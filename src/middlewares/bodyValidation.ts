@@ -82,11 +82,10 @@ export const managerSignupValidate = asyncHandler(async (req, res, next) => {
 
 export const paramsIdValidate = asyncHandler( async (req, res, next) => {
     try {
-        if(!req.params.id || !validator.isMongoId(req.params.id))
-            throw ErrorResponse.badRequest('Invalid Id')
+        if(!req.params.id || !validator.isMongoId(req.params.id)) throw ErrorResponse.badRequest('Invalid Id')
         next()
     } catch (err: any) {
-        throw ErrorResponse.badRequest(err.errors[0]);
+        throw ErrorResponse.badRequest(err.message);
     }
 })
 

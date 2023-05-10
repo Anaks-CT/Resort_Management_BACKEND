@@ -8,6 +8,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -23,9 +34,15 @@ class UserService {
     getSingleUserDetails(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield this.userRepositary.getById(id);
+            console.log(user);
             if (!user)
                 throw errorResponse_1.default.notFound('User not found');
             return user;
+        });
+    }
+    getNumberOfUsers() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.userRepositary.count();
         });
     }
     forgotPasswordverifyEmail(email) {
@@ -156,6 +173,75 @@ class UserService {
             if (!(newData === null || newData === void 0 ? void 0 : newData.isModified))
                 throw errorResponse_1.default.internalError("Update failed due to internal Error, please try again later");
             return newData;
+        });
+    }
+    getAllUserDetails() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const userDetails = yield this.userRepositary.getAll({});
+            if (userDetails.length === 0)
+                throw errorResponse_1.default.notFound("No user Details found");
+            return userDetails.map((_a) => {
+                var _b = _a._doc, { wishlist, bookings, password } = _b, userDetails = __rest(_b, ["wishlist", "bookings", "password"]);
+                return userDetails;
+            });
+        });
+    }
+    updateUserStatus(userId, blockedBy) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const checkUser = yield this.userRepositary.getById(userId);
+            if (!checkUser)
+                throw errorResponse_1.default.notFound('User not found');
+            const { modifiedCount } = yield this.userRepositary.updateUserStatus(userId);
+            if (modifiedCount === 0)
+                throw errorResponse_1.default.internalError("couldn't update user status");
+            if (checkUser.status) {
+                const { modifiedCount } = yield this.userRepositary.updateUserBlockedBy(userId, blockedBy);
+                if (modifiedCount === 0)
+                    throw errorResponse_1.default.internalError("Couldn't change blocked by status");
+            }
+        });
+    }
+    getSerchSortedUserDetails(searchValue, sortOrder, sortBy) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let sortorder;
+            if (sortOrder === "asc") {
+                sortorder = 1;
+            }
+            else if (sortOrder === "des") {
+                sortorder = -1;
+            }
+            else {
+                sortorder = null;
+            }
+            let sortValue;
+            switch (sortBy) {
+                case "Name":
+                    sortValue = "name";
+                    break;
+                case "Email":
+                    sortValue = "email";
+                    break;
+                case "Member Type":
+                    sortValue = "type";
+                    break;
+                case "Total investment":
+                    sortValue = "totalmoneySpent";
+                    break;
+                case "Joined At":
+                    sortValue = "createdAt";
+                    break;
+                case "Status":
+                    sortValue = "status";
+                    break;
+                default:
+                    sortValue = null;
+                    break;
+            }
+            const userDetails = yield this.userRepositary.searchSortService(searchValue, sortorder, sortValue);
+            return userDetails.map((_a) => {
+                var _b = _a._doc, { wishlist, bookings, password } = _b, userDetails = __rest(_b, ["wishlist", "bookings", "password"]);
+                return userDetails;
+            });
         });
     }
 }

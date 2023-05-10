@@ -85,7 +85,7 @@ exports.paramsIdValidate = (0, express_async_handler_1.default)((req, res, next)
         next();
     }
     catch (err) {
-        throw errorResponse_1.default.badRequest(err.errors[0]);
+        throw errorResponse_1.default.badRequest(err.message);
     }
 }));
 exports.bookingRoomDetailsValidate = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

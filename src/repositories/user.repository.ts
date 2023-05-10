@@ -1,6 +1,10 @@
+import { IUser } from "../interface/user.interface";
 import userModel from "../models/user.model";
+import { user } from "../routes/user.routes";
 import { BaseRepository } from "./baseRepositary";
 import { ObjectId } from "mongodb";
+import  { isValidObjectId } from "mongoose";
+
 
 class UserRepository extends BaseRepository {
     constructor() {
@@ -95,6 +99,13 @@ class UserRepository extends BaseRepository {
         );
     }
 
+    async searchSortService(searchValue: string, sortOrder: 1 | -1 | null, sortBy: string | null): Promise<IUser[]>{
+        //************************************ major error will change later */
+        let query = userModel.find({email: { $regex : new RegExp(searchValue ? searchValue : '', 'i')}});
+        if (sortOrder && sortBy) query = query.sort({[sortBy]: sortOrder});
+        return await query;
+    }
+
     async updateUserDetails(userId: string, name: string, url?: string) {
         const update: { name: string; image?: string } = { name: name };
         if (url) {
@@ -118,6 +129,17 @@ class UserRepository extends BaseRepository {
             }
         );
     }
+
+    async updateUserStatus(userId: string){
+        return await userModel.updateOne({_id: new ObjectId(userId)},[{ $set: { status: { $not: ["$status"] } } }])
+    }
+
+    async  updateUserBlockedBy(userId: string, blockedBy?: string) {
+        return await userModel.updateOne(
+          { _id: userId },
+          blockedBy ? { $set: { blockedBy } } : { $unset: { blockedBy: '' } }
+        );
+      }
 }
 
 export default UserRepository;

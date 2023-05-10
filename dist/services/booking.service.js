@@ -210,7 +210,81 @@ class BookingService {
             });
             if (!bookingDetails)
                 throw errorResponse_1.default.notFound("Cannot find booking details");
-            return yield this.bookingRepositary.searchSortService(searchInput, sortOrder === "asc" ? 1 : -1, sortBy);
+            let sortByValue;
+            switch (sortBy) {
+                case "Booking Date":
+                    sortByValue = "BookingDate";
+                    break;
+                case "CheckIn Date":
+                    sortByValue = "checkInDate";
+                    break;
+                case "CheckOut Date":
+                    sortByValue = "checkOutDate";
+                    break;
+                case "Status":
+                    sortByValue = "status";
+                    break;
+                case "Amount":
+                    sortByValue = "amount.totalCost";
+                    break;
+                default:
+                    sortByValue = null;
+                    break;
+            }
+            let sortingOrder;
+            switch (sortOrder) {
+                case "asc":
+                    sortingOrder = 1;
+                    break;
+                case "des":
+                    sortingOrder = -1;
+                    break;
+                default:
+                    sortingOrder = null;
+                    break;
+            }
+            const searchSortedBookingDetails = yield this.bookingRepositary.searchSortService(resortId, sortingOrder, sortByValue);
+            const resortPopulated = yield this.bookingRepositary.populate(searchSortedBookingDetails, "resortId");
+            const userPopulated = yield this.bookingRepositary.populate(resortPopulated, "userId");
+            return userPopulated.map((_a) => {
+                var _b = _a._doc, { paymentSuccess, resortId: { resortDetails: { name: resortName }, }, userId: { name, phone, email } } = _b, rest = __rest(_b, ["paymentSuccess", "resortId", "userId"]);
+                return (Object.assign(Object.assign({}, rest), { resortName, name, phone, email }));
+            });
+        });
+    }
+    getResortRevenue(resortId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.bookingRepositary.resortRevenue(resortId && resortId);
+        });
+    }
+    getMonthlyRevenue(resortId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const bookingDetail = yield this.bookingRepositary.getMonthlyRevenue(resortId && resortId);
+            const yearMonths = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, "0"));
+            console.log(bookingDetail);
+            if (!bookingDetail)
+                throw errorResponse_1.default.internalError("Cannot find booking details, please try again");
+            const convertedReport = yearMonths.reduce((acc, month) => {
+                const existingReport = bookingDetail.find((report) => report._id.endsWith(`-${month}`));
+                acc.push(existingReport || {
+                    _id: `2023-${month}`,
+                    totalBookings: 0,
+                    totalRevenue: 0,
+                });
+                return acc;
+            }, []);
+            if (convertedReport.length !== 12)
+                throw errorResponse_1.default.internalError("couln't process booking details, please try again later");
+            return convertedReport;
+        });
+    }
+    getBookingCounts(resortId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (resortId) {
+                const resort = this.bookingRepositary.getAll({ resortId });
+                return (yield resort).length;
+            }
+            return yield this.bookingRepositary.count();
         });
     }
     getBookingDetailsbyId(id, field) {
