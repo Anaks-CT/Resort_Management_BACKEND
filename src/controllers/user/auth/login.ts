@@ -4,8 +4,12 @@ import expressAsyncHandler from "express-async-handler";
 const authService = new AuthService();
 
 export const login = expressAsyncHandler(async (req, res) => {
-  const { email, password } = req.body;
-    const { user, token } = await authService.login("user",email, password);
-    const {password: hashedPassword, role, ...userDetails} = user._doc
-    res.json({ message: "user found", data: userDetails, token });  
+    const { email, password } = req.body;
+    const {
+        user: {
+            _doc: { password: hashedPassword, role, ...userDetails },
+        },
+        token,
+    } = await authService.login("user", email, password);
+    res.json({ message: "user found", data: userDetails, token });
 });

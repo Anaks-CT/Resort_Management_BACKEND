@@ -111,9 +111,15 @@ export default class ResortService {
         return await this.resortRepositary.count()
     }
 
-    async getResortById(id: string): Promise<IResort | null>{
+    async getResortById(id: string): Promise<IResort>{
         const resort = await this.resortRepositary.getById<IResort>(id)
         if(!resort) throw ErrorResponse.badRequest("Resort not found")
         return resort
+    }
+
+    async getResortByManagerId(managerId: string){
+        const resortDetails = await this.resortRepositary.getResortByManagerId(managerId)
+        if(!resortDetails) throw ErrorResponse.notFound('Resort Not Found')
+        return resortDetails
     }
 }

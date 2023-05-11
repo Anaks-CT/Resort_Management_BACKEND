@@ -22,6 +22,16 @@ class ManagerService {
         this.managerRepositary = managerRepositary;
         this.resortRepositary = resortRepositary;
     }
+    getManagerById(managerId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const managerDetail = yield this.managerRepositary.getById(managerId);
+            if (!managerDetail)
+                throw errorResponse_1.default.notFound("Manager not found");
+            if (!managerDetail.active)
+                throw errorResponse_1.default.unauthorized("Sorry your account have been revoked");
+            return managerDetail;
+        });
+    }
     getAllManagerDetails() {
         return __awaiter(this, void 0, void 0, function* () {
             const managerDetails = yield this.managerRepositary.searchSortManagerDetails('', null, null);

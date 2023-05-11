@@ -7,7 +7,7 @@ import {
     searchSortedBookingDetails,
     verifyPayment,
 } from "../controllers/booking/bookingCRUD";
-import { adminVerify, userVerify } from "../middlewares/auth-middlewares";
+import { adminOrMangerVerify, adminVerify, userVerify } from "../middlewares/auth-middlewares";
 import {
     bookingRoomDetailsValidate,
     paramsIdValidate,
@@ -25,6 +25,6 @@ booking.delete("/:id", userVerify, paramsIdValidate, cancelBooking);
 
 booking
     .route("/resortBookingDetails/:id")
-    .get(adminVerify, paramsIdValidate, getResortBookings)
-    .post(adminVerify, paramsIdValidate, searchSortedBookingDetails)
+    .get(adminOrMangerVerify, paramsIdValidate, getResortBookings)
+    .post(adminOrMangerVerify, paramsIdValidate, searchSortedBookingDetails)
 

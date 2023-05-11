@@ -27,6 +27,7 @@ exports.gallary
     .post(auth_middlewares_1.adminVerify, communityPic_1.addCommunityPic)
     .delete(auth_middlewares_1.adminVerify, communityPic_1.deleteCommunityPic)
     .put(auth_middlewares_1.adminVerify, communityPic_1.editCommunityPic);
+exports.gallary.get('/getGallaryDetailsByManager', auth_middlewares_1.managerVerify, fetchGallaryDetails_1.gallaryDetailsByManagerId);
 exports.gallary.get("/getAllGallaryDetails", fetchGallaryDetails_1.gallaryDetails);
 exports.gallary.get("/getGallaryByResortId/:id", fetchGallaryDetails_1.gallaryDetailsByResortId);
 exports.gallary.get("/getGallary");

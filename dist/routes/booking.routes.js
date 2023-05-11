@@ -17,5 +17,5 @@ exports.booking
 exports.booking.delete("/:id", auth_middlewares_1.userVerify, bodyValidation_1.paramsIdValidate, bookingCRUD_1.cancelBooking);
 exports.booking
     .route("/resortBookingDetails/:id")
-    .get(auth_middlewares_1.adminVerify, bodyValidation_1.paramsIdValidate, bookingCRUD_1.getResortBookings)
-    .post(auth_middlewares_1.adminVerify, bodyValidation_1.paramsIdValidate, bookingCRUD_1.searchSortedBookingDetails);
+    .get(auth_middlewares_1.adminOrMangerVerify, bodyValidation_1.paramsIdValidate, bookingCRUD_1.getResortBookings)
+    .post(auth_middlewares_1.adminOrMangerVerify, bodyValidation_1.paramsIdValidate, bookingCRUD_1.searchSortedBookingDetails);

@@ -29,7 +29,6 @@ const express_async_handler_1 = __importDefault(require("express-async-handler")
 const authService = new auth_service_1.default();
 exports.login = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
-    const { user, token } = yield authService.login("user", email, password);
-    const _a = user._doc, { password: hashedPassword, role } = _a, userDetails = __rest(_a, ["password", "role"]);
+    const _a = yield authService.login("user", email, password), _b = _a.user._doc, { password: hashedPassword, role } = _b, userDetails = __rest(_b, ["password", "role"]), { token } = _a;
     res.json({ message: "user found", data: userDetails, token });
 }));

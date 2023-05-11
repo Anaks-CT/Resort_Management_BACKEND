@@ -5,6 +5,7 @@ import UserRepository from "../repositories/user.repository";
 import MangerRepositary from "../repositories/manager.repositary";
 import { signToken } from "../utils/jwtTokenManage";
 import { checkVerificationToken, sendVerificationToken } from "../utils/twilio";
+import { IManager } from "../interface/manager.interface";
 
 type role = "user" | "admin" | "manager";
 // type loginDetails = {
@@ -33,7 +34,7 @@ export class AuthService {
             repositary = null
         }
         if(!repositary) throw ErrorResponse.badRequest('Please provide role')
-        const user = await repositary.getByEmail<IUser>(email);
+        const user = await repositary.getByEmail<IUser | IManager>(email);
         if (!user) throw ErrorResponse.unauthorized("User not found");
         const isPasswordMatch = await bcrypt.compare(password, user.password);
         if (!isPasswordMatch) {

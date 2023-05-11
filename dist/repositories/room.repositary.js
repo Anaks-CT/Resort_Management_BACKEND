@@ -57,5 +57,10 @@ class RoomRespositary extends baseRepositary_1.BaseRepository {
             });
         });
     }
+    changeRoomStatus(roomTypeId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield room_model_1.default.findOneAndUpdate({ _id: new mongodb_1.ObjectId(roomTypeId) }, [{ $set: { active: { $not: ["$active"] } } }], { new: true });
+        });
+    }
 }
 exports.default = RoomRespositary;

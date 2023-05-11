@@ -1,6 +1,7 @@
 import { BaseRepository } from "./baseRepositary";
 import { ObjectId } from "mongodb";
 import roomModel from "../models/room.model";
+import { IRoom } from "../interface/room.interface";
 
 class RoomRespositary extends BaseRepository {
     constructor() {
@@ -57,6 +58,14 @@ class RoomRespositary extends BaseRepository {
                     },
                 },
             }
+        );
+    }
+
+    async changeRoomStatus(roomTypeId: string): Promise<IRoom | null> {
+        return await roomModel.findOneAndUpdate(
+            { _id: new ObjectId(roomTypeId) },
+            [{ $set: { active: { $not: ["$active"] } } }],
+            { new: true }
         );
     }
 }

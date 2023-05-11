@@ -119,5 +119,13 @@ class ResortService {
             return resort;
         });
     }
+    getResortByManagerId(managerId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const resortDetails = yield this.resortRepositary.getResortByManagerId(managerId);
+            if (!resortDetails)
+                throw errorResponse_1.default.notFound('Resort Not Found');
+            return resortDetails;
+        });
+    }
 }
 exports.default = ResortService;

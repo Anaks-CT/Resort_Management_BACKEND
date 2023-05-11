@@ -12,5 +12,6 @@ exports.room = express_1.default.Router();
 exports.room.route("/availableRooms").post(auth_middlewares_1.userVerify, roomCRUD_1.getAvailableRooms);
 exports.room.route("/:resortId?")
     .get(roomCRUD_1.getRoomsByResortId)
-    .post(auth_middlewares_1.adminVerify, bodyValidation_1.roomValidate, roomCRUD_1.addRoom)
-    .put(auth_middlewares_1.adminVerify, roomCRUD_1.updateRoom);
+    .post(auth_middlewares_1.adminOrMangerVerify, bodyValidation_1.roomValidate, roomCRUD_1.addRoom)
+    .put(auth_middlewares_1.adminOrMangerVerify, roomCRUD_1.updateRoom);
+exports.room.route("/block/:id").patch(auth_middlewares_1.adminOrMangerVerify, bodyValidation_1.paramsIdValidate, roomCRUD_1.udpateRoomStatus);

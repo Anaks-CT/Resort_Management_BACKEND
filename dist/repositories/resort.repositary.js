@@ -58,6 +58,11 @@ class ResortRepositary extends baseRepositary_1.BaseRepository {
             return yield resort_model_1.default.updateOne({ _id: resortId }, { $unset: { manager: '' } });
         });
     }
+    getResortByManagerId(managerId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield resort_model_1.default.findOne({ manager: managerId });
+        });
+    }
     searchSortService(searchValue, sortOrder) {
         return __awaiter(this, void 0, void 0, function* () {
             //************************************ major error will change later */

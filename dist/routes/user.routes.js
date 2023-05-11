@@ -19,8 +19,8 @@ exports.user.route("/verifyPhone").get(signup_1.verifyPhone).post(signup_1.verif
 exports.user.route("/forgotPassword")
     .get(bodyValidation_1.emailQueryValidate, forgotPassword_1.verifyEmail)
     .put(bodyValidation_1.emailQueryValidate, bodyValidation_1.passwordValidate, forgotPassword_1.changePassword);
-exports.user.get("/fetchAll", auth_middlewares_1.adminVerify, userCRUD_1.getAllUserDetails);
-exports.user.get('/service', auth_middlewares_1.adminVerify, userCRUD_1.searchSortedUserDetails);
+exports.user.get("/fetchAll", auth_middlewares_1.adminOrMangerVerify, userCRUD_1.getAllUserDetails);
+exports.user.get('/service', auth_middlewares_1.adminOrMangerVerify, userCRUD_1.searchSortedUserDetails);
 exports.user.route("/wishlist/:id?")
     .get(auth_middlewares_1.userVerify, wishlistCRUD_1.getWishlistByUserId)
     .post(auth_middlewares_1.userVerify, bodyValidation_1.wishlistDetails, wishlistCRUD_1.addToWishlist)
@@ -28,4 +28,4 @@ exports.user.route("/wishlist/:id?")
 exports.user.route("/:id?")
     .get(auth_middlewares_1.userVerify, userCRUD_1.getUserDetail)
     .patch(auth_middlewares_1.userVerify, bodyValidation_1.updateUserDetailValidate, userCRUD_1.updateUserDetails)
-    .delete(auth_middlewares_1.adminVerify, bodyValidation_1.paramsIdValidate, userCRUD_1.updateUserStatus);
+    .delete(auth_middlewares_1.adminOrMangerVerify, bodyValidation_1.paramsIdValidate, userCRUD_1.updateUserStatus);

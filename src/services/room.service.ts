@@ -55,7 +55,7 @@ export default class RoomService {
         return room;
     }
 
-    async getRoomsByResortId(resortId: string): Promise<IRoom[] | null> {
+    async getRoomsByResortId(resortId: string | ObjectId): Promise<IRoom[] | null> {
         const roomDetails = await this.roomRepositary.getAll<IRoom>({
             resortId: new ObjectId(resortId),
         });
@@ -109,6 +109,7 @@ export default class RoomService {
             // fetching the required roomType according to the roomOccupancy and resortId
             const roomType = await this.roomRepositary.getAll<IRoom>({
                 resortId: resortId.id,
+                active: true,
                 maxPeople: item,
             });
             // throwing an error if no room types are available for given roomOccupancy(maximum people)
@@ -228,6 +229,15 @@ export default class RoomService {
         const occupancyRate = (totalUnavailableDays / totalAvailableDays) * 100;
         // getting 2 digits after decimal
         return occupancyRate.toFixed(2)
+    }
+
+
+    async changeRoomStatus(roomTypeId: string): Promise<string | ObjectId>{
+        const room = await this.roomRepositary.getById<IRoom>(roomTypeId)
+        if(!room) throw ErrorResponse.notFound("Room not found")
+        const roomDetails = await this.roomRepositary.changeRoomStatus(roomTypeId)
+        if(!roomDetails) throw ErrorResponse.internalError("Cannot update room status")
+        return roomDetails.resortId
     }
 
     async updateRoomDetails(

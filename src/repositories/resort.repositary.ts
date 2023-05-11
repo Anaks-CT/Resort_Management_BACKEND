@@ -60,6 +60,10 @@ class ResortRepositary extends BaseRepository {
         return await resortModel.updateOne({_id: resortId},{$unset: {manager: ''}})
     }
 
+    async getResortByManagerId(managerId: string){
+        return await resortModel.findOne({manager: managerId})
+    }
+
     async searchSortService(searchValue: string, sortOrder: 1 | -1 | null): Promise<IResort[]>{
         //************************************ major error will change later */
         let query = resortModel.find({"resortDetails.name": { $regex : new RegExp(searchValue ? searchValue : '', 'i')}}).populate('manager');

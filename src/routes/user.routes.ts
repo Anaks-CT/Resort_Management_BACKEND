@@ -24,7 +24,7 @@ import {
     deleteWishlist,
     getWishlistByUserId,
 } from "../controllers/wishlist/wishlistCRUD";
-import { adminVerify, userVerify } from "../middlewares/auth-middlewares";
+import { adminOrMangerVerify, adminVerify, authMiddleware, userVerify } from "../middlewares/auth-middlewares";
 import {
     getAllUserDetails,
     getUserDetail,
@@ -42,8 +42,8 @@ user.route("/forgotPassword")
     .get(emailQueryValidate, verifyEmail)
     .put(emailQueryValidate, passwordValidate, changePassword);
 
-user.get("/fetchAll",adminVerify, getAllUserDetails)
-user.get('/service', adminVerify, searchSortedUserDetails)
+user.get("/fetchAll",adminOrMangerVerify, getAllUserDetails)
+user.get('/service', adminOrMangerVerify, searchSortedUserDetails)
 
 user.route("/wishlist/:id?")
     .get(userVerify, getWishlistByUserId)
@@ -53,5 +53,5 @@ user.route("/wishlist/:id?")
 user.route("/:id?")
     .get(userVerify, getUserDetail)
     .patch(userVerify, updateUserDetailValidate, updateUserDetails)
-    .delete(adminVerify, paramsIdValidate, updateUserStatus)
+    .delete(adminOrMangerVerify, paramsIdValidate, updateUserStatus)
 

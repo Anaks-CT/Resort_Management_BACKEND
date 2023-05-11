@@ -109,6 +109,7 @@ class RoomService {
                 // fetching the required roomType according to the roomOccupancy and resortId
                 const roomType = yield this.roomRepositary.getAll({
                     resortId: resortId.id,
+                    active: true,
                     maxPeople: item,
                 });
                 // throwing an error if no room types are available for given roomOccupancy(maximum people)
@@ -201,6 +202,17 @@ class RoomService {
             const occupancyRate = (totalUnavailableDays / totalAvailableDays) * 100;
             // getting 2 digits after decimal
             return occupancyRate.toFixed(2);
+        });
+    }
+    changeRoomStatus(roomTypeId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const room = yield this.roomRepositary.getById(roomTypeId);
+            if (!room)
+                throw errorResponse_1.default.notFound("Room not found");
+            const roomDetails = yield this.roomRepositary.changeRoomStatus(roomTypeId);
+            if (!roomDetails)
+                throw errorResponse_1.default.internalError("Cannot update room status");
+            return roomDetails.resortId;
         });
     }
     updateRoomDetails(resortId, roomId, roomDetails) {

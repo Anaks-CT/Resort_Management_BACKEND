@@ -11,6 +11,13 @@ export default class ManagerService {
     ) {}
 
     
+    async getManagerById(managerId: string){
+        const managerDetail = await this.managerRepositary.getById<IManager>(managerId)
+        if(!managerDetail) throw ErrorResponse.notFound("Manager not found")
+        if(!managerDetail.active) throw ErrorResponse.unauthorized("Sorry your account have been revoked")
+        return managerDetail
+    }
+
     async getAllManagerDetails(): Promise<IManager[]> {
         const managerDetails = await this.managerRepositary.searchSortManagerDetails('',null,null)
         if(!managerDetails) throw ErrorResponse.internalError('Failed to fetch Manager Details')

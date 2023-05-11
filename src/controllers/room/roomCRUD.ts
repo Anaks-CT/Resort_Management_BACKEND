@@ -16,8 +16,8 @@ export const addRoom = asyncHandler(async (req, res) => {
 
 export const getRoomsByResortId = asyncHandler( async(req, res) => {
     const {resortId} = req.params
-    const response = await roomService.getRoomsByResortId(resortId)
-    res.status(200).json({message: "Successful", data: response})
+    const roomDetails = await roomService.getRoomsByResortId(resortId)
+    res.status(200).json({message: "Successful", data: roomDetails})
 })
 
 export const getAvailableRooms = asyncHandler(async (req: RequestWithUser, res) => {
@@ -35,3 +35,10 @@ export const updateRoom = asyncHandler( async (req, res) => {
     await roomService.updateRoomDetails(resortId, roomId, formValues)
     res.status(200).json({message:"Update Room Successfull"})
 }) 
+
+export const udpateRoomStatus = asyncHandler(async( req, res) => {
+    const {id: roomId} = req.params
+    const resortId = await roomService.changeRoomStatus(roomId)
+    const roomDetails = await roomService.getRoomsByResortId(resortId)
+    res.status(200).json({message: "Room staus updates successfully", data: roomDetails})
+})

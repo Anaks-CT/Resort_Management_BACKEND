@@ -34,7 +34,6 @@ class UserService {
     getSingleUserDetails(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield this.userRepositary.getById(id);
-            console.log(user);
             if (!user)
                 throw errorResponse_1.default.notFound('User not found');
             return user;
@@ -180,7 +179,9 @@ class UserService {
             const userDetails = yield this.userRepositary.getAll({});
             if (userDetails.length === 0)
                 throw errorResponse_1.default.notFound("No user Details found");
-            return userDetails.map((_a) => {
+            const populatedUserDetails = yield this.userRepositary.populate(userDetails, "blockedBy");
+            console.log(populatedUserDetails);
+            return populatedUserDetails.map((_a) => {
                 var _b = _a._doc, { wishlist, bookings, password } = _b, userDetails = __rest(_b, ["wishlist", "bookings", "password"]);
                 return userDetails;
             });
@@ -238,7 +239,9 @@ class UserService {
                     break;
             }
             const userDetails = yield this.userRepositary.searchSortService(searchValue, sortorder, sortValue);
-            return userDetails.map((_a) => {
+            const populatedUserDetails = yield this.userRepositary.populate(userDetails, "blockedBy");
+            console.log(populatedUserDetails);
+            return populatedUserDetails.map((_a) => {
                 var _b = _a._doc, { wishlist, bookings, password } = _b, userDetails = __rest(_b, ["wishlist", "bookings", "password"]);
                 return userDetails;
             });

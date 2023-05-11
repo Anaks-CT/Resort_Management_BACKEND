@@ -12,7 +12,6 @@ export default class UserService {
 
     async getSingleUserDetails(id: string): Promise<IUser>{
         const user = await this.userRepositary.getById<IUser>(id)
-        console.log(user);
         if(!user) throw ErrorResponse.notFound('User not found')
         return user
     }
@@ -120,7 +119,9 @@ export default class UserService {
     async getAllUserDetails(){
         const userDetails = await this.userRepositary.getAll<IUser>({})
         if(userDetails.length === 0) throw ErrorResponse.notFound("No user Details found")
-        return userDetails.map(({ _doc: {wishlist, bookings, password, ...userDetails} }) => userDetails);
+        const populatedUserDetails = await this.userRepositary.populate(userDetails, "blockedBy")
+        console.log(populatedUserDetails);
+        return populatedUserDetails.map(({ _doc: {wishlist, bookings, password, ...userDetails} }) => userDetails);
     }
 
     async updateUserStatus(userId: string, blockedBy?: string ){
@@ -168,6 +169,8 @@ export default class UserService {
             break;
       }
         const userDetails =  await this.userRepositary.searchSortService(searchValue, sortorder, sortValue)
-        return userDetails.map(({ _doc: {wishlist, bookings, password, ...userDetails} }) => userDetails);
+        const populatedUserDetails = await this.userRepositary.populate(userDetails, "blockedBy")
+        console.log(populatedUserDetails);
+        return populatedUserDetails.map(({ _doc: {wishlist, bookings, password, ...userDetails} }) => userDetails);
     }
 }

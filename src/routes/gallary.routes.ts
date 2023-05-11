@@ -12,9 +12,10 @@ import {
 } from "../controllers/gallary/banner";
 import {
     gallaryDetails,
+    gallaryDetailsByManagerId,
     gallaryDetailsByResortId,
 } from "../controllers/gallary/fetchGallaryDetails";
-import { adminVerify } from "../middlewares/auth-middlewares";
+import { adminVerify, managerVerify } from "../middlewares/auth-middlewares";
 
 export const gallary = express.Router();
 
@@ -36,6 +37,8 @@ gallary
     .post(adminVerify, addCommunityPic)
     .delete(adminVerify, deleteCommunityPic)
     .put(adminVerify, editCommunityPic);
+
+gallary.get('/getGallaryDetailsByManager', managerVerify, gallaryDetailsByManagerId)
 gallary.get("/getAllGallaryDetails", gallaryDetails);
 gallary.get("/getGallaryByResortId/:id", gallaryDetailsByResortId);
 gallary.get("/getGallary");

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateRoom = exports.getAvailableRooms = exports.getRoomsByResortId = exports.addRoom = void 0;
+exports.udpateRoomStatus = exports.updateRoom = exports.getAvailableRooms = exports.getRoomsByResortId = exports.addRoom = void 0;
 const room_service_1 = __importDefault(require("../../services/room.service"));
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const user_service_1 = __importDefault(require("../../services/user.service"));
@@ -26,8 +26,8 @@ exports.addRoom = (0, express_async_handler_1.default)((req, res) => __awaiter(v
 }));
 exports.getRoomsByResortId = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { resortId } = req.params;
-    const response = yield roomService.getRoomsByResortId(resortId);
-    res.status(200).json({ message: "Successful", data: response });
+    const roomDetails = yield roomService.getRoomsByResortId(resortId);
+    res.status(200).json({ message: "Successful", data: roomDetails });
 }));
 exports.getAvailableRooms = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { _id } = req.user;
@@ -42,4 +42,10 @@ exports.updateRoom = (0, express_async_handler_1.default)((req, res) => __awaite
     console.log(formValues);
     yield roomService.updateRoomDetails(resortId, roomId, formValues);
     res.status(200).json({ message: "Update Room Successfull" });
+}));
+exports.udpateRoomStatus = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id: roomId } = req.params;
+    const resortId = yield roomService.changeRoomStatus(roomId);
+    const roomDetails = yield roomService.getRoomsByResortId(resortId);
+    res.status(200).json({ message: "Room staus updates successfully", data: roomDetails });
 }));
