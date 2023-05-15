@@ -34,8 +34,9 @@ export class AuthService {
             repositary = null
         }
         if(!repositary) throw ErrorResponse.badRequest('Please provide role')
-        const user = await repositary.getByEmail<IUser | IManager>(email);
+        const user = await repositary.getByEmail<IUser & IManager>(email);
         if (!user) throw ErrorResponse.unauthorized("User not found");
+        if(user.status === false || user.active === false) throw ErrorResponse.forbidden('Your access have been revoked')
         const isPasswordMatch = await bcrypt.compare(password, user.password);
         if (!isPasswordMatch) {
             throw ErrorResponse.unauthorized("Invalid Email or Password");

@@ -35,18 +35,18 @@ class App {
 
     // Routes
     private mountRoutes(): void {
-        this.express.use("/user", user);
-        this.express.use("/resort", resort);
-        this.express.use("/room", room);
-        this.express.use("/gallary", gallary);
-        this.express.use("/company", company);
-        this.express.use("/restaurant", restaurant);
-        this.express.use("/manager",manager)
-        this.express.use("/booking/",booking)
+        this.express.use("/api/user", user);
+        this.express.use("/api/resort", resort);
+        this.express.use("/api/room", room);
+        this.express.use("/api/gallary", gallary);
+        this.express.use("/api/company", company);
+        this.express.use("/api/restaurant", restaurant);
+        this.express.use("/api/manager",manager)
+        this.express.use("/api/booking/",booking)
         // authorizing routes 
-        this.express.use('/checkCredential/admin', adminVerify, (req, res) => res.json({message:"credentials successfull"}))
-        this.express.use('/checkCredential/user', userVerify, (req, res) => res.json({message:"credentials successfull"}))
-        this.express.use('/checkCredential/manager', managerVerify, (req, res) => res.json({message:"credentials successfull"}))
+        this.express.use('/api/checkCredential/admin', adminVerify, (req, res) => res.json({message:"credentials successfull"}))
+        this.express.use('/api/checkCredential/user', userVerify, (req, res) => res.json({message:"credentials successfull"}))
+        this.express.use('/api/checkCredential/manager', managerVerify, (req, res) => res.json({message:"credentials successfull"}))
     }
 
     // connecting database(MongoDB)

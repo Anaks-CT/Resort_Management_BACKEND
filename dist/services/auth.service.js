@@ -41,6 +41,8 @@ class AuthService {
             const user = yield repositary.getByEmail(email);
             if (!user)
                 throw errorResponse_1.default.unauthorized("User not found");
+            if (user.status === false || user.active === false)
+                throw errorResponse_1.default.forbidden('Your access have been revoked');
             const isPasswordMatch = yield bcrypt_1.default.compare(password, user.password);
             if (!isPasswordMatch) {
                 throw errorResponse_1.default.unauthorized("Invalid Email or Password");

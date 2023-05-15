@@ -58,18 +58,18 @@ class App {
     }
     // Routes
     mountRoutes() {
-        this.express.use("/user", user_routes_1.user);
-        this.express.use("/resort", resort_routes_1.resort);
-        this.express.use("/room", room_routes_1.room);
-        this.express.use("/gallary", gallary_routes_1.gallary);
-        this.express.use("/company", company_routes_1.company);
-        this.express.use("/restaurant", restaurant_routes_1.restaurant);
-        this.express.use("/manager", manager_routes_1.manager);
-        this.express.use("/booking/", booking_routes_1.booking);
+        this.express.use("/api/user", user_routes_1.user);
+        this.express.use("/api/resort", resort_routes_1.resort);
+        this.express.use("/api/room", room_routes_1.room);
+        this.express.use("/api/gallary", gallary_routes_1.gallary);
+        this.express.use("/api/company", company_routes_1.company);
+        this.express.use("/api/restaurant", restaurant_routes_1.restaurant);
+        this.express.use("/api/manager", manager_routes_1.manager);
+        this.express.use("/api/booking/", booking_routes_1.booking);
         // authorizing routes 
-        this.express.use('/checkCredential/admin', auth_middlewares_1.adminVerify, (req, res) => res.json({ message: "credentials successfull" }));
-        this.express.use('/checkCredential/user', auth_middlewares_1.userVerify, (req, res) => res.json({ message: "credentials successfull" }));
-        this.express.use('/checkCredential/manager', auth_middlewares_1.managerVerify, (req, res) => res.json({ message: "credentials successfull" }));
+        this.express.use('/api/checkCredential/admin', auth_middlewares_1.adminVerify, (req, res) => res.json({ message: "credentials successfull" }));
+        this.express.use('/api/checkCredential/user', auth_middlewares_1.userVerify, (req, res) => res.json({ message: "credentials successfull" }));
+        this.express.use('/api/checkCredential/manager', auth_middlewares_1.managerVerify, (req, res) => res.json({ message: "credentials successfull" }));
     }
     // connecting database(MongoDB)
     connectDB() {
