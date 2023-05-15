@@ -1,11 +1,12 @@
 import twilio from "twilio";
 import dotenv from "dotenv";
-
 dotenv.config();
 
 const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID!;
 const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN!;
 const TWILIO_SERVICE_ID = process.env.TWILIO_SERVICE_ID!;
+
+console.log(TWILIO_SERVICE_ID, TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 
 const client = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 

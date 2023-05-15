@@ -7,6 +7,7 @@ import { signToken } from "../utils/jwtTokenManage";
 import { checkVerificationToken, sendVerificationToken } from "../utils/twilio";
 import { IManager } from "../interface/manager.interface";
 
+
 type role = "user" | "admin" | "manager";
 // type loginDetails = {
 //     email: string,
