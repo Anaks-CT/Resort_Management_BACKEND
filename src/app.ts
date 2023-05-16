@@ -58,7 +58,7 @@ class App {
     private cors(): void {
         this.express.use(
             cors({
-                origin: ["https://trinity.anaksct.tech","http://localhost:3000"],
+                origin: ["https://trinity.anaksct.tech","http://localhost:3000", "https://trinity-api.anaksct.tech"],
                 methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
                 credentials: true,
             })
