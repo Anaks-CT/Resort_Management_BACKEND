@@ -47,8 +47,8 @@ class App {
         this.express = (0, express_1.default)();
         this.bodyParser();
         this.connectDB();
-        this.logger();
         this.cors();
+        this.logger();
         this.mountRoutes();
         this.errorHandler();
     }
@@ -77,11 +77,19 @@ class App {
     }
     // CORS configuration
     cors() {
+        this.express.use((req, res, next) => {
+            console.log("CORS middleware called");
+            next();
+        });
         this.express.use((0, cors_1.default)({
-            origin: [`https://trinity.anaksct.tech`],
+            origin: ["https://trinity.anaksct.tech", "http://localhost:3000"],
             methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
             credentials: true,
         }));
+        this.express.use((req, res, next) => {
+            console.log("Access-Control-Allow-Origin header:", res.get("Access-Control-Allow-Origin"));
+            next();
+        });
     }
     // logger (Morgan configuration)
     logger() {
