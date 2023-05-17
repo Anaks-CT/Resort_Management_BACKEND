@@ -20,12 +20,9 @@ const roomService = new room_service_1.default();
 const bookingService = new booking_service_1.default();
 exports.bookingConfirmationPart1 = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
-    console.log(req.user._id);
-    console.log(req.body.stayDetails);
     const { destination: resortId, roomDetail, date } = req.body.bookingForm1Details;
     yield roomService.getAvailableRooms(resortId, roomDetail, date);
     const roomNumber = yield Promise.all((_a = req.body.stayDetails) === null || _a === void 0 ? void 0 : _a.map((singleStayDetail) => roomService.addDatesToRoom(date, singleStayDetail.roomId)));
     const bookingDetails = yield bookingService.createBooking(req.user._id, resortId.id, date, req.body.stayDetails, roomNumber);
-    console.log(bookingDetails);
     res.json({ message: "Booking confirmation part 1 successful" });
 }));

@@ -6,7 +6,6 @@ const userService = new UserService();
 const authService = new AuthService();
 
 export const verifyEmail = expressAsyncHandler(async (req, res) => {
-    console.log('object');
     const phone = await userService.forgotPasswordverifyEmail(req.query.email as string)
     res.status(200).json({message: "User Details fetched successfully", data: phone})
 });

@@ -94,9 +94,7 @@ export default class UserService {
         if(!user) throw ErrorResponse.notFound('User not found')
         const {pointsUsed, taxCost, totalCost} = bookingAmountDetails
         // 2000 cancellation fee
-        console.log(pointsUsed, taxCost, totalCost);
         const points = Math.floor(pointsUsed+(-taxCost/3)+totalCost-2000)
-        console.log(points);
         const {modifiedCount} = await this.userRepositary.incUserPoints(userId, points)
         if(modifiedCount === 0) throw ErrorResponse.internalError("Couldn't add amount to points, please contact the TRINITY helping desk")
     }
@@ -120,7 +118,6 @@ export default class UserService {
         const userDetails = await this.userRepositary.getAll<IUser>({})
         if(userDetails.length === 0) throw ErrorResponse.notFound("No user Details found")
         const populatedUserDetails = await this.userRepositary.populate(userDetails, "blockedBy")
-        console.log(populatedUserDetails);
         return populatedUserDetails.map(({ _doc: {wishlist, bookings, password, ...userDetails} }) => userDetails);
     }
 
@@ -170,7 +167,6 @@ export default class UserService {
       }
         const userDetails =  await this.userRepositary.searchSortService(searchValue, sortorder, sortValue)
         const populatedUserDetails = await this.userRepositary.populate(userDetails, "blockedBy")
-        console.log(populatedUserDetails);
         return populatedUserDetails.map(({ _doc: {wishlist, bookings, password, ...userDetails} }) => userDetails);
     }
 }

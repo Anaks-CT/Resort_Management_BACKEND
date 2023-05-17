@@ -31,7 +31,6 @@ export const getAvailableRooms = asyncHandler(async (req: RequestWithUser, res) 
 export const updateRoom = asyncHandler( async (req, res) => {
     const {resortId} = req.params
     const {roomId, formValues} = req.body
-    console.log(formValues);
     await roomService.updateRoomDetails(resortId, roomId, formValues)
     res.status(200).json({message:"Update Room Successfull"})
 }) 

@@ -10,7 +10,6 @@ dotenv_1.default.config();
 const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
 const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
 const TWILIO_SERVICE_ID = process.env.TWILIO_SERVICE_ID;
-console.log(TWILIO_SERVICE_ID, TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 const client = (0, twilio_1.default)(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 const sendVerificationToken = (phoneNumber) => {
     return new Promise((resolve) => {
@@ -24,7 +23,6 @@ const sendVerificationToken = (phoneNumber) => {
             resolve(true);
         })
             .catch((error) => {
-            console.log(error);
             resolve(false);
         });
     });
@@ -47,7 +45,6 @@ const checkVerificationToken = (otp, phoneNumber) => {
             }
         })
             .catch((error) => {
-            console.log(error);
             resolve(false);
         });
     });

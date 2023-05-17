@@ -20,7 +20,6 @@ const wishlistService = new wishllist_service_1.default();
 const userService = new user_service_1.default();
 exports.addToWishlist = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { _id } = req.user;
-    console.log(_id);
     const { wishlistDetails } = req.body;
     const wishlist = yield wishlistService.createWishlist(_id, wishlistDetails);
     yield userService.updateUserWishlist(_id, wishlist._id);

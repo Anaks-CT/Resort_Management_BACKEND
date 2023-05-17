@@ -19,7 +19,6 @@ const auth_service_1 = __importDefault(require("../../../services/auth.service")
 const userService = new user_service_1.default();
 const authService = new auth_service_1.default();
 exports.verifyEmail = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log('object');
     const phone = yield userService.forgotPasswordverifyEmail(req.query.email);
     res.status(200).json({ message: "User Details fetched successfully", data: phone });
 }));

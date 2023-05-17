@@ -25,7 +25,6 @@ class ResortService {
     createResort(resortDetails, location, email, customerCareNo) {
         return __awaiter(this, void 0, void 0, function* () {
             const resortDupe = yield this.resortRepositary.getOne({ resortDetails: resortDetails });
-            console.log(resortDetails);
             /////////////////////// checking duplicate resort with same name///////////////////////////////
             if (resortDupe) {
                 throw errorResponse_1.default.badRequest("Resort aldready exists");

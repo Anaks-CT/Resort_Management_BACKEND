@@ -23,7 +23,6 @@ export default class ResortService {
         customerCareNo: number
     ): Promise<CreateResortResponse> {
         const resortDupe = await this.resortRepositary.getOne<IResort>({resortDetails: resortDetails});
-            console.log(resortDetails);
             
 
         /////////////////////// checking duplicate resort with same name///////////////////////////////

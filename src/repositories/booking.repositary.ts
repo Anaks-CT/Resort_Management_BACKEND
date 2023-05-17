@@ -1,5 +1,3 @@
-import { UpdateQuery, UpdateWriteOpResult } from "mongoose";
-import { ICompany } from "../interface/company.interface";
 import { BaseRepository } from "./baseRepositary";
 import { ObjectId } from "mongodb";
 import bookingModel from "../models/booking.model";

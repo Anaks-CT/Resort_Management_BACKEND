@@ -10,7 +10,6 @@ const userService = new UserService()
 
 export const addToWishlist = asyncHandler(async (req: RequestWithUser, res) => {
     const {_id} = req.user
-    console.log(_id);
     const {wishlistDetails} = req.body
     const wishlist = await wishlistService.createWishlist(_id, wishlistDetails)
     await userService.updateUserWishlist(_id, wishlist._id!)

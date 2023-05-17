@@ -26,7 +26,6 @@ export default class BookingService {
         userType: "member" | "platinum" | "diamond",
         userPoints?: number
     ) {
-        console.log(roomNumberIds);
         const user = await this.userRepositary.getOne<IUser>({ _id: userId });
         if (!user)
             throw ErrorResponse.unauthorized(
@@ -59,7 +58,6 @@ export default class BookingService {
                             );
                         // how can i get the details of the packge i have id with
                         const room = res.roomNumbers.filter((num) => {
-                            console.log(num._id, roomNumberIds[i]);
                             return (
                                 num._id?.toString() ==
                                 roomNumberIds[i].toString()
@@ -309,7 +307,6 @@ export default class BookingService {
         const yearMonths = Array.from({ length: 12 }, (_, i) =>
             String(i + 1).padStart(2, "0")
         );
-        console.log(bookingDetail);
 
         if (!bookingDetail)
             throw ErrorResponse.internalError(

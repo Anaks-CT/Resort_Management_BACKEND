@@ -37,7 +37,6 @@ class BookingService {
     }
     createBooking(userId, resortId, date, stayDetails, roomNumberIds, userType, userPoints) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log(roomNumberIds);
             const user = yield this.userRepositary.getOne({ _id: userId });
             if (!user)
                 throw errorResponse_1.default.unauthorized("Authorization Error. Please try again later");
@@ -61,7 +60,6 @@ class BookingService {
                     // how can i get the details of the packge i have id with
                     const room = res.roomNumbers.filter((num) => {
                         var _a;
-                        console.log(num._id, roomNumberIds[i]);
                         return (((_a = num._id) === null || _a === void 0 ? void 0 : _a.toString()) ==
                             roomNumberIds[i].toString());
                     });
@@ -261,7 +259,6 @@ class BookingService {
         return __awaiter(this, void 0, void 0, function* () {
             const bookingDetail = yield this.bookingRepositary.getMonthlyRevenue(resortId && resortId);
             const yearMonths = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, "0"));
-            console.log(bookingDetail);
             if (!bookingDetail)
                 throw errorResponse_1.default.internalError("Cannot find booking details, please try again");
             const convertedReport = yearMonths.reduce((acc, month) => {

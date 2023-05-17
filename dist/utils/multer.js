@@ -18,7 +18,6 @@ const cloudstorage = new multer_storage_cloudinary_1.CloudinaryStorage({
     },
 });
 const upload = (0, multer_1.default)({ storage: cloudstorage, fileFilter: (req, file, callback) => {
-        console.log(file + 'jijin');
         if (file.mimetype == 'image/jpeg' || file.mimetype == 'image/jpg' || file.mimetype == 'image/png' || file.mimetype == 'image/gif' || file.mimetype == 'image/avif') {
             callback(null, true);
         }
@@ -26,5 +25,4 @@ const upload = (0, multer_1.default)({ storage: cloudstorage, fileFilter: (req, 
             callback(null, false);
         }
     } });
-// console.log(upload);
 exports.default = upload;
