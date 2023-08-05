@@ -16,10 +16,9 @@ A MERN Stack resort booking web application, featuring a user-friendly interface
 
 ## Technologies Used
 
-- ReachJS with Redux Toolkit
+- TypeScript
 - NodeJS with Express.js
 - MongoDB with Mongoose
-- TypeScript combined with Material UI
 - JWT authorization
 - RESTful API
 - Deployed on AWS utilizing an EC2 instance managed by NGINX.
