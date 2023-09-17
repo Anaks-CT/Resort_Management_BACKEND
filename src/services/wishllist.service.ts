@@ -30,21 +30,44 @@ export default class WishlistService {
         const wishlistDetails = await this.wishlistRepositary.getAll<IWishlist>(
             { userId: userId }
         );
-        if(!wishlistDetails) throw ErrorResponse.notFound("You don't have any saved dates !!")
+        if (!wishlistDetails)
+            throw ErrorResponse.notFound("You don't have any saved dates !!");
         const populatedWishlist = await this.wishlistRepositary.populate(
             wishlistDetails,
             "resortId"
         );
         const data: IWishlist[] = populatedWishlist.map((wishlist: any) => {
-            const {resortId, userId, ...rest} = wishlist._doc
-            return {resortName: resortId.resortDetails.name,resortId: resortId._id, ...rest}
-        })
-        return data
+            const { resortId, userId, ...rest } = wishlist._doc;
+            return {
+                resortName: resortId.resortDetails.name,
+                resortId: resortId._id,
+                ...rest,
+            };
+        });
+        return data;
     }
 
-    async deleteWishlist(wishlistId: string){
-        const checkWishlist = await this.wishlistRepositary.getById<IWishlist>(wishlistId)
-        if(!checkWishlist) throw ErrorResponse.notFound('Cannot find Selected wishlist')
-        await this.wishlistRepositary.deleteById<IWishlist>(wishlistId)
+    async deleteWishlist(wishlistId: string) {
+        const checkWishlist = await this.wishlistRepositary.getById<IWishlist>(
+            wishlistId
+        );
+        if (!checkWishlist)
+            throw ErrorResponse.notFound("Cannot find Selected wishlist");
+        await this.wishlistRepositary.deleteById<IWishlist>(wishlistId);
+    }
+
+    async checkWishlistDate(wishlist: IWishlist[]) {
+        const currentDate = new Date();
+        const deletePromises: Promise<void>[] = [];
+        wishlist.forEach((item) => {
+            const startDate = new Date(item.dates.startDate);
+            if (startDate < currentDate) {
+                // Create a promise to delete the item and add it to the array of delete promises.
+                deletePromises.push(this.deleteWishlist(item._id!));
+            }
+        });
+
+        // Use Promise.all to concurrently delete the items.
+        await Promise.all(deletePromises);
     }
 }

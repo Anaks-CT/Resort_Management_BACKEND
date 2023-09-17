@@ -27,8 +27,12 @@ exports.addToWishlist = (0, express_async_handler_1.default)((req, res) => __awa
 }));
 exports.getWishlistByUserId = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { _id } = req.user;
+    console.log(_id);
     const wishlists = yield wishlistService.getAllUserWishlist(_id);
-    res.status(200).json({ message: "Fetching wishlists successfull", data: wishlists });
+    console.log('first');
+    yield wishlistService.checkWishlistDate(wishlists);
+    const updatedWishlist = yield wishlistService.getAllUserWishlist(_id);
+    res.status(200).json({ message: "Fetching wishlists successfull", data: updatedWishlist });
 }));
 exports.deleteWishlist = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { _id } = req.user;

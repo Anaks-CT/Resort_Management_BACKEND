@@ -64,8 +64,23 @@ class WishlistService {
         return __awaiter(this, void 0, void 0, function* () {
             const checkWishlist = yield this.wishlistRepositary.getById(wishlistId);
             if (!checkWishlist)
-                throw errorResponse_1.default.notFound('Cannot find Selected wishlist');
+                throw errorResponse_1.default.notFound("Cannot find Selected wishlist");
             yield this.wishlistRepositary.deleteById(wishlistId);
+        });
+    }
+    checkWishlistDate(wishlist) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const currentDate = new Date();
+            const deletePromises = [];
+            wishlist.forEach((item) => {
+                const startDate = new Date(item.dates.startDate);
+                if (startDate < currentDate) {
+                    // Create a promise to delete the item and add it to the array of delete promises.
+                    deletePromises.push(this.deleteWishlist(item._id));
+                }
+            });
+            // Use Promise.all to concurrently delete the items.
+            yield Promise.all(deletePromises);
         });
     }
 }

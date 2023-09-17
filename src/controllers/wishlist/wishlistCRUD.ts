@@ -18,8 +18,12 @@ export const addToWishlist = asyncHandler(async (req: RequestWithUser, res) => {
 
 export const getWishlistByUserId = asyncHandler(async (req: RequestWithUser, res) => {
     const {_id} = req.user
+    console.log(_id)
     const wishlists = await wishlistService.getAllUserWishlist(_id)
-    res.status(200).json({message: "Fetching wishlists successfull", data: wishlists})
+    console.log('first')
+    await wishlistService.checkWishlistDate(wishlists)
+    const updatedWishlist = await wishlistService.getAllUserWishlist(_id)
+    res.status(200).json({message: "Fetching wishlists successfull", data: updatedWishlist})
 })
 
 export const deleteWishlist = asyncHandler(async (req: RequestWithUser, res) => {

@@ -46,7 +46,7 @@ user.get("/fetchAll",adminOrMangerVerify, getAllUserDetails)
 user.get('/service', adminOrMangerVerify, searchSortedUserDetails)
 
 user.route("/wishlist/:id?")
-    .get(userVerify, getWishlistByUserId)
+    .get(userVerify, getWishlistByUserId) 
     .post(userVerify, wishlistDetails, addToWishlist)
     .delete(userVerify, paramsIdValidate, deleteWishlist);
 
